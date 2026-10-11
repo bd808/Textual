@@ -2170,9 +2170,9 @@ TEXTUAL_IGNORE_DEPRECATION_END
 		IRCAddressBookEntry *config =
 		[IRCAddressBookEntry newIgnoreEntryForHostmask:hostmask];
 
-		sheet = [[TDCAddressBookSheet alloc] initWithConfig:config];
+		sheet = [TDCAddressBookSheet sheetWithConfig:config];
 	} else {
-		sheet = [[TDCAddressBookSheet alloc] initWithEntryType:IRCAddressBookEntryTypeIgnore];
+		sheet = [TDCAddressBookSheet sheetForNewEntryOfType:IRCAddressBookEntryTypeIgnore];
 	}
 
 	sheet.delegate = self;
@@ -2187,7 +2187,7 @@ TEXTUAL_IGNORE_DEPRECATION_END
 - (void)addUserTrackingAddressBookEntry
 {
 	TDCAddressBookSheet *sheet =
-	[[TDCAddressBookSheet alloc] initWithEntryType:IRCAddressBookEntryTypeUserTracking];
+	[TDCAddressBookSheet sheetForNewEntryOfType:IRCAddressBookEntryTypeUserTracking];
 
 	sheet.delegate = self;
 
@@ -2231,7 +2231,7 @@ TEXTUAL_IGNORE_DEPRECATION_END
 	IRCAddressBookEntry *config = self.addressBookList[selectedRow];
 
 	TDCAddressBookSheet *sheet =
-	[[TDCAddressBookSheet alloc] initWithConfig:config];
+	[TDCAddressBookSheet sheetWithConfig:config];
 
 	sheet.delegate = self;
 

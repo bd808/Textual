@@ -43,9 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol TDCAddressBookSheetDelegate;
 
+/* The sheet for one address book entry: an ignore (TDCAddressBookIgnoreSheet)
+ or a tracked user (TDCAddressBookUserTrackingSheet), chosen by the entry type */
 @interface TDCAddressBookSheet : TDCSheetBase
-- (instancetype)initWithEntryType:(IRCAddressBookEntryType)entryType NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithConfig:(IRCAddressBookEntry *)config NS_DESIGNATED_INITIALIZER;
++ (TDCAddressBookSheet *)sheetForNewEntryOfType:(IRCAddressBookEntryType)entryType;
++ (TDCAddressBookSheet *)sheetWithConfig:(IRCAddressBookEntry *)config;
+
+- (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 
 - (void)start;
 @end

@@ -6,12 +6,12 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TDCAddressBookSheet">
+        <customObject id="-2" userLabel="File's Owner" customClass="TDCAddressBookUserTrackingSheet">
             <connections>
                 <outlet property="trackUserActivityCheck" destination="563" id="grh-lc-kQW"/>
                 <outlet property="userTrackingEntryNicknameTextField" destination="540" id="D8Q-7L-BBk"/>
-                <outlet property="userTrackingEntrySaveButton" destination="529" id="kqV-8E-4oZ"/>
-                <outlet property="userTrackingEntryView" destination="521" id="7Q7-Zg-oll"/>
+                <outlet property="okButton" destination="529" id="kqV-8E-4oZ"/>
+                <outlet property="sheet" destination="521" id="7Q7-Zg-oll"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>

@@ -6,12 +6,12 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TDCAddressBookSheet">
+        <customObject id="-2" userLabel="File's Owner" customClass="TDCAddressBookIgnoreSheet">
             <connections>
                 <outlet property="ignoreClientToClientProtocolCheck" destination="dej-2i-HSG" id="FzP-Lw-FT4"/>
                 <outlet property="ignoreEntryHostmaskTextField" destination="298" id="8f4-Xr-W55"/>
-                <outlet property="ignoreEntrySaveButton" destination="485" id="5P8-TR-FGV"/>
-                <outlet property="ignoreEntryView" destination="5" id="nse-Nb-KaW"/>
+                <outlet property="okButton" destination="485" id="5P8-TR-FGV"/>
+                <outlet property="sheet" destination="5" id="nse-Nb-KaW"/>
                 <outlet property="ignoreFileTransferRequestsCheck" destination="FDs-Jz-PlJ" id="xHx-kw-Fld"/>
                 <outlet property="ignoreInlineMediaCheck" destination="wGM-8y-f67" id="XQg-IH-6tX"/>
                 <outlet property="ignoreGeneralEventMessagesCheck" destination="ywn-9P-Z6q" id="D3U-RV-9bp"/>
