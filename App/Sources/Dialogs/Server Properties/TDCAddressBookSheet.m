@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[self doesNotRecognizeSelector:_cmd];
 
-	return nil;
+	__builtin_unreachable(); // -doesNotRecognizeSelector: raises
 }
 
 - (void)start
