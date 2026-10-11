@@ -266,6 +266,12 @@ div.line[data-line-type="notice"] {
 	position: relative;
 }
 
+/* The usual time colour disappears into the yellow background */
+div.line[data-line-type="ctcp"] .time,
+div.line[data-line-type="notice"] .time {
+	color: rgba(255, 204, 102, 0.6); /* Tomorrow Night Eighties: Yellow 60% */
+}
+
 /* @end */
 
 /* @group Selected User */
