@@ -83,6 +83,10 @@ ConversationTracking.nicknameSingleClickEventCallback = function(senderElement)
 
 ConversationTracking.updateNicknameWithNewMessage = function(lineElement)
 {
+	if (lineElement === null) {
+		return;
+	}
+
 	var elementType = lineElement.dataset.lineType;
 
 	/* We only want to target plain text messages */

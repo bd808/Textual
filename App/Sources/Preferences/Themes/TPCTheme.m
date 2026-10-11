@@ -709,18 +709,17 @@ typedef NS_OPTIONS(NSUInteger, _TPCThemeMonitoringResult) {
 	TPCThemeVariety *globalVariety = self.globalVariety;
 
 	BOOL globalHasCSS = (globalVariety.cssFile != nil);
-	BOOL globalHasJS = (globalVariety.jsFile != nil);
 
 	TPCThemeVariety *bestVariety = nil;
 
 	NSArray *varieties = self.varieties;
 
-	/* A variety does not need to contain a CSS or JavaScript file
-	 to be the best. As long those exist within the global variety,
-	 then any variety that meets the appearance criteria can be
-	 the best. This allows for flexibility such as specific variety
-	 containing different templates and/or settings while using a
-	 unified CSS and/or JavaScript file. */
+	/* A variety does not need to contain a CSS file to be the best.
+	 As long as the global variety has one, any variety that meets the
+	 appearance criteria can be the best. This allows for flexibility
+	 such as specific variety containing different templates and/or
+	 settings while using a unified CSS file. JavaScript is optional:
+	 without it, the style gets the default behaviour (see core.js). */
 	for (TPCThemeVariety *variety in varieties) {
 		BOOL isBestVariety = NO;
 
@@ -741,10 +740,8 @@ typedef NS_OPTIONS(NSUInteger, _TPCThemeMonitoringResult) {
 		}
 
 		if (isBestVariety) {
-			/* Ensure someone has a CSS and JavaScript file. */
-			if ((globalHasCSS == NO && variety.cssFile == nil) ||
-				(globalHasJS == NO && variety.jsFile == nil))
-			{
+			/* Ensure someone has a CSS file. */
+			if (globalHasCSS == NO && variety.cssFile == nil) {
 				isBestVariety = NO;
 			}
 		}
@@ -757,7 +754,7 @@ typedef NS_OPTIONS(NSUInteger, _TPCThemeMonitoringResult) {
 
 	/* If we do not have a best variety, then use the global
 	 variety assuming it can be used. */
-	if (bestVariety == nil && globalHasCSS && globalHasJS) {
+	if (bestVariety == nil && globalHasCSS) {
 		bestVariety = globalVariety;
 	}
 

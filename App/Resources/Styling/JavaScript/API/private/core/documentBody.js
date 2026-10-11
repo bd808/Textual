@@ -73,6 +73,30 @@ Textual.fadeOutLoadingScreen = function(bodyOp, topicOp) /* PUBLIC */
 	}
 };
 
+/* The default Textual.viewBodyDidLoad(): what the bundled styles' scripts did, for
+ the elements a style's CSS hides (opacity 0) until the view has loaded. Elements a
+ style shows on its own are left alone. */
+_Textual.showViewHiddenUntilLoaded = function() /* PRIVATE */
+{
+	var loadingScreen = Textual.loadingScreenElement();
+
+	if (loadingScreen !== null) {
+		loadingScreen.style.display = "none";
+	}
+
+	var showElement = function(element, opacity) {
+		if (element === null || window.getComputedStyle(element).opacity !== "0") {
+			return;
+		}
+
+		element.style.transition = "none";
+		element.style.opacity = opacity;
+	};
+
+	showElement(Textual.documentBodyElement(), 1.00);
+	showElement(Textual.topicBarElement(), 0.95);
+};
+
 /* Topic bar */
 Textual._topicBarElementReference = null; /* PRIVATE */
 

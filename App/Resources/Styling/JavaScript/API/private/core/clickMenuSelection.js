@@ -195,9 +195,11 @@ Textual.nicknameMaybeWasDoubleClicked = function(e) /* PUBLIC */
 	}
 };
 
+/* Without its own, a style gets conversation tracking: a click marks that person's
+ messages, another click unmarks them (see Textual.messageAddedToView()) */
 Textual.nicknameSingleClicked = function(e) /* PUBLIC */
 {
-	// API does not handle this action by default...
+	ConversationTracking.nicknameSingleClickEventCallback(e);
 };
 
 Textual.channelNameDoubleClicked = function() /* PUBLIC */

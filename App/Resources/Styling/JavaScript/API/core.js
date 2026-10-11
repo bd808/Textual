@@ -67,7 +67,13 @@ var Textual = (window.Textual || {});
 */
 Textual.viewInitiated 					= function(viewType, clientHash, viewHash, viewName) {};
 
-Textual.messageAddedToView 				= function(lineNumber, fromBuffer) {};
+/*  Without its own messageAddedToView(), a style gets conversation tracking: after a
+    nickname is clicked once, that person's messages get the "selectedUser" class
+    (see nicknameSingleClicked()). A style that defines its own and still wants this
+    calls ConversationTracking.updateNicknameWithNewMessage() with the line element. */
+Textual.messageAddedToView 				= function(lineNumber, fromBuffer) {
+	ConversationTracking.updateNicknameWithNewMessage(document.getElementById("line-" + lineNumber));
+};
 Textual.messageRemovedFromView 			= function(lineNumber) {};
 
 Textual.historyIndicatorAddedToView			= function() {};
@@ -96,8 +102,14 @@ Textual.dateChanged						= function(dayYear, dayMonth, dayDay) {};
 /*  This function is not called by Textual itself, but by WebKit.
     It is appended to <body> as the function to call during onload phase.
     It is used by the newer templates to replace viewDidFinishLoading()
-    as the function responsible for fading out the loading screen. */
-Textual.viewBodyDidLoad					= function() {};
+    as the function responsible for fading out the loading screen.
+
+    Without its own, a style gets this: the loading screen goes, and the chat and
+    the topic bar are shown if the style's CSS hides them until now (opacity 0),
+    the topic bar at 95%. A style that defines its own calls fadeOutLoadingScreen(). */
+Textual.viewBodyDidLoad					= function() {
+	_Textual.showViewHiddenUntilLoaded();
+};
 
 /* *********************************************************************** */
 /*						         Appearance								   */
