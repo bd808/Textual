@@ -63,6 +63,53 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertNil([TVCLogScriptEventSink valueOfPreferenceReadableByStyles:@"alloc"]);
 }
 
+/* The page reaches the app only through the listed functions: each one has a
+ handler and a function in scriptSink.js, scriptSink.js posts to no other, and
+ arguments of the wrong number or kind are refused */
+- (void)testBridgeFunctionsAreListedHandledAndChecked
+{
+	NSURL *scriptSinkURL = [[NSBundle mainBundle] URLForResource:@"scriptSink" withExtension:@"js" subdirectory:@"JavaScript/API/private"];
+
+	NSString *scriptSink = [NSString stringWithContentsOfURL:scriptSinkURL encoding:NSUTF8StringEncoding error:NULL];
+
+	XCTAssertNotNil(scriptSink);
+
+	TVCLogScriptEventSink *eventSink = [TVCLogScriptEventSink new];
+
+	NSArray *names = [TVCLogScriptEventSink scriptHandlerNames];
+
+	for (NSString *name in names) {
+		SEL handler = NSSelectorFromString([NSString stringWithFormat:@"_%@:", name]);
+
+		NSString *posting = [NSString stringWithFormat:@"messageHandlers.%@.postMessage", name];
+
+		XCTAssertTrue([eventSink respondsToSelector:handler], @"%@", name);
+
+		XCTAssertTrue([scriptSink containsString:posting], @"%@", name);
+	}
+
+	NSRegularExpression *postedName = [NSRegularExpression regularExpressionWithPattern:@"messageHandlers\\.(\\w+)\\.postMessage" options:0 error:NULL];
+
+	for (NSTextCheckingResult *match in [postedName matchesInString:scriptSink options:0 range:NSMakeRange(0, scriptSink.length)]) {
+		NSString *name = [scriptSink substringWithRange:[match rangeAtIndex:1]];
+
+		XCTAssertTrue([names containsObject:name], @"%@", name);
+	}
+
+	XCTAssertTrue(([TVCLogScriptEventSink arguments:@[@"line-1", @YES, @NO] matchKinds:@"snn"]));
+	XCTAssertFalse(([TVCLogScriptEventSink arguments:@[@"line-1", @YES] matchKinds:@"snn"]));
+	XCTAssertFalse(([TVCLogScriptEventSink arguments:@[@"line-1", @YES, @NO, @YES] matchKinds:@"snn"]));
+	XCTAssertFalse(([TVCLogScriptEventSink arguments:@[@1, @YES, @NO] matchKinds:@"snn"]));
+
+	XCTAssertTrue(([TVCLogScriptEventSink arguments:@[@"a", @"b", @"c"] matchKinds:@"s+"]));
+	XCTAssertFalse(([TVCLogScriptEventSink arguments:@[@"a", @1] matchKinds:@"s+"]));
+	XCTAssertFalse(([TVCLogScriptEventSink arguments:@[] matchKinds:@"s+"]));
+
+	XCTAssertTrue(([TVCLogScriptEventSink arguments:@[[NSNull null]] matchKinds:@"S+"]));
+	XCTAssertFalse(([TVCLogScriptEventSink arguments:@[[NSNull null]] matchKinds:@"s+"]));
+	XCTAssertTrue(([TVCLogScriptEventSink arguments:@[@"key", @{@"a" : @[@1]}] matchKinds:@"sj+"]));
+}
+
 /* Links the scanner finds stay clickable, but never ones that run script or
  reach local content, even if the user permits any scheme */
 - (void)testScriptAndLocalSchemesNeverBecomeLinks

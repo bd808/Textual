@@ -63,25 +63,146 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TVCLogScriptEventSink
 
-+ (BOOL)isSelectorExcludedFromScripts:(SEL)selector
+/* Every function the chat view's JavaScript can call (scriptSink.js) and the
+ arguments it takes, one character each: s string, S string or null, n number,
+ a array or string, j any JSON value, * anything. A trailing + lets the last kind
+ repeat; without it, more arguments are refused. The number of kinds before the
+ + is the minimum number of arguments. Each is handled by -_<name>: with a
+ TVCLogScriptEventSinkContext (the category files). */
++ (NSDictionary<NSString *, NSString *> *)argumentKindsByHandlerName
 {
-	if (selector == @selector(init) ||
-		selector == @selector(webViewPolicy) ||
-		selector == @selector(associatedClient) ||
-		selector == @selector(associatedChannel) ||
-		selector == @selector(objectValueToCommon:) ||
-		selector == @selector(userContentController:didReceiveScriptMessage:) ||
-		selector == @selector(processInputData:forCaller:inWebView:withSelector:) ||
-		selector == @selector(processInputData:forCaller:inWebView:withSelector:minimumArgumentCount:withValidation:))
-	{
-		return YES;
+	static NSDictionary<NSString *, NSString *> *handlers = nil;
+
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		handlers = @{
+			/* Queries */
+			@"appearance" : @"",
+			@"channelIsActive" : @"",
+			@"channelMemberCount" : @"",
+			@"channelName" : @"",
+			@"inlineMediaEnabledForView" : @"",
+			@"localUserHostmask" : @"",
+			@"localUserNickname" : @"",
+			@"networkName" : @"",
+			@"nicknameColorStyleHash" : @"ss+",
+			@"serverAddress" : @"",
+			@"serverChannelCount" : @"",
+			@"serverIsConnected" : @"",
+			@"sidebarInversionIsEnabled" : @"",
+
+			/* Actions */
+			@"channelNameDoubleClicked" : @"",
+			@"copySelectionWhenPermitted" : @"",
+			@"loadInlineMedia" : @"sssn+",
+			@"nicknameDoubleClicked" : @"",
+			@"sendPluginPayload" : @"s*+",
+			@"setChannelName" : @"S+",
+			@"setNickname" : @"S+",
+			@"setSelection" : @"S+",
+			@"setURLAddress" : @"S+",
+			@"topicBarDoubleClicked" : @"",
+
+			/* Rendering */
+			@"finishedLayingOutView" : @"",
+			@"notifyJumpToLineCallback" : @"snn",
+			@"notifyLinesAddedToView" : @"a+",
+			@"notifyLinesRemovedFromView" : @"a+",
+			@"renderMessagesAfter" : @"sn",
+			@"renderMessagesBefore" : @"sn",
+			@"renderMessageWithSiblings" : @"snn",
+
+			/* Styles */
+			@"logToConsole" : @"s+",
+			@"printDebugInformation" : @"s+",
+			@"printDebugInformationToConsole" : @"s+",
+			@"retrievePreferencesWithMethodName" : @"s+",
+			@"styleSettingsRetrieveValue" : @"s+",
+			@"styleSettingsSetValue" : @"sj+"
+		};
+	});
+
+	return handlers;
+}
+
++ (NSArray<NSString *> *)scriptHandlerNames
+{
+	return [self argumentKindsByHandlerName].allKeys;
+}
+
++ (NSUInteger)minimumArgumentCountForKinds:(NSString *)kinds
+{
+	NSParameterAssert(kinds != nil);
+
+	return ([kinds hasSuffix:@"+"] ? (kinds.length - 1) : kinds.length);
+}
+
+/* The kinds in words, for the error a style sees in the console */
++ (NSString *)descriptionOfKinds:(NSString *)kinds
+{
+	NSParameterAssert(kinds != nil);
+
+	NSDictionary *words = @{@"s" : @"string", @"S" : @"string or null", @"n" : @"number", @"a" : @"array or string", @"j" : @"JSON value", @"*" : @"any value"};
+
+	NSMutableArray *parts = [NSMutableArray array];
+
+	NSUInteger kindCount = [self minimumArgumentCountForKinds:kinds];
+
+	for (NSUInteger index = 0; index < kindCount; index++) {
+		[parts addObject:words[[kinds substringWithRange:NSMakeRange(index, 1)]]];
 	}
 
-	if ([NSStringFromSelector(selector) hasPrefix:@"_"]) {
+	NSString *description = [parts componentsJoinedByString:@", "];
+
+	if ([kinds hasSuffix:@"+"]) {
+		description = [description stringByAppendingFormat:@" (the last one may repeat)"];
+	}
+
+	return description;
+}
+
++ (BOOL)arguments:(NSArray *)arguments matchKinds:(NSString *)kinds
+{
+	NSParameterAssert(arguments != nil);
+	NSParameterAssert(kinds != nil);
+
+	BOOL lastRepeats = [kinds hasSuffix:@"+"];
+
+	NSUInteger kindCount = [self minimumArgumentCountForKinds:kinds];
+
+	if (arguments.count < kindCount || (lastRepeats == NO && arguments.count > kindCount)) {
 		return NO;
 	}
 
-	return NO;
+	for (NSUInteger index = 0; index < arguments.count; index++) {
+		id argument = arguments[index];
+
+		unichar kind = [kinds characterAtIndex:MIN(index, (kindCount - 1))];
+
+		BOOL isNull = [argument isKindOfClass:[NSNull class]];
+		BOOL isString = [argument isKindOfClass:[NSString class]];
+		BOOL isNumber = [argument isKindOfClass:[NSNumber class]];
+		BOOL isArray = [argument isKindOfClass:[NSArray class]];
+		BOOL isDictionary = [argument isKindOfClass:[NSDictionary class]];
+
+		BOOL matches = NO;
+
+		switch (kind) {
+			case 's': matches = isString; break;
+			case 'S': matches = (isString || isNull); break;
+			case 'n': matches = isNumber; break;
+			case 'a': matches = (isArray || isString); break;
+			case 'j': matches = (isNull || isString || isNumber || isArray || isDictionary); break;
+			case '*': matches = YES; break;
+		}
+
+		if (matches == NO) {
+			return NO;
+		}
+	}
+
+	return YES;
 }
 
 + (nullable id)objectValueToCommon:(id)object
@@ -136,51 +257,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSString *handlerName = message.name;
 
-	SEL handlerSelector = NSSelectorFromString([handlerName stringByAppendingString:@":inWebView:"]);
+	NSString *argumentKinds = [self.class argumentKindsByHandlerName][handlerName];
+
+	if (argumentKinds == nil) {
+		return;
+	}
+
+	SEL handlerSelector = NSSelectorFromString([NSString stringWithFormat:@"_%@:", handlerName]);
 
 	if ([self respondsToSelector:handlerSelector] == NO) {
+		LogToConsoleFault("No handler for '%{public}@'", handlerName);
+
 		return;
 	}
 
-	if ([self.class isSelectorExcludedFromScripts:handlerSelector]) {
-		return;
-	}
-
-	NSMethodSignature *signature = [self methodSignatureForSelector:handlerSelector];
-
-	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-
-	[invocation setTarget:self];
-	[invocation setSelector:handlerSelector];
-
-	id body = message.body;
-	[invocation setArgument:&body atIndex:2];
-
-	WKWebView *webView = message.webView;
-	[invocation setArgument:&webView atIndex:3];
-
-	[invocation invoke];
+	[self processInputData:message.body
+				 forCaller:[NSString stringWithFormat:@"app.%@()", handlerName]
+				 inWebView:message.webView
+			  withSelector:handlerSelector
+			 argumentKinds:argumentKinds];
 }
 
 - (void)processInputData:(id)inputData
 			   forCaller:(NSString *)caller
 			   inWebView:(id)webView
 			withSelector:(SEL)selector
-{
-	[self processInputData:inputData
-				 forCaller:caller
-				 inWebView:webView
-			  withSelector:selector
-	  minimumArgumentCount:0
-			withValidation:nil];
-}
-
-- (void)processInputData:(id)inputData
-			   forCaller:(NSString *)caller
-			   inWebView:(id)webView
-			withSelector:(SEL)selector
-	minimumArgumentCount:(NSUInteger)minimumArgumentCount
-		  withValidation:(BOOL (NS_NOESCAPE ^ _Nullable)(NSUInteger argumentIndex, id argument))validateArgumentBlock
+		   argumentKinds:(NSString *)argumentKinds
 {
 	TVCLogView *intWebView = nil;
 
@@ -204,6 +306,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 		return;
 	}
+
+	NSUInteger minimumArgumentCount = [self.class minimumArgumentCountForKinds:argumentKinds];
 
 	NSInteger promiseIndex = (-1);
 
@@ -265,32 +369,12 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	/* Perform validation if needed */
-	if (minimumArgumentCount > 0 && values.count < minimumArgumentCount) {
-		[self.class throwJavaScriptException:@"Minimum number of arguments (%lu) condition not met"
+	if (minimumArgumentCount > 0 && (values == nil || [self.class arguments:values matchKinds:argumentKinds] == NO)) {
+		[self.class throwJavaScriptException:@"Invalid arguments, expected: %@"
 								   forCaller:caller
-								   inWebView:intWebView, minimumArgumentCount];
+								   inWebView:intWebView, [self.class descriptionOfKinds:argumentKinds]];
 
 		return;
-	}
-
-	if (validateArgumentBlock) {
-		__block BOOL validationPassed = YES;
-
-		[values enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
-			if (validateArgumentBlock(index, object) == NO) {
-				validationPassed = NO;
-
-				*stop = YES;
-			}
-		}];
-
-		if (validationPassed == NO) {
-			[self.class throwJavaScriptException:@"Invalid argument type(s)"
-									   forCaller:caller
-									   inWebView:intWebView];
-
-			return;
-		}
 	}
 
 	/* Pass validated data to selector */
@@ -402,10 +486,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[webView evaluateFunction:@"console.error" withArguments:@[messageFormatted]];
 }
-
-/* The preferences styles may read with app.retrievePreferencesWithMethodName().
- Keep in sync with the list in scriptSink.js. Anything else is refused: the
- method used to call any class method of TPCPreferences. */
 
 @end
 

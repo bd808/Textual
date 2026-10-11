@@ -150,11 +150,6 @@ appPrivate.copySelectionWhenPermitted = function(callbackFunction)
 	window.webkit.messageHandlers.copySelectionWhenPermitted.postMessage(dataValue);
 };
 
-appPrivate.displayContextMenu = function()
-{
-	window.webkit.messageHandlers.displayContextMenu.postMessage(null);
-};
-
 appPrivate.renderMessagesBefore = function(lineNumber, maximumNumberOfLines, callbackFunction)
 {
 	var promiseIndex = appInternal.makePromise(callbackFunction);
@@ -173,15 +168,6 @@ appPrivate.renderMessagesAfter = function(lineNumber, maximumNumberOfLines, call
 	window.webkit.messageHandlers.renderMessagesAfter.postMessage(dataValue);
 };
 
-appPrivate.renderMessagesInRange = function(lineNumberAfter, lineNumberBefore, maximumNumberOfLines, callbackFunction)
-{
-	var promiseIndex = appInternal.makePromise(callbackFunction);
-
-	var dataValue = {"promiseIndex" : promiseIndex, "values" : [lineNumberAfter, lineNumberBefore, maximumNumberOfLines]};
-
-	window.webkit.messageHandlers.renderMessagesInRange.postMessage(dataValue);
-};
-
 appPrivate.renderMessageWithSiblings = function(lineNumber, numberOfLinesBefore, numberOfLinesAfter, callbackFunction)
 {
 	var promiseIndex = appInternal.makePromise(callbackFunction);
@@ -189,15 +175,6 @@ appPrivate.renderMessageWithSiblings = function(lineNumber, numberOfLinesBefore,
 	var dataValue = {"promiseIndex" : promiseIndex, "values" : [lineNumber, numberOfLinesBefore, numberOfLinesAfter]};
 
 	window.webkit.messageHandlers.renderMessageWithSiblings.postMessage(dataValue);
-};
-
-appPrivate.renderTemplate = function(templateName, templateAttributes, callbackFunction)
-{
-	var promiseIndex = appInternal.makePromise(callbackFunction);
-
-	var dataValue = {"promiseIndex" : promiseIndex, "values" : [templateName, templateAttributes]};
-
-	window.webkit.messageHandlers.renderTemplate.postMessage(dataValue);
 };
 
 appPrivate.notifyJumpToLineCallback = function(lineNumber, successful, scrolledToBottom)

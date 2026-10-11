@@ -60,8 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)standardizeLineNumber:(NSString *)lineNumber;
 + (NSArray<NSString *> *)standardizeLineNumbers:(NSArray<NSString *> *)lineNumbers;
 + (void)throwJavaScriptException:(NSString *)message forCaller:(nullable NSString *)caller inWebView:(TVCLogView *)webView, ...;
-- (void)processInputData:(id)inputData forCaller:(NSString *)caller inWebView:(id)webView withSelector:(SEL)selector;
-- (void)processInputData:(id)inputData forCaller:(NSString *)caller inWebView:(id)webView withSelector:(SEL)selector minimumArgumentCount:(NSUInteger)minimumArgumentCount withValidation:(BOOL (NS_NOESCAPE ^ _Nullable)(NSUInteger argumentIndex, id argument))validateArgumentBlock;
 @end
 
 @interface TVCLogScriptEventSink (QueriesInternal)

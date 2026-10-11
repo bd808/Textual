@@ -41,6 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class TVCLogView;
 
 @interface TVCLogScriptEventSink : NSObject
+/* The names the chat view's JavaScript posts messages to (window.webkit.messageHandlers) */
++ (NSArray<NSString *> *)scriptHandlerNames;
+
+/* The argument kinds of each name (see TVCLogScriptEventSink.m), and whether arguments match them */
++ (NSDictionary<NSString *, NSString *> *)argumentKindsByHandlerName;
++ (BOOL)arguments:(NSArray *)arguments matchKinds:(NSString *)kinds;
+
 + (void)logToJavaScriptConsole:(NSString *)message inWebView:(TVCLogView *)webView, ...;
 + (void)logToJavaScriptConsole:(NSString *)message inWebView:(TVCLogView *)webView withArguments:(va_list)arguments;
 @end

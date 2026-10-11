@@ -190,32 +190,6 @@ NS_ASSUME_NONNULL_BEGIN
 	return contextMenu;
 }
 
-- (void)displayContextMenuInWebView:(TVCLogView *)webView
-{
-	NSMenu *contextMenu = [self constructContextMenuForWebView:webView withDefaultMenuItems:@[]];
-
-	NSView *webViewBacking = webView.webView;
-
-	NSWindow *webViewWindow = webViewBacking.window;
-
-	NSPoint mouseLocationGlobal = [NSEvent mouseLocation];
-
-	NSRect mouseLocationLocal =
-	[webViewWindow convertRectFromScreen:NSMakeRect(mouseLocationGlobal.x, mouseLocationGlobal.y, 0, 0)];
-
-	NSEvent *event = [NSEvent mouseEventWithType:NSEventTypeRightMouseUp
-										location:mouseLocationLocal.origin
-								   modifierFlags:0
-									   timestamp:0
-									windowNumber:webViewWindow.windowNumber
-										 context:nil
-									 eventNumber:0
-									  clickCount:0
-										pressure:0];
-
-	[NSMenu popUpContextMenu:contextMenu withEvent:event forView:webViewBacking];
-}
-
 #pragma mark -
 #pragma mark WebKit Delegate
 

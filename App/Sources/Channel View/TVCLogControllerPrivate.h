@@ -56,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)changeScrollbackLimit;
 
-- (void)clearBackingView;
 
 - (void)reloadTheme;
 
@@ -75,11 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)renderLogLinesAfterLineNumber:(NSString *)lineNumber
 				 maximumNumberOfLines:(NSUInteger)maximumNumberOfLines
 					  completionBlock:(void (^)(NSArray<NSDictionary<NSString *, id> *> *))completionBlock;
-
-- (void)renderLogLinesAfterLineNumber:(NSString *)lineNumberAfter
-					 beforeLineNumber:(NSString *)lineNumberBefore
-				 maximumNumberOfLines:(NSUInteger)maximumNumberOfLines
-					  completionBlock:(void (^)(NSArray<NSDictionary<NSString *,id> *> * _Nonnull))completionBlock;
 
 - (void)notifyLinesAddedToView:(NSArray<NSString *> *)lineNumbers;
 - (void)notifyLinesRemovedFromView:(NSArray<NSString *> *)lineNumbers;

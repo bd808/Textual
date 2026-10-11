@@ -1267,15 +1267,6 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	[self clearWithReset:YES];
 }
 
-- (void)clearBackingView
-{
-	if (self.terminating) {
-		return;
-	}
-
-	[self clearWithReset:YES];
-}
-
 #pragma mark -
 #pragma mark History
 
@@ -1319,32 +1310,6 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 					 limitToDate:nil
 			 withCompletionBlock:historicLogCompletionBlock];
 		}
-	};
-
-	_enqueueBlockStandalone(operationBlock)
-}
-
-- (void)renderLogLinesAfterLineNumber:(NSString *)lineNumberAfter beforeLineNumber:(NSString *)lineNumberBefore maximumNumberOfLines:(NSUInteger)maximumNumberOfLines completionBlock:(void (^)(NSArray<NSDictionary<NSString *,id> *> * _Nonnull))completionBlock
-{
-	NSParameterAssert(lineNumberAfter != nil);
-	NSParameterAssert(lineNumberBefore != nil);
-	NSParameterAssert(completionBlock != nil);
-
-	TVCLogControllerPrintingBlock operationBlock = ^(id operation) {
-		void (^historicLogCompletionBlock)(NSArray *) = ^(NSArray<TVCLogLine *> *entries) {
-			if ([operation isCancelled]) {
-				return;
-			}
-
-			[self _renderLogLinesAfterLineNumberPostFlight:entries completionBlock:completionBlock];
-		};
-
-		[sharedHistoricLog()
-			 fetchEntriesForItem:self.associatedItem
-		   afterUniqueIdentifier:lineNumberAfter
-		  beforeUniqueIdentifier:lineNumberBefore
-					  fetchLimit:maximumNumberOfLines
-			 withCompletionBlock:historicLogCompletionBlock];
 	};
 
 	_enqueueBlockStandalone(operationBlock)
