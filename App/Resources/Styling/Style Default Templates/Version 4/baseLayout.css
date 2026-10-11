@@ -19,6 +19,17 @@
 	}
 }
 
+/* The page fills the window, as in quirks mode: Textual's own template is in
+ standards mode, where <html> and <body> are only as tall as their content.
+ Zero specificity (:where), so any style's own rules win. */
+:where(html) {
+	height: 100%;
+}
+
+:where(body) {
+	min-height: 100%;
+}
+
 /* Reserved lines */
 /* Fixed width font line */
 tt {

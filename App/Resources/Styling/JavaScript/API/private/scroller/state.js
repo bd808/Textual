@@ -52,6 +52,7 @@ var _TextualScroller = {};
 
 /* Element to scroll */
 _TextualScroller._scrolledElement = null;
+_TextualScroller._scrolledElementIsPage = false; /* PRIVATE */
 
 /* Minimum distance from bottom to be scrolled upwards
 before TextualScroller.userScrolled is true. */
@@ -374,18 +375,27 @@ TextualScroller.bindToElement = function(newElement) /* PUBLIC */
 	var oldElement = _TextualScroller._scrolledElement;
 
 	if (oldElement) {
-		if (oldElement !== document.body) {
-			oldElement.removeEventListener("scroll", _TextualScroller._documentScrolledCallback);
-		} else {
+		if (_TextualScroller._scrolledElementIsPage) {
 			window.removeEventListener("scroll", _TextualScroller._documentScrolledCallback);
+		} else {
+			oldElement.removeEventListener("scroll", _TextualScroller._documentScrolledCallback);
 		}
 	}
 
-	if (newElement !== document.body) {
-		newElement.addEventListener("scroll", _TextualScroller._documentScrolledCallback, false);
-	} else {
+	/* The page itself scrolls on document.scrollingElement: <body> in quirks mode
+	 (a style's own template), <html> in standards mode (Textual's template).
+	 Binding to either means the page, whose scroll events come to the window. */
+	var isPage = (newElement === document.body || newElement === document.documentElement);
+
+	if (isPage) {
+		newElement = (document.scrollingElement || document.body);
+
 		window.addEventListener("scroll", _TextualScroller._documentScrolledCallback, false);
+	} else {
+		newElement.addEventListener("scroll", _TextualScroller._documentScrolledCallback, false);
 	}
+
+	_TextualScroller._scrolledElementIsPage = isPage;
 
 	_TextualScroller._scrolledElement = newElement;
 };
