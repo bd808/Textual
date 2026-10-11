@@ -55,4 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
 		 selectFirstChannelAdded:(BOOL)selectFirstChannelAdded;
 @end
 
+#ifdef DEBUG
+@interface IRCExtras (Development)
++ (BOOL)performDevelopmentActionForLocation:(NSString *)location event:(nullable NSAppleEventDescriptor *)event;
++ (BOOL)isConnectingToDevelopmentServer:(NSString *)serverAddress;
+@end
+#endif
+
 NS_ASSUME_NONNULL_END

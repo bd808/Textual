@@ -58,6 +58,7 @@
 #import "IRCServer.h"
 #import "IRCWorldPrivate.h"
 #import "IRCExtrasPrivate.h"
+#import "IRCProtocolLinkPrivate.h"
 #import "TXWebsiteLinks.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -83,7 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
 	knowledge-base						— Open the homepage of our knowledge base
 	newsletter							— Open the subscription page for the newsletter
 	support-channel						— Connect to the #textual channel
-	testing-channel						— Connect to the #textual-testing channel
 	unsupervised-script-folder			— Open the custom scripts storage location folder
 	unsupervised-scripts-folder			— Open the custom scripts storage location folder
 */
@@ -156,432 +156,36 @@ NS_ASSUME_NONNULL_BEGIN
 	NSParameterAssert(location != nil);
 
 #ifdef DEBUG
-	/* Textual Dev only (Development/dev connect, input, config, send, eval,
-	 reset): never from a link clicked in a message, and only with the token
-	 Development/dev passed at launch, so other apps and web pages can't. */
-	if ([location hasPrefix:@"textual://dev-"]) {
-		if (event == nil || [self developmentURLCarriesToken:location] == NO) {
-			LogToConsoleError("Ignored a Textual Dev action without the launch token");
-
-			return;
-		}
-	}
-
-	if ([location hasPrefix:@"textual://dev-connect?"]) {
-		[self performDevelopmentConnectWithURL:location];
-
-		return;
-	} else if ([location hasPrefix:@"textual://dev-eval?"]) {
-		[self performDevelopmentEvaluationWithURL:location];
-
-		return;
-	} else if ([location hasPrefix:@"textual://dev-send?"]) {
-		[self performDevelopmentSendWithURL:location];
-
-		return;
-	} else if ([location hasPrefix:@"textual://dev-reset?"]) {
-		[self performDevelopmentReset];
-
-		return;
-	} else if ([location hasPrefix:@"textual://dev-input?"]) {
-		[self performDevelopmentInputWithURL:location];
-
-		return;
-	} else if ([location hasPrefix:@"textual://dev-config?"]) {
-		[self performDevelopmentConfigurationWithURL:location];
-
+	if ([self performDevelopmentActionForLocation:location event:event]) {
 		return;
 	}
 #endif
 
-	/* Basic input clean up. */
-	NSString *locationValue = location;
+	IRCProtocolLink *link = [IRCProtocolLink linkWithString:location];
 
-	locationValue = locationValue.percentDecodedString;
-	locationValue = locationValue.trim;
-
-	/* This method extracts the path component of the URL from the input
-	 string before turning the remaining pieces into an NSURL. */
-	/* The URL may contain multiple sections proceeded by the pound sign (#),
-	 which this method treats as channel, but NSURL aren't too friendly about. */
-	NSUInteger totalSlashCount = [locationValue occurrencesOfCharacter:'/'];
-
-	if (totalSlashCount < 2 || totalSlashCount > 3) {
+	if (link == nil) {
 		return;
 	}
 
-	NSString *serverInfo = locationValue;
-
-	NSString *channelInfo = nil;
-
-	if (totalSlashCount == 3) { // Only cut if we do have an extra slash.
-		NSRange backwardRange = [locationValue rangeOfString:@"/" options:NSBackwardsSearch];
-
-		if (backwardRange.location != NSNotFound) {
-			serverInfo = [locationValue substringToIndex:backwardRange.location];
-
-			channelInfo = [locationValue substringAfterIndex:backwardRange.location];
-		}
-	}
-
-	/* Now that channel information is no longer present in the URL, 
-	 we can pass it to NSURL to extract all other information. */
-	NSURL *baseURL = [NSURL URLWithString:serverInfo];
-
-	NSString *addressScheme = baseURL.scheme;
-
-	NSString *serverAddress = baseURL.host;
-
-	if (addressScheme == nil || serverAddress == nil) {
-		return;
-	}
-
-	if ([addressScheme isEqualToString:@"textual"]) {
-		[self performSpecialActionForTextualScheme:serverAddress source:locationValue];
+	if ([link.scheme isEqualToString:@"textual"]) {
+		[self performSpecialActionForTextualScheme:link.host source:link.location];
 
 		return;
-	}
-
-	/* Continue normal parsing... */
-	NSNumber *serverPort = baseURL.port;
-
-	__block BOOL connectSecurely = NO;
-
-	if ([addressScheme isEqualToString:@"ircs"]) {
-		connectSecurely = YES;
-	}
-
-	/* If we have made it to this point without this method returning,
-	 then everything is going smooth so far. We have established our
-	 server address, the URL scheme, and associated channel information. */
-	/* We will now parse the actual channel information. */
-	/* This method does not actually create the connection. It only formats 
-	 the input so that another can. Therefore, we do not have to take much 
-	 care with the channel information. Just a basic parse to establish if 
-	 the "needssl" token is present as well as the channel name having a 
-	 pound (#) sign in front of it. */
-	NSMutableString *channelList = [NSMutableString string];
-
-	if (channelInfo) {
-		NSArray *dataSections = [channelInfo split:@","];
-
-		NSUInteger dataSectionsCount = dataSections.count;
-
-		[dataSections enumerateObjectsUsingBlock:^(NSString *section, NSUInteger index, BOOL *stop) {
-			if (section.length == 0) {
-				return;
-			}
-
-			if (index > 4) {
-				*stop = YES;
-
-				return;
-			}
-
-			BOOL isLastObject = ((index + 1) == dataSectionsCount);
-
-			if (isLastObject && [section isEqualToStringIgnoringCase:@"needssl"]) {
-				connectSecurely = YES;
-
-				return;
-			}
-
-			NSString *sectionCopy = section;
-
-			if ([sectionCopy hasPrefix:@"#"] == NO) {
-				sectionCopy = [@"#" stringByAppendingString:sectionCopy];
-			}
-
-			[channelList appendString:sectionCopy];
-			[channelList appendString:@","];
-		}];
-
-		/* Erase end commas */
-		if (channelList.length > 1) {
-			[channelList deleteCharactersInRange:NSMakeRange((channelList.length - 1), 1)];
-		}
-	}
-
-	/* We have parsed every part of our URL. Build the final result and
-	 pass it along. We are done here. */
-	NSString *resultValue = nil;
-
-	/* Without a port: the standard one for TLS or plain text (ircs:// used
-	 to default to 6667, R3.20) */
-	if (serverPort == nil) {
-		serverPort = @(connectSecurely ? IRCConnectionDefaultSecureServerPort : IRCConnectionDefaultServerPort);
-	}
-
-	if (connectSecurely) {
-		resultValue = [NSString stringWithFormat:@"-SSL %@:%hu", serverAddress, serverPort.unsignedShortValue];
-	} else {
-		resultValue = [NSString stringWithFormat:@"%@:%hu", serverAddress, serverPort.unsignedShortValue];
 	}
 
 #ifdef DEBUG
 	/* Development/dev connect: test servers on this Mac are connected to
 	 straight away, as a new server each time (they differ only by port) */
-	if (_developmentConnectRequested && [self isDevelopmentTestServerAddress:serverAddress]) {
-		[self createConnectionToServer:resultValue channelList:channelList connectWhenCreated:YES mergeConnectionIfPossible:NO selectFirstChannelAdded:NO];
+	if ([self isConnectingToDevelopmentServer:link.host]) {
+		[self createConnectionToServer:link.serverInfo channelList:link.channelList connectWhenCreated:YES mergeConnectionIfPossible:NO selectFirstChannelAdded:NO];
 
 		return;
 	}
 #endif
 
-	/* A URL is consider untrusted and will not auto connect */
-	[self createConnectionToServer:resultValue channelList:channelList connectWhenCreated:NO mergeConnectionIfPossible:YES selectFirstChannelAdded:NO];
+	/* A link is untrusted: it doesn't connect by itself */
+	[self createConnectionToServer:link.serverInfo channelList:link.channelList connectWhenCreated:NO mergeConnectionIfPossible:YES selectFirstChannelAdded:NO];
 }
-
-#ifdef DEBUG
-static BOOL _developmentConnectRequested = NO;
-
-/* This Mac, or a name under the reserved .test domain (RFC 2606, never
- resolved on the internet), which the test proxy maps to a local server */
-+ (BOOL)isDevelopmentTestServerAddress:(NSString *)serverAddress
-{
-	if ([@[@"127.0.0.1", @"localhost"] containsObject:serverAddress]) {
-		return YES;
-	}
-
-	return [serverAddress.lowercaseString hasSuffix:@".test"];
-}
-
-/* Development/dev passes a fresh token as a launch argument ("-TextualDevToken");
- it is read from the arguments only, never from saved preferences */
-+ (BOOL)developmentURLCarriesToken:(NSString *)location
-{
-	NSString *launchToken = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain][@"TextualDevToken"];
-
-	if ([launchToken isKindOfClass:[NSString class]] == NO || launchToken.length < 16) {
-		return NO;
-	}
-
-	for (NSURLQueryItem *item in [NSURLComponents componentsWithString:location].queryItems) {
-		if ([item.name isEqualToString:@"token"]) {
-			return [item.value isEqualToString:launchToken];
-		}
-	}
-
-	return NO;
-}
-
-/* textual://dev-connect?url=<irc or ircs URL to a test server on this Mac> */
-+ (void)performDevelopmentConnectWithURL:(NSString *)location
-{
-	NSString *serverURL = nil;
-
-	for (NSURLQueryItem *item in [NSURLComponents componentsWithString:location].queryItems) {
-		if ([item.name isEqualToString:@"url"]) {
-			serverURL = item.value;
-		}
-	}
-
-	if (serverURL.length == 0) {
-		return;
-	}
-
-	_developmentConnectRequested = YES;
-
-	[self parseIRCProtocolURI:serverURL withDescriptor:nil];
-
-	_developmentConnectRequested = NO;
-}
-
-/* textual://dev-input?text=<text>[&channel=<channel>] selects the newest server's
- console, or one of its channels, and runs the text as if it was typed there.
- Without text, it only selects. */
-+ (void)performDevelopmentInputWithURL:(NSString *)location
-{
-	NSURLComponents *components = [NSURLComponents componentsWithString:location];
-
-	NSString *text = nil;
-	NSString *channelName = nil;
-
-	for (NSURLQueryItem *item in components.queryItems) {
-		if ([item.name isEqualToString:@"text"]) {
-			text = item.value;
-		} else if ([item.name isEqualToString:@"channel"]) {
-			channelName = item.value;
-		}
-	}
-
-	IRCClient *client = worldController().clientList.lastObject;
-
-	if (client == nil) {
-		return;
-	}
-
-	IRCTreeItem *destination = client;
-
-	if (channelName.length > 0) {
-		IRCChannel *channel = [client findChannel:channelName];
-
-		if (channel == nil) {
-			return;
-		}
-
-		destination = channel;
-	}
-
-	[mainWindow() select:destination];
-
-	if (text.length == 0) {
-		return;
-	}
-
-	[client inputText:text destination:destination];
-}
-
-/* textual://dev-config?<key>=<value>[&…] changes the newest server's configuration
- as Server Properties would. Keys are IRCClientConfig property names; switches
- take 1 or 0. connect=1 then (re)connects the server with the new settings. */
-+ (void)performDevelopmentConfigurationWithURL:(NSString *)location
-{
-	IRCClient *client = worldController().clientList.lastObject;
-
-	if (client == nil) {
-		return;
-	}
-
-	IRCClientConfigMutable *config = [client.config mutableCopy];
-
-	NSURLComponents *components = [NSURLComponents componentsWithString:location];
-
-	BOOL connect = NO;
-
-	for (NSURLQueryItem *item in components.queryItems) {
-		if ([item.name isEqualToString:@"connect"]) {
-			connect = [item.value isEqualToString:@"1"];
-
-			continue;
-		}
-
-		NSString *setterName = [NSString stringWithFormat:@"set%@%@:", [item.name substringToIndex:1].uppercaseString, [item.name substringFromIndex:1]];
-
-		if ([config respondsToSelector:NSSelectorFromString(setterName)] == NO) {
-			LogToConsoleError("dev-config: unknown key '%{public}@'", item.name);
-
-			continue;
-		}
-
-		/* Numbers as NSNumber: KVC can't set integer properties from strings */
-		id value = item.value;
-
-		if (value && [value rangeOfString:@"^[0-9]+$" options:NSRegularExpressionSearch].location != NSNotFound) {
-			value = @([value longLongValue]);
-		}
-
-		[config setValue:value forKey:item.name];
-	}
-
-	[client updateConfig:config];
-
-	if (connect == NO) {
-		return;
-	}
-
-	if (client.isConnected || client.isConnecting) {
-		[client quit];
-
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-			[client connect];
-		});
-	} else {
-		[client connect];
-	}
-}
-
-/* textual://dev-send?nickname=<nickname>&path=<path> offers a file to a user
- on the newest server, as dropping it on them would. The path must be one
- the sandbox can read, such as the Downloads folder. */
-+ (void)performDevelopmentSendWithURL:(NSString *)location
-{
-	NSURLComponents *components = [NSURLComponents componentsWithString:location];
-
-	NSString *nickname = nil;
-	NSString *path = nil;
-
-	for (NSURLQueryItem *item in components.queryItems) {
-		if ([item.name isEqualToString:@"nickname"]) {
-			nickname = item.value;
-		} else if ([item.name isEqualToString:@"path"]) {
-			path = item.value;
-		}
-	}
-
-	IRCClient *client = worldController().clientList.lastObject;
-
-	if (client == nil || nickname.length == 0 || path.length == 0) {
-		return;
-	}
-
-	[[TXSharedApplication sharedFileTransferDialog] addSenderForClient:client nickname:nickname path:path autoOpen:YES];
-}
-
-/* textual://dev-eval?script=<JavaScript> runs the script in the selected view
- and logs the result ("dev-eval: …", see Development/dev logs). */
-+ (void)performDevelopmentEvaluationWithURL:(NSString *)location
-{
-	NSURLComponents *components = [NSURLComponents componentsWithString:location];
-
-	NSString *script = nil;
-
-	for (NSURLQueryItem *item in components.queryItems) {
-		if ([item.name isEqualToString:@"script"]) {
-			script = item.value;
-		}
-	}
-
-	TVCLogController *viewController = mainWindow().selectedViewController;
-
-	if (viewController == nil || script.length == 0) {
-		return;
-	}
-
-	[viewController.backingView evaluateJavaScript:script completionHandler:^(id _Nullable result) {
-		LogToConsole("dev-eval: %{public}@", ((result) ? [result description] : @"(no result)"));
-	}];
-}
-
-/* textual://dev-reset deletes Textual Dev's own preferences (including the
- server list), scrollback, caches and logs, then quits without saving. Only
- the app itself may remove the contents of its container. The container
- holds links to the user's folders, so only these folders are removed.
- Keychain items are kept. */
-+ (void)performDevelopmentReset
-{
-	NSString *bundleIdentifier = [TPCApplicationInfo applicationBundleIdentifier];
-
-	if ([bundleIdentifier isEqualToString:@"com.textualapp.app.dev"] == NO) {
-		return;
-	}
-
-	/* Only inside Textual Dev's own sandbox container: unsandboxed (e.g. an
-	 unsigned build), these folders would be the user's own Library folders */
-	if ([NSHomeDirectory() hasSuffix:@"/Library/Containers/com.textualapp.app.dev/Data"] == NO) {
-		LogToConsoleError("dev-reset refused: not running in Textual Dev's sandbox container");
-
-		return;
-	}
-
-	[RZUserDefaults() removePersistentDomainForName:bundleIdentifier];
-
-	NSURL *containerLibraryURL = [[NSURL fileURLWithPath:NSHomeDirectory()] URLByAppendingPathComponent:@"Library"];
-
-	NSArray *folders = @[
-		[containerLibraryURL URLByAppendingPathComponent:@"Application Support"],
-		[containerLibraryURL URLByAppendingPathComponent:@"Caches"],
-		[containerLibraryURL URLByAppendingPathComponent:@"Logs"]
-	];
-
-	for (NSURL *folder in folders) {
-		[RZFileManager() removeItemAtURL:folder error:NULL];
-	}
-
-	/* Not -terminate:, which would save the server list again */
-	exit(0);
-}
-#endif
 
 + (void)createConnectionToServer:(NSString *)serverInfo channelList:(nullable NSString *)channelList connectWhenCreated:(BOOL)connectWhenCreated
 {
@@ -841,7 +445,7 @@ static BOOL _developmentConnectRequested = NO;
 
 #ifdef DEBUG
 		/* Development/dev connect: the test servers on this Mac use self-signed certificates */
-		if (_developmentConnectRequested && [self isDevelopmentTestServerAddress:serverAddress]) {
+		if ([self isConnectingToDevelopmentServer:serverAddress]) {
 			baseConfig.validateServerCertificateChain = NO;
 		}
 #endif
