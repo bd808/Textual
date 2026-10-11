@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCServerPropertiesSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	/* Populate server list combo box */
 	self.networkList = [IRCNetworkList new];
@@ -2536,6 +2536,8 @@ TEXTUAL_IGNORE_DEPRECATION_END
 	if ([self.delegate respondsToSelector:@selector(serverPropertiesSheetWillClose:)]) {
 		[self.delegate serverPropertiesSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

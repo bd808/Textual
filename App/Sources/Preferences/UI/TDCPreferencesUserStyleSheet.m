@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCPreferencesUserStyleSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.rulesTextView.font = [NSFont systemFontOfSize:13.0];
 
@@ -137,6 +137,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(userStyleSheetWillClose:)]) {
 		[self.delegate userStyleSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

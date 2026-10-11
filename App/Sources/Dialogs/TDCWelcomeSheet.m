@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCWelcomeSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	/* Populate server list combo box */
 	self.networkList = [IRCNetworkList new];
@@ -326,6 +326,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(welcomeSheetWillClose:)]) {
 		[self.delegate welcomeSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

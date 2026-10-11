@@ -146,11 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[worldController() save];
 }
 
-- (void)channelPropertiesSheetWillClose:(TDCChannelPropertiesSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
-}
-
 - (void)channelPropertiesSheetWantsReload:(TDCChannelPropertiesSheet *)sender
 {
 	IRCChannel *c = sender.channel;
@@ -226,11 +221,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
-- (void)channelInviteSheetWillClose:(TDCChannelInviteSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
-}
-
 #pragma mark -
 #pragma mark Address Book Sheet
 
@@ -280,11 +270,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[u connect];
 
 	[u selectFirstChannelInChannelList];
-}
-
-- (void)welcomeSheetWillClose:(TDCWelcomeSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
 }
 
 #pragma mark -
@@ -386,11 +371,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[worldController() save];
 }
 
-- (void)serverPropertiesSheetWillClose:(TDCServerPropertiesSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
-}
-
 - (void)serverPropertiesSheetWantsReload:(TDCServerPropertiesSheet *)sender
 {
 	IRCClient *u = sender.client;
@@ -432,11 +412,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[windowController() addWindowToWindowList:sheet];
 }
 
-- (void)serverHighlightListSheetWillClose:(TDCServerHighlightListSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
-}
-
 #pragma mark -
 #pragma mark Nickname Color Sheet
 
@@ -467,11 +442,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)nicknameColorSheetOnOk:(TDCNicknameColorSheet *)sender
 {
 	[mainWindow() reloadTheme];
-}
-
-- (void)nicknameColorSheetWillClose:(TDCNicknameColorSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
 }
 
 #pragma mark -
@@ -510,11 +480,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[u sendTopicTo:topic inChannel:c];
-}
-
-- (void)channelModifyTopicSheetWillClose:(TDCChannelModifyTopicSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
 }
 
 #pragma mark -
@@ -561,11 +526,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[u sendModes:changeString withParameters:nil inChannel:c];
 }
 
-- (void)channelModifyModesSheetWillClose:(TDCChannelModifyModesSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
-}
-
 #pragma mark -
 #pragma mark Channel Spotlight Window
 
@@ -585,11 +545,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)channelSpotlightController:(TDCChannelSpotlightController *)sender selectChannel:(IRCChannel *)channel
 {
 	[mainWindow() select:channel];
-}
-
-- (void)channelSpotlightControllerWillClose:(TDCChannelSpotlightController *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
 }
 
 #pragma mark -
@@ -626,11 +581,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[u changeNickname:nickname];
-}
-
-- (void)serverChangeNicknameSheetWillClose:(TDCServerChangeNicknameSheet *)sender
-{
-	[windowController() removeWindowFromWindowList:sender];
 }
 
 #pragma mark -

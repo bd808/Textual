@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCChannelInviteSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	NSUInteger nicknameCount = self.nicknames.count;
 
@@ -120,6 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(channelInviteSheetWillClose:)]) {
 		[self.delegate channelInviteSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

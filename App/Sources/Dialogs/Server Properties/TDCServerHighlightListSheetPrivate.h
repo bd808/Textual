@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol TDCServerHighlightListSheetDelegate <NSObject>
 @required
 
+@optional
+
 - (void)serverHighlightListSheetWillClose:(TDCServerHighlightListSheet *)sender;
 @end
 

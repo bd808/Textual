@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCChannelBanListSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.entryTable.sortDescriptors = @[
 		[NSSortDescriptor sortDescriptorWithKey:@"entryCreationDate" ascending:NO selector:@selector(compare:)]
@@ -235,6 +235,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(channelBanListSheetWillClose:)]) {
 		[self.delegate channelBanListSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCLicenseManagerRecoverLostLicenseSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 }
 
 - (void)start
@@ -114,6 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowWillClose:(NSNotification *)note
 {
 	[self.delegate licenseManagerRecoverLostLicenseSheetWillClose:self];
+
+	[super windowWillClose:note];
 }
 
 @end

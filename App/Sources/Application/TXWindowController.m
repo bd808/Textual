@@ -160,6 +160,19 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
+- (void)removeWindowObjectFromWindowList:(id)window
+{
+	NSParameterAssert(window != nil);
+
+	@synchronized(self.windowObjects) {
+		for (NSString *windowDescription in [self.windowObjects allKeysForObject:window]) {
+			if (self.windowObjects[windowDescription] == window) {
+				[self.windowObjects removeObjectForKey:windowDescription];
+			}
+		}
+	}
+}
+
 - (nullable id)windowFromWindowList:(NSString *)windowDescription
 {
 	NSParameterAssert(windowDescription != nil);

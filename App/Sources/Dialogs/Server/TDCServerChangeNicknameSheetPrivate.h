@@ -53,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 
 - (void)serverChangeNicknameSheet:(TDCServerChangeNicknameSheet *)sender didInputNickname:(NSString *)nickname;
+
+@optional
+
 - (void)serverChangeNicknameSheetWillClose:(TDCServerChangeNicknameSheet *)sender;
 @end
 

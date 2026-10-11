@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCChannelSpotlightController" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.searchResultsTable.doubleAction = @selector(delegatePostSelectChannelForDoubleClickedRow:);
 
@@ -599,6 +599,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(channelSpotlightControllerWillClose:)]) {
 		[self.delegate channelSpotlightControllerWillClose:self];
 	}
+
+	[super windowWillClose:notification];
 }
 
 @end

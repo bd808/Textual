@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCServerChangeNicknameSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.tnewNicknameTextField.stringValueIsInvalidOnEmpty = YES;
 	self.tnewNicknameTextField.stringValueUsesOnlyFirstToken = YES;
@@ -135,6 +135,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(serverChangeNicknameSheetWillClose:)]) {
 		[self.delegate serverChangeNicknameSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

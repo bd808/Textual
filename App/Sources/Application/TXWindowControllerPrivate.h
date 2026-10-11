@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeWindowFromWindowList:(id)window;
 - (void)removeWindowFromWindowList:(id)window inRelationTo:(nullable id)relatedObject;
 
+/* Under whatever description it was added (the sheet base classes, when closing) */
+- (void)removeWindowObjectFromWindowList:(id)window;
+
 - (nullable id)windowFromWindowList:(NSString *)windowDescription;
 
 - (NSArray *)windowsFromWindowList:(NSArray<NSString *> *)windowDescriptions;

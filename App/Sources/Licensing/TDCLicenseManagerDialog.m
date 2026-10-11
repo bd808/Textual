@@ -121,7 +121,7 @@ NSString * const TDCLicenseManagerTrialExpiredNotification = @"TDCLicenseManager
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCLicenseManagerDialog" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	[self populateMacAppStoreIconImageView];
 
@@ -863,6 +863,8 @@ NSString * const TDCLicenseManagerTrialExpiredNotification = @"TDCLicenseManager
 - (void)windowWillClose:(NSNotification *)note
 {
 	[self.window saveWindowStateForClass:self.class];
+
+	[super windowWillClose:note];
 }
 
 @end

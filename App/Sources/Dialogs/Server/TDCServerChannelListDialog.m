@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCServerChannelListDialog" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.queuedWrites = [NSMutableArray array];
 
@@ -291,6 +291,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(serverChannelDialogWillClose:)]) {
 		[self.delegate serverChannelDialogWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

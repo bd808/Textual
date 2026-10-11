@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCFileTransferDialog" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.maintenanceTimer =
 	[TLOTimer timerWithActionBlock:^(TLOTimer *sender) {
@@ -776,6 +776,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowWillClose:(NSNotification *)note
 {
 	[self.window saveWindowStateForClass:self.class];
+
+	[super windowWillClose:note];
 }
 
 - (void)hideWindow:(nullable id)sender

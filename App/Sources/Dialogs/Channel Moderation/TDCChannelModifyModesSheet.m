@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCChannelModifyModesSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 }
 
 - (void)loadConfig
@@ -290,6 +290,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(channelModifyModesSheetWillClose:)]) {
 		[self.delegate channelModifyModesSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

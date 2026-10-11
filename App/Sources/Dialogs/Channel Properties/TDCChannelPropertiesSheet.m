@@ -189,7 +189,7 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCChannelPropertiesSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.navigationTree = @[
 		//		view								first responder
@@ -464,6 +464,8 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 	if ([self.delegate respondsToSelector:@selector(channelPropertiesSheetWillClose:)]) {
 		[self.delegate channelPropertiesSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

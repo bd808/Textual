@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCLicenseManagerMigrateAppStoreSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 }
 
 - (void)startContactAddressSheet
@@ -362,6 +362,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowWillClose:(NSNotification *)note
 {
 	[self.delegate licenseManagerMigrateAppStoreSheetWillClose:self];
+
+	[super windowWillClose:note];
 }
 
 @end

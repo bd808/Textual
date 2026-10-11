@@ -50,6 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 
 - (void)welcomeSheet:(TDCWelcomeSheet *)sender onOk:(IRCClientConfig *)config;
+
+@optional
+
 - (void)welcomeSheetWillClose:(TDCWelcomeSheet *)sender;
 @end
 

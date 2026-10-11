@@ -187,8 +187,6 @@ NS_ASSUME_NONNULL_BEGIN
 	for (NSString *change in listOfChanges) {
 		[self sendModes:change withParametersString:nil inChannel:channel];
 	}
-
-	[windowController() removeWindowFromWindowList:sender];
 }
 
 #pragma mark -
@@ -227,11 +225,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)serverChannelListDialog:(TDCServerChannelListDialog *)sender joinChannels:(NSArray<NSString *> *)channels
 {
 	[self joinUnlistedChannelsAndSelectBestMatch:channels];
-}
-
-- (void)serverChannelDialogWillClose:(TDCServerChannelListDialog *)sender
-{
-	[windowController() removeWindowFromWindowList:[self channelListDialogWindowKey]];
 }
 
 @end

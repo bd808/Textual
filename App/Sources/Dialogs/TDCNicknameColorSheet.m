@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCNicknameColorSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	NSColor *nicknameColor =
 	[TPCNicknameColorStyleGenerator nicknameColorStyleOverrideForKey:self.nickname];
@@ -145,6 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(nicknameColorSheetWillClose:)]) {
 		[self.delegate nicknameColorSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

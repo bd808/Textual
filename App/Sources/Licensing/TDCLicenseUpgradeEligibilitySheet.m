@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCLicenseUpgradeEligibilitySheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.eligibility = TLOLicenseUpgradeEligibilityUnknown;
 }
@@ -336,6 +336,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowWillClose:(NSNotification *)note
 {
 	[self.delegate upgradeEligibilitySheetWillClose:self];
+
+	[super windowWillClose:note];
 }
 
 @end

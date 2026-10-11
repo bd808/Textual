@@ -243,6 +243,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(addressBookSheetWillClose:)]) {
 		[self.delegate addressBookSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

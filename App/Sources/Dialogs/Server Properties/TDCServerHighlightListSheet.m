@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCServerHighlightListSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.highlightListTable.doubleAction = @selector(highlightDoubleClicked:);
 
@@ -220,6 +220,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(serverHighlightListSheetWillClose:)]) {
 		[self.delegate serverHighlightListSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

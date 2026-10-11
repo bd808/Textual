@@ -38,6 +38,8 @@
 
 #import "TVCValidatedComboBox.h"
 #import "TVCValidatedTextField.h"
+#import "TXSharedApplicationPrivate.h"
+#import "TXWindowControllerPrivate.h"
 #import "TDCSheetBase.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -120,6 +122,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)close
 {
 	[self cancel:nil];
+}
+
+- (void)loadNib
+{
+	[RZMainBundle() loadNibNamed:NSStringFromClass(self.class) owner:self topLevelObjects:nil];
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+	[windowController() removeWindowObjectFromWindowList:self];
 }
 
 @end

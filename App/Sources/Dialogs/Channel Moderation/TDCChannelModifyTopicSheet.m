@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCChannelModifyTopicSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	NSString *headerTitle = [NSString stringWithFormat:self.headerTitleTextField.stringValue, self.channel.name];
 
@@ -176,6 +176,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(channelModifyTopicSheetWillClose:)]) {
 		[self.delegate channelModifyTopicSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end

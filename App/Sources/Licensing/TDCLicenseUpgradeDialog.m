@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCLicenseUpgradeDialog" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.eligibility = TLOLicenseUpgradeEligibilityUnknown;
 }
@@ -195,6 +195,8 @@ NS_ASSUME_NONNULL_BEGIN
 	[self closeEligibilitySheet];
 
 	[self.delegate licenseUpgradeDialogWillClose:self];
+
+	[super windowWillClose:note];
 }
 
 @end

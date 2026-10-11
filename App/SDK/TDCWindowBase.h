@@ -48,6 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)ok:(nullable id)sender;
 - (IBAction)cancel:(nullable id)sender;
+
+/* Loads the interface file named after the class, with this object as its owner */
+- (void)loadNib;
+
+/* The window's delegate method: takes this object off Textual's window list.
+ Subclasses that close more call super. */
+- (void)windowWillClose:(NSNotification *)notification;
 @end
 
 NS_ASSUME_NONNULL_END

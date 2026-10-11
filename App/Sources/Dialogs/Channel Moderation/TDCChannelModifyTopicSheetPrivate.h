@@ -53,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 
 - (void)channelModifyTopicSheet:(TDCChannelModifyTopicSheet *)sender onOk:(NSString *)topic;
+
+@optional
+
 - (void)channelModifyTopicSheetWillClose:(TDCChannelModifyTopicSheet *)sender;
 @end
 

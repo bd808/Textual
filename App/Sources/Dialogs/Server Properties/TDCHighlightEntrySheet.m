@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCHighlightEntrySheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	self.matchKeywordTextField.stringValueUsesOnlyFirstToken = NO;
 	self.matchKeywordTextField.stringValueIsInvalidOnEmpty = YES;
@@ -174,6 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowWillClose:(NSNotification *)note
 {
 	[self.delegate highlightEntrySheetWillClose:self];
+
+	[super windowWillClose:note];
 }
 
 @end

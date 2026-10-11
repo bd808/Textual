@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCProgressIndicatorSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 }
 
 - (void)start

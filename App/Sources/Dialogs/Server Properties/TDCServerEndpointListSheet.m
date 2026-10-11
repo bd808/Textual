@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareInitialState
 {
-	[RZMainBundle() loadNibNamed:@"TDCServerEndpointListSheet" owner:self topLevelObjects:nil];
+	[self loadNib];
 
 	[self.entryTable registerForDraggedTypes:@[_endpointEntryTableDragToken]];
 
@@ -230,6 +230,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self.delegate respondsToSelector:@selector(serverEndpointListSheetWillClose:)]) {
 		[self.delegate serverEndpointListSheetWillClose:self];
 	}
+
+	[super windowWillClose:note];
 }
 
 @end
