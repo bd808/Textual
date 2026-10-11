@@ -107,6 +107,49 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqualObjects(@"5 \u20AC – Ü".gtm_stringByEscapingForHTML, @"5 &euro; &ndash; Ü");
 }
 
+/* Every color span a message opens is closed once, never before it is opened.
+ A span left open swallows what follows the message (its time, its inline
+ media); one closed too often ends the message early. */
+- (void)testColorSpansAreBalanced
+{
+	NSString *fg = TVCLogRendererFormattingForegroundColorAttribute;
+	NSString *bg = TVCLogRendererFormattingBackgroundColorAttribute;
+
+	NSArray<NSArray<NSDictionary *> *> *messages = @[
+		@[@{fg : @4}],							// "\x034all red"
+		@[@{}, @{fg : @4}, @{}, @{fg : @15}],	// "x \x034red\x03 \x0315last\x03"
+		@[@{fg : @4}, @{}],						// "\x034red\x03 plain"
+		@[@{fg : @4}, @{fg : @4}],				// one color over two fragments (a link)
+		@[@{fg : @4}, @{fg : @5}],				// "\x034red\x035maroon"
+		@[@{fg : @8, bg : @1}, @{fg : @8}],		// "\x038,1on black\x03\x038yellow"
+		@[@{}, @{}],
+	];
+
+	for (NSArray<NSDictionary *> *fragments in messages) {
+		TVCLogRenderer *renderer = [TVCLogRenderer new];
+
+		NSInteger open = 0;
+
+		for (NSUInteger i = 0; i < fragments.count; i++) {
+			NSMutableDictionary *tokens = [NSMutableDictionary dictionary];
+
+			[renderer addColorTokens:tokens forAttributes:fragments[i] isFirstFragment:(i == 0) isLastFragment:(i == (fragments.count - 1))];
+
+			/* The template closes the previous span, opens one, then closes at the end */
+			open -= [tokens boolForKey:@"fragmentTextColorClosedAtStart"];
+
+			XCTAssertGreaterThanOrEqual(open, 0, @"%@", fragments);
+
+			open += [tokens boolForKey:@"fragmentTextColorOpened"];
+			open -= [tokens boolForKey:@"fragmentTextColorClosedAtEnd"];
+
+			XCTAssertGreaterThanOrEqual(open, 0, @"%@", fragments);
+		}
+
+		XCTAssertEqual(open, 0, @"%@", fragments);
+	}
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

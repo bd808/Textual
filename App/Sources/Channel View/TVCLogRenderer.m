@@ -1004,6 +1004,45 @@ static BOOL _isNicknameSpecialCharacter(UniChar character)
 
 	// --- //
 
+	[self addColorTokens:templateTokens forAttributes:stringAttributes isFirstFragment:isFirstFragment isLastFragment:isLastFragment];
+
+	// --- //
+
+	/* Escape spaces that are prefix and suffix characters */
+	if (escapeBody) {
+		if ([html hasPrefix:@" "]) {
+			html = [html stringByReplacingCharactersInRange:NSMakeRange(0, 1)
+												 withString:@"&nbsp;"];
+		}
+
+		if ([html hasSuffix:@" "]) {
+			html = [html stringByReplacingCharactersInRange:NSMakeRange((html.length - 1), 1)
+												 withString:@"&nbsp;"];
+		}
+	}
+
+	// --- //
+
+	templateTokens[@"messageFragment"] = html;
+
+	NSString *plainRender = [self.class renderPlainFragment:html withTemplateTokens:templateTokens];
+
+	if (plainRender) {
+		return plainRender;
+	}
+
+	return [self.class renderTemplateNamed:@"formattedMessageFragment" attributes:templateTokens];
+}
+
+/* A fragment whose colors differ from the fragment before closes that one's
+ color span and opens its own. The last fragment closes the span still open
+ after it, whichever fragment opened it, so every span is closed once. */
+- (void)addColorTokens:(NSMutableDictionary<NSString *, id> *)templateTokens forAttributes:(NSDictionary<NSString *, id> *)stringAttributes isFirstFragment:(BOOL)isFirstFragment isLastFragment:(BOOL)isLastFragment
+{
+	if (self->_renderedBodyOpenAttributes == nil) {
+		self->_renderedBodyOpenAttributes = [NSMutableDictionary dictionary];
+	}
+
 	id foregroundColorNew = stringAttributes[TVCLogRendererFormattingForegroundColorAttribute];
 	id backgroundColorNew = stringAttributes[TVCLogRendererFormattingBackgroundColorAttribute];
 
@@ -1018,13 +1057,12 @@ static BOOL _isNicknameSpecialCharacter(UniChar character)
 	if (foregroundColorOld || backgroundColorOld)
 	{
 		/* There is no need to open a new HTML segment if the color hasn't changed. */
-		if ([foregroundColorNew isEqual:foregroundColorOld] &&
-			 [backgroundColorNew isEqual:backgroundColorOld])
+		if ((foregroundColorNew == foregroundColorOld || [foregroundColorNew isEqual:foregroundColorOld]) &&
+			(backgroundColorNew == backgroundColorOld || [backgroundColorNew isEqual:backgroundColorOld]))
 		{
 			setNewColors = NO;
 		} else {
 			templateTokens[@"fragmentTextColorClosedAtStart"] = @(isFirstFragment == NO);
-			templateTokens[@"fragmentTextColorClosedAtEnd"] = @(isLastFragment);
 		}
 
 		if (foregroundColorOld && foregroundColorNew == nil) {
@@ -1075,32 +1113,12 @@ static BOOL _isNicknameSpecialCharacter(UniChar character)
 		templateTokens[@"fragmentIsSpoiler"] = @(NO);
 	}
 
-	// --- //
-
-	/* Escape spaces that are prefix and suffix characters */
-	if (escapeBody) {
-		if ([html hasPrefix:@" "]) {
-			html = [html stringByReplacingCharactersInRange:NSMakeRange(0, 1)
-												 withString:@"&nbsp;"];
-		}
-
-		if ([html hasSuffix:@" "]) {
-			html = [html stringByReplacingCharactersInRange:NSMakeRange((html.length - 1), 1)
-												 withString:@"&nbsp;"];
-		}
+	if (isLastFragment &&
+		(self->_renderedBodyOpenAttributes[TVCLogRendererFormattingForegroundColorAttribute] ||
+		 self->_renderedBodyOpenAttributes[TVCLogRendererFormattingBackgroundColorAttribute]))
+	{
+		templateTokens[@"fragmentTextColorClosedAtEnd"] = @(YES);
 	}
-
-	// --- //
-
-	templateTokens[@"messageFragment"] = html;
-
-	NSString *plainRender = [self.class renderPlainFragment:html withTemplateTokens:templateTokens];
-
-	if (plainRender) {
-		return plainRender;
-	}
-
-	return [self.class renderTemplateNamed:@"formattedMessageFragment" attributes:templateTokens];
 }
 
 /* Most of a message is plain text: no effect, color, link or nickname. For such a

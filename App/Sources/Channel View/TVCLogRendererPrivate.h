@@ -48,6 +48,12 @@ NS_ASSUME_NONNULL_BEGIN
  channel): runs of nickname characters and the pieces of them that begin and
  end next to a special character, never part of a word */
 + (NSArray<NSValue *> *)nicknameCandidateRangesInString:(NSString *)string;
+
+/* The color span tokens for one fragment of a message, given in order */
+- (void)addColorTokens:(NSMutableDictionary<NSString *, id> *)templateTokens forAttributes:(NSDictionary<NSString *, id> *)stringAttributes isFirstFragment:(BOOL)isFirstFragment isLastFragment:(BOOL)isLastFragment;
 @end
+
+extern NSString * const TVCLogRendererFormattingForegroundColorAttribute;
+extern NSString * const TVCLogRendererFormattingBackgroundColorAttribute;
 
 NS_ASSUME_NONNULL_END
