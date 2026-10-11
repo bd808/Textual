@@ -8,12 +8,6 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TDCServerPropertiesSheet">
             <connections>
-                <outlet property="addAddressBookEntryButton" destination="1843" id="Yfy-Fb-eH2"/>
-                <outlet property="addAddressBookEntryMenu" destination="yYJ-qd-Dm2" id="cVa-bu-jqf"/>
-                <outlet property="addChannelButton" destination="1794" id="1947"/>
-                <outlet property="addHighlightButton" destination="2449" id="2478"/>
-                <outlet property="addressBookArrayController" destination="aez-lt-zBV" id="BOQ-aO-HOI"/>
-                <outlet property="addressBookTable" destination="1851" id="wZ4-il-0gh"/>
                 <outlet property="alternateNicknamesTextField" destination="1602" id="vN7-KA-LFN"/>
                 <outlet property="autoConnectCheck" destination="1531" id="1935"/>
                 <outlet property="autoDisconnectOnSleepCheck" destination="2250" id="2253"/>
@@ -21,8 +15,6 @@
                 <outlet property="autojoinWaitsForNickServCheck" destination="B1u-e0-30u" id="44s-dS-Pu5"/>
                 <outlet property="awayNicknameTextField" destination="2335" id="eE8-0s-KKE"/>
                 <outlet property="cancelButton" destination="1456" id="1463"/>
-                <outlet property="channelListArrayController" destination="XlX-J4-ZJt" id="EMw-nK-7vi"/>
-                <outlet property="channelListTable" destination="1805" id="ex0-5N-btj"/>
                 <outlet property="clientCertificateChangeCertificateButton" destination="l36-PJ-JBU" id="vUq-tL-9aS"/>
                 <outlet property="clientCertificateCommonNameField" destination="nly-3d-FIq" id="OGc-7I-cMH"/>
                 <outlet property="clientCertificateMD5FingerprintCopyButton" destination="KJ9-QR-tAv" id="xCY-zF-PWK"/>
@@ -39,15 +31,12 @@
                 <outlet property="connectionIPv4AddressTypeCheck" destination="Doi-rA-9aF" id="wyV-Fd-Ii1"/>
                 <outlet property="connectionIPv6AddressTypeCheck" destination="dd4-fZ-E2b" id="6Eh-9M-sx5"/>
                 <outlet property="connectionNameTextField" destination="1539" id="f2G-5T-09V"/>
-                <outlet property="contentViewAddressBook" destination="1817" id="d5R-wV-sv5"/>
-                <outlet property="contentViewAutojoin" destination="1738" id="GdW-S9-Mmc"/>
                 <outlet property="contentViewClientCertificate" destination="Ti4-Q4-cYX" id="dRg-gZ-hNm"/>
                 <outlet property="contentViewConnectCommands" destination="1860" id="dva-TR-IFP"/>
                 <outlet property="contentViewDisconnectMessages" destination="1627" id="gWi-wY-SNi"/>
                 <outlet property="contentViewEncoding" destination="1675" id="m4X-ZN-3GX"/>
                 <outlet property="contentViewFloodControl" destination="2078" id="FYp-t2-8yg"/>
                 <outlet property="contentViewGeneral" destination="1469" id="USi-gD-XZz"/>
-                <outlet property="contentViewHighlights" destination="2445" id="9h8-1O-lMv"/>
                 <outlet property="contentViewIdentity" destination="1563" id="J9a-mN-3KM"/>
                 <outlet property="contentViewNetworkSocket" destination="2488" id="x1c-Rp-XjX"/>
                 <outlet property="contentViewProxyServer" destination="1887" id="Y6r-hB-Lvd"/>
@@ -56,19 +45,11 @@
                 <outlet property="contentViewProxyServerTorBrowserView" destination="yql-kd-PP5" id="uIe-fo-kbw"/>
                 <outlet property="contentViewRedundancy" destination="O3J-xl-nwg" id="cB8-PX-TAQ"/>
                 <outlet property="contentViewZncBouncer" destination="2542" id="qzo-1Y-6rw"/>
-                <outlet property="deleteAddressBookEntryButton" destination="1845" id="YMJ-qA-DaM"/>
-                <outlet property="deleteChannelButton" destination="1796" id="1948"/>
-                <outlet property="deleteHighlightButton" destination="2447" id="2477"/>
                 <outlet property="disconnectOnReachabilityChangeCheck" destination="w5K-aH-URS" id="8N7-xY-lax"/>
-                <outlet property="editAddressBookEntryButton" destination="1844" id="LTq-3U-HnM"/>
-                <outlet property="editChannelButton" destination="1795" id="1949"/>
-                <outlet property="editHighlightButton" destination="2448" id="2476"/>
                 <outlet property="fallbackEncodingButton" destination="1685" id="2275"/>
                 <outlet property="floodControlDelayTimerSlider" destination="O6l-eN-3Uc" id="l2j-Kb-PsN"/>
                 <outlet property="floodControlMessageCountSlider" destination="RXW-HB-aEa" id="whf-jb-XgS"/>
                 <outlet property="hideAutojoinDelayedWarningsCheck" destination="ptP-ZP-JAf" id="LXI-a8-mzH"/>
-                <outlet property="highlightListArrayController" destination="XVW-tl-Aro" id="yo0-76-qlh"/>
-                <outlet property="highlightsTable" destination="2454" id="2474"/>
                 <outlet property="navigationOutlineView" destination="Uj0-Wm-eox" id="9jc-dy-sjg"/>
                 <outlet property="nickServHostTextField" destination="n5V-hT-f01" id="n5V-oT-001"/>
                 <outlet property="saslECDSAKeyButton" destination="eK1-pd-001" id="eK1-ot-001"/>
@@ -101,6 +82,43 @@
                 <outlet property="zncIgnoreConfiguredAutojoinCheck" destination="75N-79-v1S" id="thL-o4-SqJ"/>
                 <outlet property="zncIgnorePlaybackNotificationsCheck" destination="2580" id="2583"/>
                 <outlet property="zncOnlyPlaybackLatestCheck" destination="mgv-QS-XMc" id="Scd-8o-aKm"/>
+                <outlet property="channelsPane" destination="db5-T1-d1T" id="af2-bd-5a6"/>
+                <outlet property="highlightsPane" destination="4Tf-76-487" id="T42-7f-b12"/>
+                <outlet property="addressBookPane" destination="473-1d-e92" id="5ca-66-e42"/>
+            </connections>
+        </customObject>
+        <customObject id="db5-T1-d1T" customClass="TDCServerPropertiesChannelsPane">
+            <connections>
+                <outlet property="addButton" destination="1794" id="bdd-51-afa"/>
+                <outlet property="arrayController" destination="XlX-J4-ZJt" id="78b-44-d56"/>
+                <outlet property="deleteButton" destination="1796" id="1dT-1b-44d"/>
+                <outlet property="editButton" destination="1795" id="296-fb-a79"/>
+                <outlet property="propertiesSheet" destination="-2" id="aaa-39-332"/>
+                <outlet property="table" destination="1805" id="ec8-d2-312"/>
+                <outlet property="view" destination="1738" id="47e-a9-T71"/>
+            </connections>
+        </customObject>
+        <customObject id="4Tf-76-487" customClass="TDCServerPropertiesHighlightsPane">
+            <connections>
+                <outlet property="addButton" destination="2449" id="98a-1T-26f"/>
+                <outlet property="arrayController" destination="XVW-tl-Aro" id="799-fd-cf1"/>
+                <outlet property="deleteButton" destination="2447" id="36f-5b-5cd"/>
+                <outlet property="editButton" destination="2448" id="e52-df-365"/>
+                <outlet property="propertiesSheet" destination="-2" id="T28-3c-2d9"/>
+                <outlet property="table" destination="2454" id="T3T-66-a59"/>
+                <outlet property="view" destination="2445" id="928-53-T11"/>
+            </connections>
+        </customObject>
+        <customObject id="473-1d-e92" customClass="TDCServerPropertiesAddressBookPane">
+            <connections>
+                <outlet property="addButton" destination="1843" id="1f2-9f-951"/>
+                <outlet property="addMenu" destination="yYJ-qd-Dm2" id="af5-87-af1"/>
+                <outlet property="arrayController" destination="aez-lt-zBV" id="32a-fc-89T"/>
+                <outlet property="deleteButton" destination="1845" id="a2T-eb-d26"/>
+                <outlet property="editButton" destination="1844" id="6f6-36-87f"/>
+                <outlet property="propertiesSheet" destination="-2" id="eT7-7b-d81"/>
+                <outlet property="table" destination="1851" id="b49-9T-251"/>
+                <outlet property="view" destination="1817" id="89b-3T-675"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -1103,7 +1121,7 @@ Gw
                     </buttonCell>
                     <accessibility description="Remove Selected Channel"/>
                     <connections>
-                        <action selector="deleteChannel:" target="-2" id="1814"/>
+                        <action selector="deleteItem:" target="db5-T1-d1T" id="1814"/>
                     </connections>
                 </button>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" allowsMagnification="YES" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1793">
@@ -1160,8 +1178,8 @@ Gw
                                 </tableColumns>
                                 <connections>
                                     <binding destination="XlX-J4-ZJt" name="content" keyPath="arrangedObjects" id="eN6-1G-Wto"/>
-                                    <outlet property="dataSource" destination="-2" id="1812"/>
-                                    <outlet property="delegate" destination="-2" id="1813"/>
+                                    <outlet property="dataSource" destination="db5-T1-d1T" id="1812"/>
+                                    <outlet property="delegate" destination="db5-T1-d1T" id="1813"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -1192,7 +1210,7 @@ Gw
                     </constraints>
                     <accessibility description="Add Channel"/>
                     <connections>
-                        <action selector="addChannel:" target="-2" id="1815"/>
+                        <action selector="addItem:" target="db5-T1-d1T" id="1815"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1795">
@@ -1207,7 +1225,7 @@ Gw
                     </constraints>
                     <accessibility description="Edit Selected Channel"/>
                     <connections>
-                        <action selector="editChannel:" target="-2" id="1816"/>
+                        <action selector="editItem:" target="db5-T1-d1T" id="1816"/>
                     </connections>
                 </button>
             </subviews>
@@ -1243,7 +1261,7 @@ Gw
                     </constraints>
                     <accessibility description="Add Highlight Match"/>
                     <connections>
-                        <action selector="addHighlight:" target="-2" id="2481"/>
+                        <action selector="addItem:" target="4Tf-76-487" id="2481"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2447">
@@ -1254,7 +1272,7 @@ Gw
                     </buttonCell>
                     <accessibility description="Remove Selected Highlight Match"/>
                     <connections>
-                        <action selector="deleteHighlight:" target="-2" id="2483"/>
+                        <action selector="deleteItem:" target="4Tf-76-487" id="2483"/>
                     </connections>
                 </button>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2450">
@@ -1312,8 +1330,8 @@ Gw
                                 </tableColumns>
                                 <connections>
                                     <binding destination="XVW-tl-Aro" name="content" keyPath="arrangedObjects" id="Qdv-Df-SW6"/>
-                                    <outlet property="dataSource" destination="-2" id="2469"/>
-                                    <outlet property="delegate" destination="-2" id="2468"/>
+                                    <outlet property="dataSource" destination="4Tf-76-487" id="2469"/>
+                                    <outlet property="delegate" destination="4Tf-76-487" id="2468"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -1344,7 +1362,7 @@ Gw
                     </constraints>
                     <accessibility description="Edit Selected Highlight Match"/>
                     <connections>
-                        <action selector="editHighlight:" target="-2" id="2482"/>
+                        <action selector="editItem:" target="4Tf-76-487" id="2482"/>
                     </connections>
                 </button>
             </subviews>
@@ -1388,7 +1406,7 @@ Gw
                     </constraints>
                     <accessibility description="Add Address Book Entry"/>
                     <connections>
-                        <action selector="showAddAddressBookEntryMenu:" target="-2" id="88b-Ti-Qfj"/>
+                        <action selector="addItem:" target="473-1d-e92" id="88b-Ti-Qfj"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1845">
@@ -1399,7 +1417,7 @@ Gw
                     </buttonCell>
                     <accessibility description="Remove Selected Address Book Entry"/>
                     <connections>
-                        <action selector="deleteAddressBookEntry:" target="-2" id="xzf-1d-ibA"/>
+                        <action selector="deleteItem:" target="473-1d-e92" id="xzf-1d-ibA"/>
                     </connections>
                 </button>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" allowsMagnification="YES" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1842">
@@ -1444,8 +1462,8 @@ Gw
                                 </tableColumns>
                                 <connections>
                                     <binding destination="aez-lt-zBV" name="content" keyPath="arrangedObjects" id="Fiz-Rr-whz"/>
-                                    <outlet property="dataSource" destination="-2" id="1858"/>
-                                    <outlet property="delegate" destination="-2" id="1859"/>
+                                    <outlet property="dataSource" destination="473-1d-e92" id="1858"/>
+                                    <outlet property="delegate" destination="473-1d-e92" id="1859"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -1476,7 +1494,7 @@ Gw
                     </constraints>
                     <accessibility description="Edit Selected Address Book Entry"/>
                     <connections>
-                        <action selector="editAddressBookEntry:" target="-2" id="IB0-cr-GDM"/>
+                        <action selector="editItem:" target="473-1d-e92" id="IB0-cr-GDM"/>
                     </connections>
                 </button>
             </subviews>
@@ -2477,13 +2495,13 @@ Gw
                 <menuItem title="Add User Ignore Entry" tag="3" id="Mxd-76-s9L">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="addAddressBookEntry:" target="-2" id="5e0-v6-i7r"/>
+                        <action selector="addAddressBookEntry:" target="473-1d-e92" id="5e0-v6-i7r"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Add User Tracking Entry" tag="4" id="Ju6-ey-oG4">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="addAddressBookEntry:" target="-2" id="4Ht-2r-Dp6"/>
+                        <action selector="addAddressBookEntry:" target="473-1d-e92" id="4Ht-2r-Dp6"/>
                     </connections>
                 </menuItem>
             </items>

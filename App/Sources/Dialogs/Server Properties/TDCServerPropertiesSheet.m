@@ -41,6 +41,7 @@
 #import "NSStringHelper.h"
 #import "IRCClientConfigPrivate.h"
 #import "IRCClientPrivate.h"
+#import "IRCAddressBook.h"
 #import "IRCChannel.h"
 #import "IRCHighlightMatchCondition.h"
 #import "IRCNetworkList.h"
@@ -55,18 +56,14 @@
 #import "TVCValidatedComboBox.h"
 #import "TVCContentNavigationOutlineViewPrivate.h"
 #import "TVCValidatedTextField.h"
-#import "TDCAddressBookSheetPrivate.h"
 #import "TDCAlert.h"
-#import "TDCChannelPropertiesSheetPrivate.h"
-#import "TDCHighlightEntrySheetPrivate.h"
 #import "TDCPreferencesControllerPrivate.h"
 #import "TDCServerEndpointListSheetPrivate.h"
 #import "TDCServerPropertiesSheetPrivate.h"
+#import "TDCServerPropertiesPanePrivate.h"
 #import "TXWebsiteLinks.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-#define _tableDragToken		@"com.textualapp.server-properties.row" // A UTI: drags of NSPasteboardItems need one
 
 @interface TDCServerPropertiesSheet () <NSControlTextEditingDelegate>
 @property (nonatomic, strong, readwrite, nullable) IRCClient *client;
@@ -76,16 +73,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) IRCSASLECDSAKey *currentSASLECDSAKey;
 @property (nonatomic, copy) NSDictionary *encodingList;
 @property (nonatomic, strong) IRCNetworkList *networkList;
-@property (nonatomic, strong) IBOutlet NSMenu *addAddressBookEntryMenu;
-@property (nonatomic, strong) IBOutlet NSView *contentViewAddressBook;
-@property (nonatomic, strong) IBOutlet NSView *contentViewAutojoin;
 @property (nonatomic, strong) IBOutlet NSView *contentViewClientCertificate;
 @property (nonatomic, strong) IBOutlet NSView *contentViewConnectCommands;
 @property (nonatomic, strong) IBOutlet NSView *contentViewDisconnectMessages;
 @property (nonatomic, strong) IBOutlet NSView *contentViewEncoding;
 @property (nonatomic, strong) IBOutlet NSView *contentViewFloodControl;
 @property (nonatomic, strong) IBOutlet NSView *contentViewGeneral;
-@property (nonatomic, strong) IBOutlet NSView *contentViewHighlights;
 @property (nonatomic, strong) IBOutlet NSView *contentViewIdentity;
 @property (nonatomic, strong) IBOutlet NSView *contentViewNetworkSocket;
 @property (nonatomic, strong) IBOutlet NSView *contentViewProxyServer;
@@ -94,13 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) IBOutlet NSView *contentViewProxyServerTorBrowserView;
 @property (nonatomic, strong) IBOutlet NSView *contentViewRedundancy;
 @property (nonatomic, strong) IBOutlet NSView *contentViewZncBouncer;
-@property (nonatomic, strong, nullable) TDCAddressBookSheet *addressBookSheet;
-@property (nonatomic, strong, nullable) TDCHighlightEntrySheet *highlightSheet;
-@property (nonatomic, strong, nullable) TDCChannelPropertiesSheet *channelSheet;
 @property (nonatomic, strong, nullable) TDCServerEndpointListSheet *serverEndpointSheet;
-@property (nonatomic, weak) IBOutlet NSButton *addAddressBookEntryButton;
-@property (nonatomic, weak) IBOutlet NSButton *addChannelButton;
-@property (nonatomic, weak) IBOutlet NSButton *addHighlightButton;
 @property (nonatomic, weak) IBOutlet NSButton *autoConnectCheck;
 @property (nonatomic, weak) IBOutlet NSButton *autoDisconnectOnSleepCheck;
 @property (nonatomic, weak) IBOutlet NSButton *autoReconnectCheck;
@@ -114,13 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSButton *connectionIPv4AddressTypeCheck;
 @property (nonatomic, weak) IBOutlet NSButton *connectionIPv6AddressTypeCheck;
 @property (nonatomic, weak) IBOutlet NSButton *connectionDefaultAddressTypeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *deleteAddressBookEntryButton;
-@property (nonatomic, weak) IBOutlet NSButton *deleteChannelButton;
-@property (nonatomic, weak) IBOutlet NSButton *deleteHighlightButton;
 @property (nonatomic, weak) IBOutlet NSButton *disconnectOnReachabilityChangeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *editAddressBookEntryButton;
-@property (nonatomic, weak) IBOutlet NSButton *editChannelButton;
-@property (nonatomic, weak) IBOutlet NSButton *editHighlightButton;
 @property (nonatomic, weak) IBOutlet NSButton *hideAutojoinDelayedWarningsCheck;
 @property (nonatomic, weak) IBOutlet NSButton *performDisconnectOnPongTimerCheck;
 @property (nonatomic, weak) IBOutlet NSButton *pongTimerCheck;
@@ -149,9 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSTextField *proxyUsernameTextField;
 @property (nonatomic, weak) IBOutlet NSTextField *saslECDSAKeyField;
 @property (nonatomic, weak) IBOutlet NSTextField *serverPasswordTextField;
-@property (nonatomic, weak) IBOutlet TVCBasicTableView *addressBookTable;
-@property (nonatomic, weak) IBOutlet TVCBasicTableView *channelListTable;
-@property (nonatomic, weak) IBOutlet TVCBasicTableView *highlightsTable;
 @property (nonatomic, weak) IBOutlet TVCValidatedComboBox *serverAddressComboBox;
 @property (nonatomic, weak) IBOutlet TVCContentNavigationOutlineView *navigationOutlineView;
 @property (nonatomic, weak) IBOutlet TVCValidatedTextField *alternateNicknamesTextField;
@@ -169,36 +147,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger floodControlDelayTimerSliderTempValue;
 @property (nonatomic, assign) NSUInteger floodControlMessageCountSliderTempValue;
 @property (nonatomic, weak) NSPanel *clientCertificateSelectCertificatePanel;
-@property (nonatomic, strong) IBOutlet NSArrayController *addressBookArrayController;
-@property (nonatomic, strong) IBOutlet NSArrayController *channelListArrayController;
-@property (nonatomic, strong) IBOutlet NSArrayController *highlightListArrayController;
 @property (nonatomic, strong) IBOutlet NSArrayController *serverListArrayController;
-@property (readonly, copy) NSArray<IRCAddressBookEntry *> *addressBookList;
-@property (readonly, copy) NSArray<IRCChannelConfig *> *channelList;
-@property (readonly, copy) NSArray<IRCHighlightMatchCondition *> *highlightList;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesChannelsPane *channelsPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesHighlightsPane *highlightsPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesAddressBookPane *addressBookPane;
+@property (nonatomic, copy) NSArray<TDCServerPropertiesPane *> *panes;
 @property (readonly, copy) NSArray<IRCServer *> *serverList;
 @property (nonatomic, assign) BOOL populatingPrimaryServer;
 @property (nonatomic, assign) BOOL primaryServerIsPredefined;
 @property (nonatomic, copy, nullable) NSString *lastServerAddressValue;
 @property (nonatomic, copy, nullable) IRCServer *previousPrimaryServer;
-@property (nonatomic, strong, nullable) NSMutableDictionary<NSString *, NSString *> *channelSecretKeys; // channel ID → key, read once
 
 - (IBAction)proxyTypeChanged:(nullable id)sender;
 - (IBAction)toggleAdvancedEncodings:(nullable id)sender;
-
-- (IBAction)addChannel:(nullable id)sender;
-- (IBAction)editChannel:(nullable id)sender;
-- (IBAction)deleteChannel:(nullable id)sender;
-
-- (IBAction)addHighlight:(nullable id)sender;
-- (IBAction)editHighlight:(nullable id)sender;
-- (IBAction)deleteHighlight:(nullable id)sender;
-
-- (IBAction)addAddressBookEntry:(nullable id)sender;
-- (IBAction)editAddressBookEntry:(nullable id)sender;
-- (IBAction)deleteAddressBookEntry:(nullable id)sender;
-
-- (IBAction)showAddAddressBookEntryMenu:(nullable id)sender;
 
 - (IBAction)openProxySettingsInSystemPreferences:(nullable id)sender;
 
@@ -491,20 +452,11 @@ NS_ASSUME_NONNULL_BEGIN
 	/* Setup others */
 	[self addConfigurationDidChangeObserver];
 
-	self.addressBookTable.doubleAction = @selector(tableViewDoubleClicked:);
-	self.addressBookTable.target = self;
+	self.panes = @[self.channelsPane, self.highlightsPane, self.addressBookPane];
 
-	[self.addressBookTable registerForDraggedTypes:@[_tableDragToken]];
-
-	self.channelListTable.doubleAction = @selector(tableViewDoubleClicked:);
-	self.channelListTable.target = self;
-
-	[self.channelListTable registerForDraggedTypes:@[_tableDragToken]];
-
-	self.highlightsTable.doubleAction = @selector(tableViewDoubleClicked:);
-	self.highlightsTable.target = self;
-
-	[self.highlightsTable registerForDraggedTypes:@[_tableDragToken]];
+	for (TDCServerPropertiesPane *pane in self.panes) {
+		[pane prepareInitialState];
+	}
 
 	[self populateEncodings];
 
@@ -519,14 +471,17 @@ NS_ASSUME_NONNULL_BEGIN
 #define _childItem(_label_, _identifier_) 	\
 	[[TVCContentNavigationOutlineViewItem alloc] initWithLabel:TXTLS(_label_) identifier:TDCServerPropertiesSheetSelection ##_identifier_ view:self.contentView ##_identifier_ firstResponder:nil]
 
+#define _paneItem(_label_, _identifier_, _pane_) 	\
+	[[TVCContentNavigationOutlineViewItem alloc] initWithLabel:TXTLS(_label_) identifier:TDCServerPropertiesSheetSelection ##_identifier_ view:(_pane_).view firstResponder:nil]
+
 	NSArray *generalSectionChildren = @[
-		_childItem(@"TDCServerPropertiesSheet[8zc-6y]", AddressBook),
-		_childItem(@"TDCServerPropertiesSheet[5oz-07]", Autojoin),
+		_paneItem(@"TDCServerPropertiesSheet[8zc-6y]", AddressBook, self.addressBookPane),
+		_paneItem(@"TDCServerPropertiesSheet[5oz-07]", Autojoin, self.channelsPane),
 		_childItem(@"TDCServerPropertiesSheet[hip-13]", ConnectCommands),
 		_childItem(@"TDCServerPropertiesSheet[8ug-ka]", Encoding),
 		_childItem(@"TDCServerPropertiesSheet[ehx-4d]", General),
 		_childItem(@"TDCServerPropertiesSheet[8ik-qo]", Identity),
-		_childItem(@"TDCServerPropertiesSheet[jtx-hn]", Highlights),
+		_paneItem(@"TDCServerPropertiesSheet[jtx-hn]", Highlights, self.highlightsPane),
 		_childItem(@"TDCServerPropertiesSheet[j34-yr]", DisconnectMessages),
 	];
 
@@ -550,6 +505,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #undef _groupItem
 #undef _childItem
+#undef _paneItem
 
 	self.navigationOutlineView.navigationTreeMatrix = navigationTreeMatrix;
 
@@ -652,9 +608,9 @@ NS_ASSUME_NONNULL_BEGIN
 		case TDCServerPropertiesSheetSelectionNewIgnoreEntry:
 		{
 			if ([context isKindOfClass:[NSString class]]) {
-				[self addIgnoreAddressBookEntryWithHostmask:context];
+				[self.addressBookPane addIgnoreEntryWithHostmask:context];
 			} else if ([context isKindOfClass:[IRCAddressBookEntry class]]) {
-				[self editAddressBookEntryWithObject:context];
+				[self.addressBookPane editEntry:context];
 			}
 
 			break;
@@ -681,13 +637,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)closeChildSheets
 {
-	if (self.addressBookSheet) {
-		[self.addressBookSheet close];
-	} else if (self.channelSheet) {
-		[self.channelSheet close];
-	} else if (self.highlightSheet) {
-		[self.highlightSheet close];
-	} else if (self.serverEndpointSheet) {
+	for (TDCServerPropertiesPane *pane in self.panes) {
+		[pane closeChildSheets];
+	}
+
+	if (self.serverEndpointSheet) {
 		[self.serverEndpointSheet close];
 	} else if (self.clientCertificateSelectCertificatePanel) {
 		[NSApp stopModalWithCode:NSModalResponseCancel];
@@ -992,10 +946,11 @@ NS_ASSUME_NONNULL_BEGIN
 	self.floodControlMessageCountSliderTempValue = self.config.floodControlMaximumMessages;
 
 	/* Mutable Stores */
-	[self.addressBookArrayController addObjects:self.config.ignoreList];
-	[self.channelListArrayController addObjects:self.config.channelList];
-	[self.highlightListArrayController addObjects:self.config.highlightList];
 	[self.serverListArrayController addObjects:self.config.serverList];
+
+	for (TDCServerPropertiesPane *pane in self.panes) {
+		[pane loadFromConfig:self.config];
+	}
 
 	/* Special loads */
 	[self loadPrimaryServerEndpoint];
@@ -1044,12 +999,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadConfigPostflight
 {
-	[self setChannelListPredicate];
-
-	[self updateAddressBookPage];
-	[self updateChannelListPage];
 	[self updateClientCertificatePage];
-	[self updateHighlightsPage];
 	[self updateIdentityPage];
 
 	[self preferredCipherSuitesChanged:nil];
@@ -1140,10 +1090,11 @@ NS_ASSUME_NONNULL_BEGIN
 	self.config.floodControlDelayTimerInterval = self.floodControlDelayTimerSlider.integerValue;
 
 	/* Mutable stores. */
-	self.config.channelList = self.allChannelConfigs;
-	self.config.highlightList = self.highlightListArrayController.arrangedObjects;
-	self.config.ignoreList = self.addressBookArrayController.arrangedObjects;
 	self.config.serverList = self.serverListArrayController.arrangedObjects;
+
+	for (TDCServerPropertiesPane *pane in self.panes) {
+		[pane saveToConfig:self.config];
+	}
 }
 
 - (void)restorePreviousValuesForPrimaryServer
@@ -1241,55 +1192,6 @@ NS_ASSUME_NONNULL_BEGIN
 	self.populatingPrimaryServer = NO;
 }
 
-- (void)updateChannelListPage
-{
-	NSInteger selectedRow = self.channelListTable.selectedRow;
-
-	self.deleteChannelButton.enabled = (selectedRow >= 0);
-	self.editChannelButton.enabled = (selectedRow >= 0);
-}
-
-/* The channel table shows the channels of a list that also holds queries
- (the "type == 0" filter). Rows are mapped to their objects and changes are
- made to the whole list: row numbers of the shown channels were applied to
- the whole list, so deleting a channel could delete a query and editing one
- could replace another. */
-- (NSArray<IRCChannelConfig *> *)allChannelConfigs
-{
-	NSArray *content = self.channelListArrayController.content;
-
-	return ((content) ? [content copy] : @[]);
-}
-
-- (void)setAllChannelConfigs:(NSArray<IRCChannelConfig *> *)channelConfigs
-{
-	NSParameterAssert(channelConfigs != nil);
-
-	self.channelListArrayController.content = [channelConfigs mutableCopy];
-}
-
-- (void)setChannelListPredicate
-{
-	self.channelListArrayController.filterPredicate =
-	[NSPredicate predicateWithFormat:@"type == 0"]; // Is channel type
-}
-
-- (void)updateAddressBookPage
-{
-	NSInteger selectedRow = self.addressBookTable.selectedRow;
-
-	self.deleteAddressBookEntryButton.enabled = (selectedRow >= 0);
-	self.editAddressBookEntryButton.enabled = (selectedRow >= 0);
-}
-
-- (void)updateHighlightsPage
-{
-	NSInteger selectedRow = self.highlightsTable.selectedRow;
-
-	self.deleteHighlightButton.enabled = (selectedRow >= 0);
-	self.editHighlightButton.enabled = (selectedRow >= 0);
-}
-
 - (void)useSSLCheckChanged:(nullable id)sender
 {
 	NSInteger serverPort = self.serverPortTextField.integerValue;
@@ -1342,19 +1244,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Properties
 
-- (NSArray<IRCAddressBookEntry *> *)addressBookList
-{
-	return self.addressBookArrayController.arrangedObjects;
-}
-
 - (NSArray<IRCChannelConfig *> *)channelList
 {
-	return self.channelListArrayController.arrangedObjects;
-}
-
-- (NSArray<IRCHighlightMatchCondition *> *)highlightList
-{
-	return self.highlightListArrayController.arrangedObjects;
+	return self.channelsPane.items;
 }
 
 - (NSArray<IRCServer *> *)serverList
@@ -1959,577 +1851,13 @@ TEXTUAL_IGNORE_DEPRECATION_END
 }
 
 #pragma mark -
-#pragma mark Highlight Actions
-
-- (void)addHighlight:(nullable id)sender
-{
-	TDCHighlightEntrySheet *sheet =
-	[[TDCHighlightEntrySheet alloc] initWithConfig:nil];
-
-	sheet.delegate = self;
-
-	sheet.window = self.sheet;
-
-	[sheet startWithChannels:self.channelList];
-
-	self.highlightSheet = sheet;
-}
-
-- (void)editHighlight:(nullable id)sender
-{
-	NSInteger selectedRow = self.highlightsTable.selectedRow;
-
-	if (selectedRow < 0) {
-		return;
-	}
-
-	IRCHighlightMatchCondition *config = self.highlightList[selectedRow];
-
-	TDCHighlightEntrySheet *sheet =
-	[[TDCHighlightEntrySheet alloc] initWithConfig:config];
-
-	sheet.delegate = self;
-
-	sheet.window = self.sheet;
-
-	[sheet startWithChannels:self.channelList];
-
-	self.highlightSheet = sheet;
-}
-
-- (void)highlightEntrySheet:(TDCHighlightEntrySheet *)sender onOk:(IRCHighlightMatchCondition *)config
-{
-	NSUInteger entryIndex =
-	[self.highlightList indexOfObjectPassingTest:^BOOL(id object, NSUInteger index, BOOL *stop) {
-		if ([[object uniqueIdentifier] isEqualToString:config.uniqueIdentifier]) {
-			return YES;
-		} else {
-			return NO;
-		}
-	}];
-
-	if (entryIndex == NSNotFound) {
-		[self.highlightListArrayController addObject:config];
-	} else {
-		[self.highlightListArrayController replaceObjectAtArrangedObjectIndex:entryIndex withObject:config];
-	}
-}
-
-- (void)highlightEntrySheetWillClose:(TDCHighlightEntrySheet *)sender
-{
-	self.highlightSheet = nil;
-}
-
-- (void)deleteHighlight:(nullable id)sender
-{
-	NSInteger selectedRow = self.highlightsTable.selectedRow;
-
-	if (selectedRow < 0) {
-		return;
-	}
-
-	[self.highlightListArrayController removeObjectAtArrangedObjectIndex:selectedRow];
-
-	NSUInteger listCount = self.highlightList.count;
-
-	if (listCount > 0) {
-		if (listCount <= selectedRow) {
-			[self.highlightsTable selectItemAtIndex:(listCount - 1)];
-		} else {
-			[self.highlightsTable selectItemAtIndex:selectedRow];
-		}
-	}
-}
-
-#pragma mark -
-#pragma mark Channel Actions
-
-- (void)addChannel:(nullable id)sender
-{
-	TDCChannelPropertiesSheet *sheet =
-	[[TDCChannelPropertiesSheet alloc] initWithWindow:self.sheet];
-
-	sheet.delegate = self;
-
-	[sheet start];
-
-	self.channelSheet = sheet;
-}
-
-- (void)editChannel:(nullable id)sender
-{
-	NSInteger selectedRow = self.channelListTable.selectedRow;
-
-	if (selectedRow < 0) {
-		return;
-	}
-
-	IRCChannelConfig *config = self.channelList[selectedRow];
-
-	TDCChannelPropertiesSheet *sheet =
-	[[TDCChannelPropertiesSheet alloc] initWithConfig:config];
-
-	sheet.delegate = self;
-
-	sheet.window = self.sheet;
-
-	[sheet start];
-
-	self.channelSheet = sheet;
-}
-
-- (void)channelPropertiesSheet:(TDCChannelPropertiesSheet *)sender onOk:(IRCChannelConfig *)config
-{
-	NSUInteger entryIndex =
-	[self.allChannelConfigs indexOfObjectPassingTest:^BOOL(id object, NSUInteger index, BOOL *stop) {
-		if ([[object uniqueIdentifier] isEqualToString:config.uniqueIdentifier]) {
-			return YES;
-		} else {
-			return NO;
-		}
-	}];
-
-	NSMutableArray *channelConfigs = [self.allChannelConfigs mutableCopy];
-
-	/* A new channel with the name of one in the list made two entries for it */
-	if (entryIndex == NSNotFound) {
-		NSUInteger duplicateIndex =
-		[channelConfigs indexOfObjectPassingTest:^BOOL(IRCChannelConfig *object, NSUInteger index, BOOL *stop) {
-			return ([object.channelName caseInsensitiveCompare:config.channelName] == NSOrderedSame);
-		}];
-
-		if (duplicateIndex != NSNotFound) {
-			NSBeep();
-
-			return;
-		}
-	}
-
-	/* Its key may have changed */
-	[self.channelSecretKeys removeObjectForKey:config.uniqueIdentifier];
-
-	if (entryIndex == NSNotFound) {
-		[channelConfigs addObject:config];
-	} else {
-		channelConfigs[entryIndex] = config;
-	}
-
-	self.allChannelConfigs = channelConfigs;
-}
-
-- (void)channelPropertiesSheetWillClose:(TDCChannelPropertiesSheet *)sender
-{
-	self.channelSheet = nil;
-}
-
-- (void)deleteChannel:(nullable id)sender
-{
-	NSInteger selectedRow = self.channelListTable.selectedRow;
-
-	if (selectedRow < 0) {
-		return;
-	}
-
-	IRCChannelConfig *config = self.channelList[selectedRow];
-
-	NSMutableArray *channelConfigs = [self.allChannelConfigs mutableCopy];
-
-	[channelConfigs removeObjectIdenticalTo:config];
-
-	self.allChannelConfigs = channelConfigs;
-
-	NSUInteger listCount = self.channelList.count;
-
-	if (listCount > 0) {
-		if (listCount <= selectedRow) {
-			[self.channelListTable selectItemAtIndex:(listCount - 1)];
-		} else {
-			[self.channelListTable selectItemAtIndex:selectedRow];
-		}
-	}
-}
-
-#pragma mark -
-#pragma mark Address Book Actions
-
-- (void)showAddAddressBookEntryMenu:(nullable id)sender
-{
-	[self.addAddressBookEntryMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, 0) inView:sender];
-}
-
-- (void)addIgnoreAddressBookEntry
-{
-	[self addIgnoreAddressBookEntryWithHostmask:nil];
-}
-
-- (void)addIgnoreAddressBookEntryWithHostmask:(nullable NSString *)hostmask
-{
-	TDCAddressBookSheet *sheet = nil;
-
-	if (hostmask) {
-		IRCAddressBookEntry *config =
-		[IRCAddressBookEntry newIgnoreEntryForHostmask:hostmask];
-
-		sheet = [TDCAddressBookSheet sheetWithConfig:config];
-	} else {
-		sheet = [TDCAddressBookSheet sheetForNewEntryOfType:IRCAddressBookEntryTypeIgnore];
-	}
-
-	sheet.delegate = self;
-
-	sheet.window = self.sheet;
-
-	[sheet start];
-
-	self.addressBookSheet = sheet;
-}
-
-- (void)addUserTrackingAddressBookEntry
-{
-	TDCAddressBookSheet *sheet =
-	[TDCAddressBookSheet sheetForNewEntryOfType:IRCAddressBookEntryTypeUserTracking];
-
-	sheet.delegate = self;
-
-	sheet.window = self.sheet;
-
-	[sheet start];
-
-	self.addressBookSheet = sheet;
-}
-
-- (void)addAddressBookEntry:(nullable id)sender
-{
-	if ([sender tag] == 3) {
-		[self addIgnoreAddressBookEntry];
-	} else if ([sender tag] == 4) {
-		[self addUserTrackingAddressBookEntry];
-	}
-}
-
-- (void)editAddressBookEntryWithObject:(IRCAddressBookEntry *)entryObject
-{
-	NSInteger tableIndex = [self.addressBookList indexOfObject:entryObject];
-
-	if (tableIndex == NSNotFound) {
-		return;
-	}
-
-	[self.addressBookTable selectItemAtIndex:tableIndex];
-
-	[self editAddressBookEntry:nil];
-}
-
-- (void)editAddressBookEntry:(nullable id)sender
-{
-	NSInteger selectedRow = self.addressBookTable.selectedRow;
-
-	if (selectedRow < 0) {
-		return;
-	}
-
-	IRCAddressBookEntry *config = self.addressBookList[selectedRow];
-
-	TDCAddressBookSheet *sheet =
-	[TDCAddressBookSheet sheetWithConfig:config];
-
-	sheet.delegate = self;
-
-	sheet.window = self.sheet;
-
-	[sheet start];
-
-	self.addressBookSheet = sheet;
-}
-
-- (void)addressBookSheet:(TDCAddressBookSheet *)sender onOk:(IRCAddressBookEntry *)config
-{
-	NSUInteger entryIndex =
-	[self.addressBookList indexOfObjectPassingTest:^BOOL(id object, NSUInteger index, BOOL *stop) {
-		if ([[object uniqueIdentifier] isEqualToString:config.uniqueIdentifier]) {
-			return YES;
-		} else {
-			return NO;
-		}
-	}];
-
-	if (entryIndex == NSNotFound) {
-		[self.addressBookArrayController addObject:config];
-	} else {
-		[self.addressBookArrayController replaceObjectAtArrangedObjectIndex:entryIndex withObject:config];
-	}
-}
-
-- (void)addressBookSheetWillClose:(TDCAddressBookSheet *)sender
-{
-	self.addressBookSheet = nil;
-}
-
-- (void)deleteAddressBookEntry:(nullable id)sender
-{
-	NSInteger selectedRow = self.addressBookTable.selectedRow;
-
-	if (selectedRow < 0) {
-		return;
-	}
-
-	[self.addressBookArrayController removeObjectAtArrangedObjectIndex:selectedRow];
-
-	NSUInteger listCount = self.addressBookList.count;
-
-	if (listCount > 0) {
-		if (listCount <= selectedRow) {
-			[self.addressBookTable selectItemAtIndex:(listCount - 1)];
-		} else {
-			[self.addressBookTable selectItemAtIndex:selectedRow];
-		}
-	}
-}
-
-/* The key is read from the Keychain once per channel: it was read for every
- row each time the table drew */
-- (NSString *)secretKeyForChannelConfig:(IRCChannelConfig *)config
-{
-	NSParameterAssert(config != nil);
-
-	if (self.channelSecretKeys == nil) {
-		self.channelSecretKeys = [NSMutableDictionary dictionary];
-	}
-
-	NSString *channelId = config.uniqueIdentifier;
-
-	NSString *secretKey = self.channelSecretKeys[channelId];
-
-	if (secretKey == nil) {
-		secretKey = (config.secretKey ?: @"");
-
-		self.channelSecretKeys[channelId] = secretKey;
-	}
-
-	return secretKey;
-}
-
-#pragma mark -
-#pragma mark NSTableView Delegate
-
-- (nullable id)tableView:(NSTableView *)tableView objectValueForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
-{
-	NSString *columnId = tableColumn.identifier;
-
-	if (tableView == self.channelListTable)
-	{
-		IRCChannelConfig *config = self.channelList[row];
-
-		if ([columnId isEqualToString:@"name"])
-		{
-			return config.channelName;
-		}
-		else if ([columnId isEqualToString:@"pass"])
-		{
-			return [self secretKeyForChannelConfig:config];
-		}
-		else if ([columnId isEqualToString:@"join"])
-		{
-			return @(config.autoJoin);
-		}
-	}
-	else if (tableView == self.highlightsTable)
-	{
-		IRCHighlightMatchCondition *config = self.highlightList[row];
-
-		if ([columnId isEqualToString:@"keyword"])
-		{
-			return config.matchKeyword;
-		}
-		else if ([columnId isEqualToString:@"channel"])
-		{
-			NSString *matchChannelId = config.matchChannelId;
-
-			if (matchChannelId) {
-				for (IRCChannelConfig *channel in self.channelList) {
-					if ([channel.uniqueIdentifier isEqualToString:matchChannelId] == NO) {
-						continue;
-					}
-
-					return channel.channelName;
-				}
-			}
-
-			return TXTLS(@"TDCServerPropertiesSheet[61f-6b]");
-		}
-		else if ([columnId isEqualToString:@"type"])
-		{
-			if (config.matchIsExcluded) {
-				return TXTLS(@"TDCServerPropertiesSheet[qcc-b4]");
-			} else {
-				return TXTLS(@"TDCServerPropertiesSheet[tet-dk]");
-			}
-		}
-	}
-	else if (tableView == self.addressBookTable)
-	{
-		IRCAddressBookEntry *config = self.addressBookList[row];
-
-		if ([columnId isEqualToString:@"hostmask"])
-		{
-			return config.hostmask;
-		}
-		else if ([columnId isEqualToString:@"type"])
-		{
-			if (config.entryType == IRCAddressBookEntryTypeIgnore) {
-				return TXTLS(@"TDCServerPropertiesSheet[f7o-x4]");
-			} else {
-				return TXTLS(@"TDCServerPropertiesSheet[b0g-0x]");
-			}
-		}
-	}
-
-	return nil;
-}
-
-- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
-{
-	return YES;
-}
-
-- (void)tableView:(NSTableView *)tableView setObjectValue:(nullable id)object forTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
-{
-	NSString *columnId = tableColumn.identifier;
-
-	if (tableView == self.channelListTable)
-	{
-		IRCChannelConfig *oldConfig = self.channelList[row];
-
-		IRCChannelConfigMutable *config = [oldConfig mutableCopy];
-
-		if ([columnId isEqualToString:@"join"]) {
-			config.autoJoin = [object boolValue];
-		}
-
-		NSMutableArray *channelConfigs = [self.allChannelConfigs mutableCopy];
-
-		NSUInteger configIndex = [channelConfigs indexOfObjectIdenticalTo:oldConfig];
-
-		if (configIndex != NSNotFound) {
-			channelConfigs[configIndex] = [config copy];
-
-			self.allChannelConfigs = channelConfigs;
-		}
-	}
-}
-
-- (void)tableViewSelectionDidChange:(NSNotification *)aNote
-{
-	NSTableView *tableView = aNote.object;
-
-	if (tableView == self.channelListTable) {
-		[self updateChannelListPage];
-	} else if (tableView == self.highlightsTable) {
-		[self updateHighlightsPage];
-	} else if (tableView == self.addressBookTable) {
-		[self updateAddressBookPage];
-	}
-}
-
-- (void)tableViewDoubleClicked:(nullable id)sender
-{
-	if (sender == self.channelListTable) {
-		[self editChannel:sender];
-	} else if (sender == self.highlightsTable) {
-		[self editHighlight:sender];
-	} else if (sender == self.addressBookTable) {
-		[self editAddressBookEntry:sender];
-	}
-}
-
-/* The dragged row's index, read back on drop */
-- (nullable id <NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row
-{
-	NSPasteboardItem *item = [NSPasteboardItem new];
-
-	[item setString:@(row).stringValue forType:_tableDragToken];
-
-	return item;
-}
-
-/* Rows move within their own table only: a row dragged from one of the
- three tables was moved by its number in another */
-- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation
-{
-	if (info.draggingSource != tableView) {
-		return NSDragOperationNone;
-	}
-
-	if (dropOperation == NSTableViewDropOn) {
-		[tableView setDropRow:row dropOperation:NSTableViewDropAbove];
-	}
-
-	return NSDragOperationGeneric;
-}
-
-- (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id <NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation
-{
-	if (info.draggingSource != tableView) {
-		return NO;
-	}
-
-	NSPasteboard *pasteboard = [info draggingPasteboard];
-
-	NSString *draggedRow = [pasteboard stringForType:_tableDragToken];
-
-	NSUInteger draggedRowIndex = ((draggedRow.length > 0) ? (NSUInteger)draggedRow.integerValue : NSNotFound);
-
-	NSInteger numberOfRows = tableView.numberOfRows;
-
-	if (draggedRowIndex == NSNotFound || draggedRowIndex >= numberOfRows || row < 0 || row > numberOfRows) {
-		return NO;
-	}
-
-	if (tableView == self.channelListTable) {
-		NSArray *channelList = self.channelList;
-
-		IRCChannelConfig *movedConfig = channelList[draggedRowIndex];
-
-		IRCChannelConfig *configAfter = ((row < channelList.count) ? channelList[row] : nil);
-
-		if (configAfter == movedConfig) {
-			return NO;
-		}
-
-		NSMutableArray *channelConfigs = [self.allChannelConfigs mutableCopy];
-
-		[channelConfigs removeObjectIdenticalTo:movedConfig];
-
-		NSUInteger insertionIndex = ((configAfter) ? [channelConfigs indexOfObjectIdenticalTo:configAfter] : channelConfigs.count);
-
-		[channelConfigs insertObject:movedConfig atIndex:insertionIndex];
-
-		self.allChannelConfigs = channelConfigs;
-	} else if (tableView == self.highlightsTable) {
-		[self.highlightListArrayController moveObjectAtArrangedObjectIndex:draggedRowIndex toIndex:row];
-	} else if (tableView == self.addressBookTable) {
-		[self.addressBookArrayController moveObjectAtArrangedObjectIndex:draggedRowIndex toIndex:row];
-	}
-
-	return YES;
-}
-
-#pragma mark -
 #pragma mark NSWindow Delegate
 
 - (void)windowWillClose:(NSNotification *)note
 {
-	self.addressBookTable.delegate = nil;
-	self.channelListTable.delegate = nil;
-	self.highlightsTable.delegate = nil;
-
-	self.addressBookTable.dataSource = nil;
-	self.channelListTable.dataSource = nil;
-	self.highlightsTable.dataSource = nil;
-
-	[self.addressBookTable unregisterDraggedTypes];
-	[self.channelListTable unregisterDraggedTypes];
-	[self.highlightsTable unregisterDraggedTypes];
+	for (TDCServerPropertiesPane *pane in self.panes) {
+		[pane tearDown];
+	}
 
 	[self.sheet makeFirstResponder:nil];
 
