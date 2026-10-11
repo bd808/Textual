@@ -1357,6 +1357,67 @@ async def scenario_whox(client):
 	await client.collect(120)
 
 
+async def scenario_styles(client):
+	"""A showcase of every kind of line for checking the styles: #styles gets yesterday's
+	lines (a date change, through server-time), then messages from several people, a
+	mention of you, formatting and colours, an action, notices, joins, parts, quits,
+	nickname, mode and topic changes, a kick, a long line, links and an image link
+	(turn on inline media to see it), and alice sends you a private message. Type a few
+	lines of your own too. Stays connected (Ctrl-C to stop)."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+	channel = "#styles"
+
+	def at(minutes_ago):
+		stamp = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=minutes_ago)
+		return "@time=" + stamp.strftime("%Y-%m-%dT%H:%M:%S.000Z") + " "
+
+	await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+	await client.send(f":{SERVER} 332 {me} {channel} :Style showcase \x02bold\x02 \x034red\x03 and a link https://www.textualapp.com")
+	await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice +bob carl dave_ eve")
+	await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+	await client.collect(1)
+
+	lines = [
+		(1500, ":alice!a@alice.test PRIVMSG #styles :This line is from yesterday (date change below)"),
+		(1440, ":bob!b@bob.test PRIVMSG #styles :Still yesterday"),
+		(30, ":alice!a@alice.test PRIVMSG #styles :Good morning, everyone"),
+		(29, ":alice!a@alice.test PRIVMSG #styles :A second line from alice right after the first"),
+		(28, ":bob!b@bob.test PRIVMSG #styles :Morning! Different nicknames get different colours"),
+		(27, f":carl!c@carl.test PRIVMSG #styles :{me}: this line mentions you and should be a highlight"),
+		(26, ":dave_!d@dave.test PRIVMSG #styles :\x02bold\x02 \x1ditalic\x1d \x1funderline\x1f \x1estrikethrough\x1e \x11monospace\x11 \x16reverse\x16 \x0fplain"),
+		(25, ":dave_!d@dave.test PRIVMSG #styles :\x034red \x033green \x0312blue \x038,1yellow on black\x03 \x0400FF88hex colour\x0f done"),
+		(25, ":dave_!d@dave.test PRIVMSG #styles :Palette: " + " ".join(f"\x03{n:02d}{n}\x03" for n in range(16))),
+		(24, ":eve!e@eve.test PRIVMSG #styles :\x01ACTION waves at the channel\x01"),
+		(23, ":ChanServ!services@services.textual.test NOTICE #styles :A notice to the channel"),
+		(22, ":frank!f@frank.test JOIN #styles"),
+		(21, ":frank!f@frank.test PART #styles :Leaving with a reason"),
+		(20, ":grace!g@grace.test JOIN #styles"),
+		(19, ":grace!g@grace.test QUIT :Quit: see you later"),
+		(18, ":bob!b@bob.test NICK :robert"),
+		(17, ":alice!a@alice.test MODE #styles +v carl"),
+		(16, ":alice!a@alice.test MODE #styles +b *!*@spam.test"),
+		(15, ":alice!a@alice.test TOPIC #styles :A new topic with \x1ditalics\x1d"),
+		(14, ":heidi!h@heidi.test JOIN #styles"),
+		(13, ":alice!a@alice.test KICK #styles heidi :Kicked with a reason"),
+		(12, ":carl!c@carl.test PRIVMSG #styles :" + " ".join(["A long line that has to wrap across several rows of the chat view to show how the style handles it."] * 4)),
+		(11, ":robert!b@bob.test PRIVMSG #styles :Links: https://www.textualapp.com and #styles and ircs://irc.libera.chat/#textual"),
+		(10, ":eve!e@eve.test PRIVMSG #styles :An image link: https://www.textualapp.com/textual-light.jpg"),
+		(9, ":eve!e@eve.test PRIVMSG #styles :Emoji and other scripts: 🎉 ✓ 日本語 русский العربية"),
+	]
+
+	for minutes_ago, line in lines:
+		await client.send(at(minutes_ago) + line)
+
+	await client.send(f":alice!a@alice.test PRIVMSG {me} :A private message from alice")
+	await client.send(f":alice!a@alice.test NOTICE {me} :A private notice from alice")
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1364,6 +1425,7 @@ async def scenario_silent(client):
 
 
 SCENARIOS = {
+	"styles": scenario_styles,
 	"idle": scenario_idle,
 	"links": scenario_links,
 	"nickserv-spoof": scenario_nickserv_spoof,
@@ -1400,7 +1462,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 
