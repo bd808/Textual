@@ -33,6 +33,7 @@ body img {
   float: left;
   margin: 15px 15px 12px 10px;
   min-width: 100px;
+  max-width: none; /* not baseLayout.css's default */
 }
 
 .inlineImage .closeButton,
@@ -55,4 +56,6 @@ body img {
   right: 5px;
   width: 25px;
   height: 25px;
+  padding: 0; /* not baseLayout.css's defaults */
+  text-indent: 0;
 }

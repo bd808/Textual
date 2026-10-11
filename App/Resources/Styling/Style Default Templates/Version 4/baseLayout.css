@@ -271,3 +271,31 @@ body[data-selected="false"] #topicBar {
 	0%, 80%, 100% { opacity: 0.2; }
 	40% { opacity: 1; }
 }
+
+/* Inline media (images, videos, web previews) and their close button: zero
+ specificity (:where), so any style's own rules win */
+:where(.inlineImage .content, .inlineVideo .content, .inlineVideoService .content, .inlineHTML .content) {
+	display: inline-block;
+	float: left;
+	margin-right: 12px;
+	margin-left: 10px;
+	min-width: 40px;
+	max-width: 90%;
+}
+
+:where(.inlineImage .closeButton, .inlineVideo .closeButton, .inlineVideoService .closeButton, .inlineHTML .closeButton) {
+	cursor: pointer;
+	border-radius: 5px;
+	border: 2px solid #a1a1a1;
+	color: #a1a1a1;
+	display: inline-block;
+	line-height: 14px;
+	font-size: 15px;
+	font-family: "Helvetica Neue";
+	text-indent: 7px;
+	width: 16px;
+	height: 16px;
+	float: left;
+	padding-right: 7px;
+	padding-left: 0px;
+}
