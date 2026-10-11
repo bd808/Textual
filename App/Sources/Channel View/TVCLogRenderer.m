@@ -46,7 +46,7 @@
 #import "IRCColorFormat.h"
 #import "IRCISupportInfo.h"
 #import "IRCUser.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 #import "TPCPreferencesLocal.h"
 #import "TPCThemeController.h"
 #import "TPCTheme.h"
@@ -936,7 +936,7 @@ static BOOL _isNicknameSpecialCharacter(UniChar character)
 					}
 				}
 
-				NSString *nicknameColorStyle = [IRCUserNicknameColorStyleGenerator nicknameColorStyleForString:nickname];
+				NSString *nicknameColorStyle = [TPCNicknameColorStyleGenerator nicknameColorStyleForString:nickname];
 
 				templateTokens[@"inlineNicknameMatchFound"] = @(YES);
 

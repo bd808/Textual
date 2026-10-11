@@ -45,6 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, weak) IRCChannel *channel;
 @property (readonly, copy) NSString *channelName;
 @property (readonly, copy) NSString *timeLoggedFormatted;
+
+/* "<nickname> message" or "• nickname message", still with IRC formatting codes */
+@property (readonly, copy) NSString *formattedMessage;
 @end
 
 @interface IRCHighlightLogEntryMutable : IRCHighlightLogEntry

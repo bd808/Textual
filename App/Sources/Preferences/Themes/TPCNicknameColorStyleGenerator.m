@@ -41,13 +41,13 @@
 #import "TPCPreferencesUserDefaults.h"
 #import "TPCThemeController.h"
 #import "TPCTheme.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 #define _overridesDefaultsKey			@"Nickname Color Style Overrides (v2)"
 
-@implementation IRCUserNicknameColorStyleGenerator
+@implementation TPCNicknameColorStyleGenerator
 
 + (NSString *)nicknameColorStyleForString:(NSString *)inputString
 {

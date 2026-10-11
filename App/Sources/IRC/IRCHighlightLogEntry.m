@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return TXTLS(@"BasicLanguage[vbl-xi]");
 }
 
-- (NSAttributedString *)renderedMessage
+- (NSString *)formattedMessage
 {
 	IRCChannel *channel = self.channel;
 
@@ -114,10 +114,13 @@ NS_ASSUME_NONNULL_BEGIN
 		messageBody = TXNotificationHighlightLogStandardMessageFormat;
 	}
 
-	messageBody = [NSString stringWithFormat:messageBody, nicknameBody, logLine.messageBody];
+	return [NSString stringWithFormat:messageBody, nicknameBody, logLine.messageBody];
+}
 
-	return [messageBody attributedStringWithIRCFormatting:[NSTableView preferredGlobalTableViewFont]
-									   preferredFontColor:[NSColor controlTextColor]];
+- (NSAttributedString *)renderedMessage
+{
+	return [self.formattedMessage attributedStringWithIRCFormatting:[NSTableView preferredGlobalTableViewFont]
+												 preferredFontColor:[NSColor controlTextColor]];
 }
 
 - (NSString *)lineNumber

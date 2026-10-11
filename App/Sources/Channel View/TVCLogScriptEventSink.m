@@ -49,7 +49,7 @@
 #import "THOPluginProtocolPrivate.h"
 #import "IRCClient.h"
 #import "IRCChannel.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 #import "IRCWorld.h"
 #import "TVCMainWindow.h"
 #import "TVCLogControllerPrivate.h"

@@ -35,6 +35,8 @@
  *
  *********************************************************************** */
 
+#import "NSStringHelper.h"
+#import "NSTableViewHelperPrivate.h"
 #import "TXMasterController.h"
 #import "IRCClient.h"
 #import "IRCChannel.h"
@@ -44,8 +46,6 @@
 #import "TDCServerHighlightListSheetPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-#define _renderedMessageTextFieldLeftRightPadding		2.0
 
 @interface TDCServerHighlightListSheet ()
 @property (nonatomic, strong, readwrite) IRCClient *client;
@@ -196,6 +196,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
 	NSTableCellView *result = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
+
+	/* The message with its IRC formatting, in the table's font */
+	if ([tableColumn.identifier isEqualToString:@"renderedMessage"]) {
+		IRCHighlightLogEntry *entryItem = self.highlightListController.arrangedObjects[row];
+
+		result.textField.attributedStringValue =
+		[entryItem.formattedMessage attributedStringWithIRCFormatting:[NSTableView preferredGlobalTableViewFont]
+												   preferredFontColor:[NSColor controlTextColor]];
+	}
 
 	return result;
 }

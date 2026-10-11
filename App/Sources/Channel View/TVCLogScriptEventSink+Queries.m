@@ -49,7 +49,7 @@
 #import "THOPluginProtocolPrivate.h"
 #import "IRCClient.h"
 #import "IRCChannel.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 #import "IRCWorld.h"
 #import "TVCMainWindow.h"
 #import "TVCLogControllerPrivate.h"
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
-	context.completionBlock( [IRCUserNicknameColorStyleGenerator hashForString:inputString colorStyle:colorStyleEnum] );
+	context.completionBlock( [TPCNicknameColorStyleGenerator hashForString:inputString colorStyle:colorStyleEnum] );
 }
 
 - (void)_serverAddress:(TVCLogScriptEventSinkContext *)context

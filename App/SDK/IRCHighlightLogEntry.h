@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, copy) NSString *clientId;
 @property (readonly, copy) NSString *channelId;
 @property (readonly, copy) NSString *lineNumber;
-@property (readonly, copy) NSAttributedString *renderedMessage;
+@property (readonly, copy) NSAttributedString *renderedMessage TEXTUAL_DEPRECATED("Format lineLogged for your own view; this one uses the table font");
 @end
 
 NS_ASSUME_NONNULL_END

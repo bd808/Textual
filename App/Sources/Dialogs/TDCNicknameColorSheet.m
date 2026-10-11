@@ -36,7 +36,7 @@
  *********************************************************************** */
 
 #import "NSObjectHelperPrivate.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 #import "TDCNicknameColorSheetPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[RZMainBundle() loadNibNamed:@"TDCNicknameColorSheet" owner:self topLevelObjects:nil];
 
 	NSColor *nicknameColor =
-	[IRCUserNicknameColorStyleGenerator nicknameColorStyleOverrideForKey:self.nickname];
+	[TPCNicknameColorStyleGenerator nicknameColorStyleOverrideForKey:self.nickname];
 
 	if (nicknameColor == nil) {
 		[self showPlaceholderColor];
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self releaseColorPanel];
 
-	[IRCUserNicknameColorStyleGenerator setNicknameColorStyleOverride:nicknameColor forKey:self.nickname];
+	[TPCNicknameColorStyleGenerator setNicknameColorStyleOverride:nicknameColor forKey:self.nickname];
 
 	if ([self.delegate respondsToSelector:@selector(nicknameColorSheetOnOk:)]) {
 		[self.delegate nicknameColorSheetOnOk:self];

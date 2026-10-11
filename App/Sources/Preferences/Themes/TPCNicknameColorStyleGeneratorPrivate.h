@@ -39,7 +39,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface IRCUserNicknameColorStyleGenerator : NSObject
+@interface TPCNicknameColorStyleGenerator : NSObject
 + (NSString *)nicknameColorStyleForString:(NSString *)inputString;
 + (NSString *)nicknameColorStyleForString:(NSString *)inputString isOverride:(BOOL * _Nullable)isOverride;
 

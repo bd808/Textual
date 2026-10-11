@@ -41,7 +41,7 @@
 #import "TXGlobalModels.h"
 #import "IRCClient.h"
 #import "IRCChannel.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 #import "TPCPreferencesLocal.h"
 #import "TPCThemeController.h"
 #import "TPCTheme.h"
@@ -410,7 +410,7 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 		BOOL isOverride = NO;
 
 		self->_nicknameColorStyle =
-		[IRCUserNicknameColorStyleGenerator nicknameColorStyleForString:self.nickname isOverride:&isOverride];
+		[TPCNicknameColorStyleGenerator nicknameColorStyleForString:self.nickname isOverride:&isOverride];
 
 		self->_nicknameColorStyleOverride = isOverride;
 	} else {

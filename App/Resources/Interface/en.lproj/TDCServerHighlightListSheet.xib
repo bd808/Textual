@@ -105,9 +105,6 @@
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <accessibility description="Original Message"/>
-                                                            <connections>
-                                                                <binding destination="EgS-Pq-f28" name="value" keyPath="objectValue.renderedMessage" id="LvU-FV-bn6"/>
-                                                            </connections>
                                                         </textField>
                                                     </subviews>
                                                     <constraints>

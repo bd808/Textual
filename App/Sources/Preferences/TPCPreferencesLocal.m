@@ -38,7 +38,7 @@
 
 #import "TXGlobalModels.h"
 #import "IRCWorld.h"
-#import "IRCUserNicknameColorStyleGeneratorPrivate.h"
+#import "TPCNicknameColorStyleGeneratorPrivate.h"
 #import "TPCApplicationInfoPrivate.h"
 #import "TPCPathInfoPrivate.h"
 #import "TPCPreferencesUserDefaultsLocal.h"
@@ -1214,7 +1214,7 @@ static NSArray<NSString *> *_matchKeywords = nil;
 		return;
 	}
 
-	[IRCUserNicknameColorStyleGenerator migrateNicknameColorStyleOverrides];
+	[TPCNicknameColorStyleGenerator migrateNicknameColorStyleOverrides];
 
 	[RZUserDefaults() setBool:YES forKey:_defaultsKey];
 
