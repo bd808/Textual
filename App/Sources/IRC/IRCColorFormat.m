@@ -273,8 +273,27 @@ NSString * const IRCTextFormatterSpoilerAttributeName = @"IRCTextFormatterSpoile
 
 	NSMutableArray *effects = [NSMutableArray arrayWithCapacity:7];
 
-	IRCTextFormatterEffect *foregroundColor = [IRCTextFormatterEffect effectWithType:IRCTextFormatterEffectForegroundColor withValue:attributes[IRCTextFormatterForegroundColorAttributeName]];
-	IRCTextFormatterEffect *backgroundColor = [IRCTextFormatterEffect effectWithType:IRCTextFormatterEffectBackgroundColor withValue:attributes[IRCTextFormatterBackgroundColorAttributeName]];
+	id foregroundColorValue = attributes[IRCTextFormatterForegroundColorAttributeName];
+	id backgroundColorValue = attributes[IRCTextFormatterBackgroundColorAttributeName];
+
+	/* A palette colour (number) and a custom one (NSColor) use different codes, and a
+	 background is only sent in the foreground's: the palette one goes as hex too */
+	if (foregroundColorValue && backgroundColorValue &&
+		[foregroundColorValue isKindOfClass:[NSNumber class]] != [backgroundColorValue isKindOfClass:[NSNumber class]])
+	{
+		if ([foregroundColorValue isKindOfClass:[NSNumber class]]) {
+			NSUInteger colorCode = [foregroundColorValue unsignedIntegerValue];
+
+			foregroundColorValue = ((colorCode <= IRCTextFormatterEffectColorHighestDigit) ? [TVCLogRenderer mapColorCode:colorCode] : nil);
+		} else {
+			NSUInteger colorCode = [backgroundColorValue unsignedIntegerValue];
+
+			backgroundColorValue = ((colorCode <= IRCTextFormatterEffectColorHighestDigit) ? [TVCLogRenderer mapColorCode:colorCode] : nil);
+		}
+	}
+
+	IRCTextFormatterEffect *foregroundColor = [IRCTextFormatterEffect effectWithType:IRCTextFormatterEffectForegroundColor withValue:foregroundColorValue];
+	IRCTextFormatterEffect *backgroundColor = [IRCTextFormatterEffect effectWithType:IRCTextFormatterEffectBackgroundColor withValue:backgroundColorValue];
 
 	if (foregroundColor) {
 		[effects addObject:foregroundColor];
@@ -1036,6 +1055,9 @@ NSString * const IRCTextFormatterSpoilerAttributeName = @"IRCTextFormatterSpoile
 				 [self removeAttribute:NSBackgroundColorAttributeName range:effectiveRange];
 
 				 [self removeAttribute:IRCTextFormatterForegroundColorAttributeName range:effectiveRange];
+
+				 /* IRC sends a background only with a foreground: the hidden one came back with the next colour */
+				 [self removeAttribute:IRCTextFormatterBackgroundColorAttributeName range:effectiveRange];
 
 				 break;
 			 }

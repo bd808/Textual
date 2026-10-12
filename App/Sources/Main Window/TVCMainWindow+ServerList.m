@@ -639,7 +639,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	[self.serverList refreshDrawingForRow:row];
+	/* Through the row view: asking the outline view for the cell while it adds
+	 the row is a reentrant call (AppKit warns, and will assert) */
+	[[rowView viewAtColumn:0] setNeedsDisplay:YES];
 }
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification

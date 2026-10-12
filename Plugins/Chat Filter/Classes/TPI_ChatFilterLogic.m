@@ -112,7 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
 	return YES;
 }
 
-- (BOOL)testFilterSender:(TPI_ChatFilter *)filter authoredBy:(IRCPrefix *)textAuthor destinedFor:(nullable IRCChannel *)textDestination onClient:(IRCClient *)client
+/* matchTimedOut becomes YES when a match came from a search that took too long */
+- (BOOL)testFilterSender:(TPI_ChatFilter *)filter authoredBy:(IRCPrefix *)textAuthor destinedFor:(nullable IRCChannel *)textDestination onClient:(IRCClient *)client matchTimedOut:(BOOL *)matchTimedOut
 {
 	/* Check whether the sender is myself */
 	if (filter.filterLimitedToMyself) {
@@ -139,7 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
 			comparisonHostmask = textAuthor.hostmask;
 		}
 
-		/* A search that took too long counts as a match: text built to be slow must not get past a filter */
+		/* A search that took too long counts as a match: text built to be slow must not
+		 get past a filter. It only hides the line: the filter's action isn't run. */
 		BOOL timedOut = NO;
 
 		if ([XRRegularExpression string:comparisonHostmask isMatchedByRegex:filterSenderMatch withoutCase:YES timedOut:&timedOut] == NO && timedOut == NO) {
@@ -147,6 +149,10 @@ NS_ASSUME_NONNULL_BEGIN
 			 this particular filter fails, then skip this filter. */
 
 			return NO;
+		}
+
+		if (timedOut) {
+			*matchTimedOut = YES;
 		}
 	}
 
@@ -206,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return YES;
 }
 
-- (BOOL)testFilterMatch:(TPI_ChatFilter *)filter againstText:(nullable NSString *)text allowingNilText:(BOOL)allowingNilText
+- (BOOL)testFilterMatch:(TPI_ChatFilter *)filter againstText:(nullable NSString *)text allowingNilText:(BOOL)allowingNilText matchTimedOut:(BOOL *)matchTimedOut
 {
 	/* Filter text */
 	if (text == nil) {
@@ -233,6 +239,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 			return NO;
 		}
+
+		if (timedOut) {
+			*matchTimedOut = YES;
+		}
 	}
 
 	return YES;
@@ -257,12 +267,20 @@ NS_ASSUME_NONNULL_BEGIN
 				continue;
 			}
 
-			if ([self testFilterSender:filter authoredBy:textAuthor destinedFor:textDestination onClient:client] == NO) {
+			BOOL matchTimedOut = NO;
+
+			if ([self testFilterSender:filter authoredBy:textAuthor destinedFor:textDestination onClient:client matchTimedOut:&matchTimedOut] == NO) {
 				continue;
 			}
 
-			if ([self testFilterMatch:filter againstText:text allowingNilText:YES] == NO) {
+			if ([self testFilterMatch:filter againstText:text allowingNilText:YES matchTimedOut:&matchTimedOut] == NO) {
 				continue;
+			}
+
+			/* Matched only because a search took too long: hide the line (if the
+			 filter hides), but don't run its command or forward a copy */
+			if (matchTimedOut) {
+				return (filter.filterIgnoreContent == NO);
 			}
 
 			/* Perform actions defined by filter */
@@ -335,12 +353,20 @@ NS_ASSUME_NONNULL_BEGIN
 				continue;
 			}
 
-			if ([self testFilterSender:filter authoredBy:textAuthor destinedFor:textDestination onClient:client] == NO) {
+			BOOL matchTimedOut = NO;
+
+			if ([self testFilterSender:filter authoredBy:textAuthor destinedFor:textDestination onClient:client matchTimedOut:&matchTimedOut] == NO) {
 				continue;
 			}
 
-			if ([self testFilterMatch:filter againstText:text allowingNilText:NO] == NO) {
+			if ([self testFilterMatch:filter againstText:text allowingNilText:NO matchTimedOut:&matchTimedOut] == NO) {
 				continue;
+			}
+
+			/* Matched only because a search took too long: hide the line (if the
+			 filter hides), but don't run its command or forward a copy */
+			if (matchTimedOut) {
+				return (filter.filterIgnoreContent == NO);
 			}
 
 			/* Perform actions defined by filter */

@@ -1171,7 +1171,7 @@ async def run_sasl_scram(client, variant):
 				outcome.append(f"proof {'valid' if valid else 'INVALID'}")
 				server_key = hmac_module.new(salted, b"Server Key", hashlib.sha512).digest()
 				server_signature = hmac_module.new(server_key, auth_message, hashlib.sha512).digest()
-				if variant == "badsig":
+				if variant in ("badsig", "badsig-success"):
 					server_signature = bytes(64)
 				if variant == "noproof":
 					# Success without ever sending the server signature
@@ -1186,6 +1186,9 @@ async def run_sasl_scram(client, variant):
 				if data == "+":
 					await client.send(f":{SERVER} 900 {nickname} {nickname}!u@h {username} :You are now logged in as {username}")
 					await client.send(f":{SERVER} 903 {nickname} :SASL authentication successful")
+				elif data == "*" and variant == "badsig-success":
+					# Ignores the abort and claims success
+					await client.send(f":{SERVER} 903 {nickname} :SASL authentication successful")
 				elif data == "*":
 					await client.send(f":{SERVER} 906 {nickname} :SASL authentication aborted")
 				state = "done"
@@ -1197,6 +1200,9 @@ async def run_sasl_scram(client, variant):
 	if variant == "badsig":
 		result(outcome == ["proof valid", "after server-final: *", "CAP END"],
 			"the client aborted on the wrong server signature and didn't fall back to PLAIN")
+	elif variant == "badsig-success":
+		result(outcome == ["proof valid", "after server-final: *"],
+			"the client disconnected when the server answered its abort with success")
 	elif variant == "noproof":
 		result(outcome == ["proof valid"],
 			"the client disconnected when the server reported success without its signature")
@@ -1369,6 +1375,12 @@ async def scenario_sasl_scram_fallback(client):
 	"""SCRAM-SHA-512 fails with 904 (an account without SCRAM credentials): the
 	client must try PLAIN next and log in with it."""
 	await run_sasl_scram(client, "fallback")
+
+
+async def scenario_sasl_scram_badsig_success(client):
+	"""Wrong server signature; the client aborts, the server answers 903 anyway:
+	the client must disconnect instead of counting itself logged in."""
+	await run_sasl_scram(client, "badsig-success")
 
 
 async def scenario_sasl_scram_noproof(client):
@@ -1570,12 +1582,13 @@ SCENARIOS = {
 	"sasl-scram-fallback": scenario_sasl_scram_fallback,
 	"sasl-scram-badsig": scenario_sasl_scram_badsig,
 	"sasl-scram-noproof": scenario_sasl_scram_noproof,
+	"sasl-scram-badsig-success": scenario_sasl_scram_badsig_success,
 	"sasl-ecdsa": scenario_sasl_ecdsa,
 	"sasl-ecdsa-wrongkey": scenario_sasl_ecdsa_wrongkey,
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

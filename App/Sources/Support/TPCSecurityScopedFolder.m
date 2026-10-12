@@ -98,15 +98,17 @@ NS_ASSUME_NONNULL_BEGIN
 		return NO;
 	}
 
-	self.URL = URL;
-
-	self.isAccessed = [URL startAccessingSecurityScopedResource];
-
-	if (self.isAccessed == NO) {
+	/* Not kept when access is refused: callers would write into a folder the
+	 sandbox blocks, report it as working, and never try again */
+	if ([URL startAccessingSecurityScopedResource] == NO) {
 		LogToConsoleError("Failed to access bookmark for '%{public}@'", self.bookmarkKey);
 
-		return YES;
+		return NO;
 	}
+
+	self.URL = URL;
+
+	self.isAccessed = YES;
 
 	/* "On return, if YES, the bookmark data is stale. Your app should create a
 	 new bookmark using the returned URL and use it in place of any stored
@@ -114,11 +116,12 @@ NS_ASSUME_NONNULL_BEGIN
 	if (bookmarkIsStale) {
 		NSData *newBookmark = [self.class bookmarkForURL:URL];
 
-		if (newBookmark == nil) {
-			return NO;
+		/* The folder works now; the refresh is tried again next time */
+		if (newBookmark) {
+			[RZUserDefaults() setObject:newBookmark forKey:self.bookmarkKey];
+		} else {
+			LogToConsoleError("Couldn't refresh the stale bookmark for '%{public}@'", self.bookmarkKey);
 		}
-
-		[RZUserDefaults() setObject:newBookmark forKey:self.bookmarkKey];
 	}
 
 	return YES;

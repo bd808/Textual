@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TVCMainWindowLoadingScreenView ()
 @property (nonatomic, weak) NSView *visibleView;
+@property (nonatomic, assign) NSUInteger displayGeneration; // raised by each display; a fade from before it doesn't hide
 @property (nonatomic, strong) IBOutlet NSView *welcomeAddServerView;
 @property (nonatomic, weak) IBOutlet NSButton *welcomeAddServerViewContinueButton;
 @property (nonatomic, strong) IBOutlet NSView *progressView;
@@ -116,6 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 	self.visibleView = view;
 
+	self.displayGeneration += 1;
+
 	[self disableBackgroundControlsStepOne];
 
 	[self addSubview:view];
@@ -177,7 +180,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 	/* ================================== */
 
+	NSUInteger displayGeneration = self.displayGeneration;
+
 	void (^phaseTwoBlock)(NSView *) = ^(NSView *viewToHide) {
+		/* Shown again during the fade (the same view can be): leave it */
+		if (self.displayGeneration != displayGeneration) {
+			return;
+		}
+
 		[view removeFromSuperview];
 
 		/* We only continue with phase two if we have not

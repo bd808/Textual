@@ -158,7 +158,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	[self.memberList refreshDrawingForRow:row];
+	/* Through the row view: asking the table for the cell while it adds the row is reentrant */
+	[[rowView viewAtColumn:0] setNeedsDisplay:YES];
 }
 
 #pragma mark -

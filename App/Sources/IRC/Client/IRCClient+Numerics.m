@@ -1858,16 +1858,22 @@ NS_ASSUME_NONNULL_BEGIN
 		case ERR_SASLABORTED:
 		case ERR_SASLALREADY:
 		{
-			/* SCRAM success only counts after the server proved it knows the password (step 4) */
-			if (numeric == RPL_SASLSUCCESS && self.saslSCRAM != nil && self.saslStep != 4) {
-				[self printDebugInformationToConsole:TXTLS(@"IRC[sc7-v2]", self.saslSCRAM.mechanismName)];
+			/* SCRAM success only counts after the server proved it knows the password (step 4).
+			 Keyed on the mechanism: an abort (wrong signature) clears saslSCRAM but not the mechanism. */
+			IRCSASLSCRAMHash scramHash = IRCSASLSCRAMHashSHA256;
+
+			BOOL triedSCRAM = (self.saslMechanism != nil && [IRCSASLSCRAM hash:&scramHash forMechanismName:self.saslMechanism]);
+
+			if (numeric == RPL_SASLSUCCESS && triedSCRAM && (self.saslSCRAM == nil || self.saslStep != 4)) {
+				[self printDebugInformationToConsole:TXTLS(@"IRC[sc7-v2]", self.saslMechanism)];
 
 				[self quit];
 
 				break;
 			}
 
-			if (numeric == RPL_SASLSUCCESS) {
+			/* Only while logging in: a success after a logout (901) or outside SASL means nothing */
+			if (numeric == RPL_SASLSUCCESS && [self isPendingCapabilityEnabled:ClientIRCv3SupportedCapabilityIsInSASLNegotiation]) {
 				self.isAuthenticatedWithSASL = YES;
 			}
 

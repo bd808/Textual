@@ -115,8 +115,8 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 {
 	self.isImportingConfiguration = YES;
 
-	[mainWindowServerList() beginUpdates];
-
+	/* Not one batch of updates: with automatic row heights, AppKit re-entered its
+	 row height cache while ending a batch of many inserts (and warned) */
 	NSArray *clientList = [TPCPreferences clientList];
 
 	for (NSDictionary *client in clientList) {
@@ -131,8 +131,6 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 
 		[self createClientWithConfig:e reload:YES];
 	}
-
-	[mainWindowServerList() endUpdates];
 
 	self.isImportingConfiguration = NO;
 

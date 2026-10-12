@@ -553,7 +553,9 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 	
 	BOOL manuallyDetect = (detectionMethod == TXFileTransferIPAddressMethodManual);
 	
-	if (address == nil && manuallyDetect == NO) {
+	/* Only a working mapping's address: one from another NAT in front (private)
+	 would be cached and offered to every later transfer */
+	if (address == nil && manuallyDetect == NO && self.portMapping.isMapped) {
 		NSString *publicAddress = self.portMapping.publicAddress;
 
 		LogToConsoleDebug("Port mapper public IP address: %{private}@", publicAddress);

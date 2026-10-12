@@ -1482,6 +1482,9 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 		if (html == nil) {
 			LogToConsoleError("Failed to render log line %{public}@", logLine.description);
 
+			/* Never shown, so not saved later either */
+			[self takeUnsavedLogLine:logLine];
+
 			return;
 		}
 
@@ -1500,8 +1503,13 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 				return;
 			}
 
-			/* A clear since rendering began saved or dropped this line already */
+			/* A clear since rendering began saved or dropped this line already: it isn't
+			 appended again, but its highlight, unread count and notification still happen */
 			if ([self takeUnsavedLogLine:logLine] == NO) {
+				if (notifiedEarly == NO) {
+					[self finishPrintingLogLine:logLine highlighted:highlighted listOfUsers:listOfUsers completionBlock:completionBlock];
+				}
+
 				return;
 			}
 

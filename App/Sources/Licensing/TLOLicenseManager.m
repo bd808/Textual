@@ -633,6 +633,30 @@ NSDictionary<NSString *, id> * _Nullable TLOLicenseManagerLicenseDictionary(void
 	return TLOLicenseManagerCachedLicenseDictionary;
 }
 
+BOOL TLOLicenseManagerLicenseFileIsValid(void)
+{
+	if (TLOLicenseManagerLicenseFileExists() == NO) {
+		return NO;
+	}
+
+	/* The first launch's Textual 7 import asks before the licence manager is set up */
+	TLOLicenseManagerPopulatePublicKeyRef();
+
+	NSData *licenseContents = TLOLicenseManagerLicenseFileContents();
+
+	if (licenseContents == nil) {
+		return NO;
+	}
+
+	NSDictionary *licenseDictionary = TLOLicenseManagerLicenseDictionaryWithData(licenseContents);
+
+	if (licenseDictionary == nil) {
+		return NO;
+	}
+
+	return (TLOLicenseManagerVerifyLicenseSignatureWithDictionary(licenseDictionary) == TLOLicenseManagerActionResultSuccess);
+}
+
 #pragma mark -
 #pragma mark Public Key Access
 
@@ -681,6 +705,11 @@ void TLOLicenseManagerSetPublicKeyIsGenuine(void)
 
 void TLOLicenseManagerPopulatePublicKeyRef(void)
 {
+	/* Once: the licence file check can load it before TLOLicenseManagerSetup() */
+	if (TLOLicenseManagerPublicKey != NULL) {
+		return;
+	}
+
 	NSData *publicKeyContents = TLOLicenseManagerPublicKeyContents();
 
 	if (publicKeyContents == nil) {

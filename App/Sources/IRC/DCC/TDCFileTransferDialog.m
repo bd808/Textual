@@ -543,7 +543,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-	TDCFileTransferDialogTableCell *tableCell = [tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+	/* Through the row view: asking the table while it adds the row is reentrant */
+	TDCFileTransferDialogTableCell *tableCell = [rowView viewAtColumn:0];
 
 	[tableCell prepareInitialState];
 }

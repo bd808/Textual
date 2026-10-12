@@ -103,6 +103,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSTableCellView *childCell = self->_childCell;
 
+	/* Rows are reused and reloaded: the cached cell may sit in another row now
+	 (still alive, so the weak reference didn't clear) */
+	if (childCell && childCell.superview != self) {
+		childCell = nil;
+	}
+
 	if (childCell == nil && self.numberOfColumns > 0) {
 		childCell = [self viewAtColumn:0];
 

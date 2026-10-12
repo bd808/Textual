@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	if (timedOut) {
-		NSLog(@"Regular expression took too long and was treated as no match: %@", needle);
+		NSLog(@"Regular expression took too long and was abandoned: %@", needle);
 
 		return @[];
 	}

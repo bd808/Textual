@@ -81,6 +81,29 @@ static NSString * _Nullable StringFromIPv4Addr(UInt32 ipv4Addr)
 
 #pragma mark -
 
+// Private IP address ranges. See RFC 3330.
+static const struct {UInt32 mask, value;} kPrivateRanges[] = {
+	{0xFF000000, 0x00000000},       // 0.x.x.x (hosts on "this" network)
+	{0xFF000000, 0x0A000000},       // 10.x.x.x (private address range)
+	{0xFF000000, 0x7F000000},       // 127.x.x.x (loopback)
+	{0xFFFF0000, 0xA9FE0000},       // 169.254.x.x (link-local self-configured addresses)
+	{0xFFF00000, 0xAC100000},       // 172.(16-31).x.x (private address range)
+	{0xFFFF0000, 0xC0A80000},       // 192.168.x.x (private address range)
+	{0,0}
+};
+
+/* address in host byte order */
+static BOOL _addressIsPrivate(UInt32 address)
+{
+	for (NSUInteger i = 0; kPrivateRanges[i].mask; i++) {
+		if ((address & kPrivateRanges[i].mask) == kPrivateRanges[i].value) {
+			return YES;
+		}
+	}
+
+	return NO;
+}
+
 @implementation XRPortMapper
 
 - (instancetype)init
@@ -111,8 +134,14 @@ static NSString * _Nullable StringFromIPv4Addr(UInt32 ipv4Addr)
 
 - (BOOL)isMapped
 {
-	return ( self.rawPublicAddress != 0 &&
-			 self.rawPublicAddress != [[self class] rawLocalAddress]);
+	UInt32 rawPublicAddress = self.rawPublicAddress;
+
+	/* A "public" address in a private range (another NAT in front) isn't reachable */
+	return (self.error == 0 &&
+			self.publicPort != 0 &&
+			rawPublicAddress != 0 &&
+			rawPublicAddress != [[self class] rawLocalAddress] &&
+			_addressIsPrivate(ntohl(rawPublicAddress)) == NO);
 }
 
 /** Called whenever the port mapping changes (see comment for callback, below.) */
@@ -129,6 +158,13 @@ static NSString * _Nullable StringFromIPv4Addr(UInt32 ipv4Addr)
 		if (publicPort == 0 && self.desiredPublicPort > 0) {
 			errorCode = kDNSServiceErr_NATPortMappingUnsupported;
 		}
+	}
+
+	/* As the header says: with an error, nothing else is valid (a double NAT
+	 reports the outer router's private address together with its error) */
+	if (errorCode) {
+		rawPublicAddress = 0;
+		publicPort = 0;
 	}
 
 	/* Populate properties with relevant information. */
@@ -316,28 +352,11 @@ static void portMapCallback (
 	return StringFromIPv4Addr([self rawLocalAddress]);
 }
 
-// Private IP address ranges. See RFC 3330.
-static const struct {UInt32 mask, value;} kPrivateRanges[] = {
-	{0xFF000000, 0x00000000},       // 0.x.x.x (hosts on "this" network)
-	{0xFF000000, 0x0A000000},       // 10.x.x.x (private address range)
-	{0xFF000000, 0x7F000000},       // 127.x.x.x (loopback)
-	{0xFFFF0000, 0xA9FE0000},       // 169.254.x.x (link-local self-configured addresses)
-	{0xFFF00000, 0xAC100000},       // 172.(16-31).x.x (private address range)
-	{0xFFFF0000, 0xC0A80000},       // 192.168.x.x (private address range)
-	{0,0}
-};
+
 
 + (BOOL)localAddressIsPrivate
 {
-	UInt32 address = ntohl([self rawLocalAddress]);
-
-	for (NSUInteger i = 0; kPrivateRanges[i].mask; i++) {
-		if ((address & kPrivateRanges[i].mask) == kPrivateRanges[i].value) {
-			return YES;
-		}
-	}
-
-	return NO;
+	return _addressIsPrivate(ntohl([self rawLocalAddress]));
 }
 
 + (nullable NSString *)findPublicAddress

@@ -65,8 +65,8 @@ TEXTUAL_EXTERN void TLOLicenseManagerSetup(void);
 
 TEXTUAL_EXTERN BOOL TLOLicenseManagerTextualIsRegistered(void);
 
-/* A licence file is installed (valid or not); also before TLOLicenseManagerSetup() */
-TEXTUAL_EXTERN BOOL TLOLicenseManagerLicenseFileExists(void);
+/* A licence file is installed and correctly signed; also before TLOLicenseManagerSetup() */
+TEXTUAL_EXTERN BOOL TLOLicenseManagerLicenseFileIsValid(void);
 
 TEXTUAL_EXTERN BOOL TLOLicenseManagerIsTrialExpired(void);
 TEXTUAL_EXTERN NSTimeInterval TLOLicenseManagerTimeRemainingTrial(void);

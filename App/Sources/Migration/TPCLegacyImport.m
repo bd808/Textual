@@ -130,9 +130,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)licenseFolderURL
 {
 #if TEXTUAL_BUILT_WITH_LICENSE_MANAGER == 1
-	/* Never over a licence this copy already has (by its file: at first launch
-	 the licence manager isn't set up yet, so "registered" was always NO) */
-	if (self.licenseContainerIdentifier == nil || TLOLicenseManagerLicenseFileExists()) {
+	/* Never over a valid licence this copy already has (checked on the file: at first
+	 launch the licence manager isn't set up yet, so "registered" was always NO).
+	 A damaged or wrongly signed one doesn't stop the import. */
+	if (self.licenseContainerIdentifier == nil || TLOLicenseManagerLicenseFileIsValid()) {
 		return nil;
 	}
 

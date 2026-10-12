@@ -71,6 +71,14 @@ NS_ASSUME_NONNULL_BEGIN
 		return firstResponder;
 	}
 
+	/* Typing a hex value makes the colour panel the key window; the text
+	 field is then in the main window */
+	firstResponder = [[NSApp mainWindow] firstResponder];
+
+	if ([firstResponder isKindOfClass:[TVCTextViewWithIRCFormatter class]]) {
+		return firstResponder;
+	}
+
 	return nil;
 }
 

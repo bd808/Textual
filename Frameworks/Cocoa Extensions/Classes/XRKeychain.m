@@ -143,7 +143,9 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	OSStatus status = SecItemDelete((__bridge CFDictionaryRef)dictionary);
 
-	/* Reads fall back to the file-based keychain, so its copy would come back */
+	/* Reads fall back to the file-based keychain, so its copy would come back: a
+	 cleared password would reappear. Deleting it too is the only way a deletion
+	 sticks, even though that copy may belong to Textual 7 (used side by side). */
 	if (deleteFromCloud == NO && [self dataProtectionKeychainAvailable]) {
 		NSDictionary *legacyDictionary = [self searchDictionary:itemName
 												   withItemKind:itemKind
@@ -364,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	/* Items saved before the data protection keychain could be used (by Textual 7,
 	 or a build without a provisioning profile) are copied over on first use. The
-	 original stays for the version that saved it. */
+	 original stays for the version that saved it, until the item is deleted here. */
 	if (status == errSecItemNotFound && searchForOnCloud == NO && [self dataProtectionKeychainAvailable]) {
 		NSDictionary *legacyDictionary = [self searchDictionary:itemName
 												   withItemKind:itemKind
