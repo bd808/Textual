@@ -106,7 +106,9 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
-	XRPerformBlockSynchronouslyOnMainQueue(^{
+	/* Not waiting: the last reference can go on a render thread (memberInfo is
+	 atomic), and the main thread must never be waited on from there */
+	XRPerformBlockAsynchronouslyOnMainQueue(^{
 		[observer memberListWasDestroyed];
 	});
 }

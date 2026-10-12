@@ -68,7 +68,7 @@ NSString * const IRCChannelMemberListWasCreatedNotification = @"IRCChannelMember
 
 @interface IRCChannel ()
 @property (nonatomic, assign) BOOL statusChangedByAction;
-@property (nonatomic, copy, readwrite) IRCChannelConfig *config;
+@property (atomic, copy, readwrite) IRCChannelConfig *config; // atomic: renderers read it while a query rename replaces it
 @property (nonatomic, assign, readwrite) NSTimeInterval channelJoinTime;
 @property (nonatomic, strong, readwrite, nullable) IRCChannelMode *modeInfo;
 /* Atomic: the render queue reads it while the main thread replaces it */

@@ -187,15 +187,22 @@ typedef void (^TLOLicenseManagerDownloaderConnectionCompletionBlock)(TLOLicenseM
 
 	__weak TLOLicenseManagerDownloader *weakSelf = self;
 
+	__weak TLOLicenseManagerDownloaderConnection *weakConnection = connectionObject;
+
 	[connectionObject performRequest:^(TLOLicenseManagerDownloaderRequestType requestType, NSURLResponse *response, NSData *data) {
 		/* Connection uses NSURLSession which is a background task. */
 		/* The result of processing the response will update the UI
 		 which must always take place on the main thread. */
 		XRPerformBlockAsynchronouslyOnMainQueue(^{
-			[weakSelf processResponse:response forRequestType:requestType contents:data];
-		});
+			TLOLicenseManagerDownloader *downloader = weakSelf;
 
-		weakSelf.activeConnection = nil;
+			/* On main, like every other change of it, and only if no newer request replaced it */
+			if (downloader.activeConnection == weakConnection) {
+				downloader.activeConnection = nil;
+			}
+
+			[downloader processResponse:response forRequestType:requestType contents:data];
+		});
 	}];
 
 	self.activeConnection = connectionObject;

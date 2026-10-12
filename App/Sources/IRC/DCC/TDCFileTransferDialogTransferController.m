@@ -105,20 +105,20 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 @property (nonatomic, assign, readwrite) BOOL isResume;
 @property (nonatomic, assign, readwrite) BOOL isReversed;
 @property (nonatomic, assign, readwrite) BOOL isSender;
-@property (nonatomic, assign, readwrite) TDCFileTransferDialogTransferStatus transferStatus;
+@property (nonatomic, assign, readwrite) TDCFileTransferDialogTransferStatus transferStatus; // atomic accessors below: set on the transfer's queue, shown on main
 @property (nonatomic, assign, readwrite) uint64_t totalFilesize;
-@property (nonatomic, assign, readwrite) uint64_t processedFilesize;
-@property (nonatomic, assign, readwrite) uint64_t currentRecord;
+@property (atomic, assign, readwrite) uint64_t processedFilesize;
+@property (atomic, assign, readwrite) uint64_t currentRecord;
 @property (nonatomic, strong) NSMutableArray<NSNumber *> *speedRecordsPrivate;
-@property (nonatomic, copy, readwrite, nullable) NSString *errorMessageDescription;
-@property (nonatomic, copy, readwrite, nullable) NSString *path;
+@property (atomic, copy, readwrite, nullable) NSString *errorMessageDescription; // atomic (with the two above): the window reads them on main
+@property (atomic, copy, readwrite, nullable) NSString *path;
 @property (nonatomic, copy, readwrite) NSString *filename;
 @property (nonatomic, copy, readwrite) NSString *hostAddress;
 @property (nonatomic, copy, readwrite) NSString *peerNickname;
 @property (nonatomic, copy, readwrite, nullable) NSString *transferToken;
 @property (nonatomic, copy, readwrite) NSString *uniqueIdentifier;
 @property (nonatomic, assign, readwrite) uint16_t hostPort;
-@property (nonatomic, strong, nullable) NSFileHandle *fileHandle;
+@property (atomic, strong, nullable) NSFileHandle *fileHandle; // atomic: cleared on main by a close while the transfer's queue uses it
 @property (nonatomic, strong, nullable) XRPortMapper *portMapping;
 @property (nonatomic, assign) NSUInteger sendQueueSize;
 @property (nonatomic, strong, nullable) dispatch_queue_t serverDispatchQueue;
@@ -135,6 +135,14 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 @end
 
 @implementation TDCFileTransferDialogTransferController
+
+@synthesize transferStatus = _transferStatus;
+
+/* Atomic loads and stores (a property's "atomic" doesn't make a scalar one); the setter is below */
+- (TDCFileTransferDialogTransferStatus)transferStatus
+{
+	return __atomic_load_n(&self->_transferStatus, __ATOMIC_RELAXED);
+}
 
 #pragma mark -
 #pragma mark Initialization
@@ -834,6 +842,14 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 
 - (void)closeAndPostNotification:(BOOL)postNotification
 {
+	/* First, so the transfer's queue sees the transfer is over before its file goes */
+	if (self.transferStatus != TDCFileTransferDialogTransferStatusComplete &&
+		self.transferStatus != TDCFileTransferDialogTransferStatusFatalError &&
+		self.transferStatus != TDCFileTransferDialogTransferStatusRecoverableError)
+	{
+		self.transferStatus = TDCFileTransferDialogTransferStatusStopped;
+	}
+
 	[self cancelPerformRequests];
 
 	self.peerResponseTimeoutGeneration += 1;
@@ -860,13 +876,6 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 	[self closePortMapping];
 
 	[self closeFileHandleOnQueue:dispatchQueue];
-
-	if (self.transferStatus != TDCFileTransferDialogTransferStatusComplete &&
-		self.transferStatus != TDCFileTransferDialogTransferStatusFatalError &&
-		self.transferStatus != TDCFileTransferDialogTransferStatusRecoverableError)
-	{
-		self.transferStatus = TDCFileTransferDialogTransferStatusStopped;
-	}
 
 	if (postNotification) {
 		TXNotificationType notificationType = 0;
@@ -1151,6 +1160,7 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 
 	if (data.length > 0) {
 		@try {
+			/* nil once closed meanwhile (the user pressed Stop): nothing is written */
 			[self.fileHandle writeData:data];
 		}
 		@catch (NSException *exception) {
@@ -1255,8 +1265,10 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 			return;
 		}
 
-		/* Closed meanwhile (e.g. the user pressed Stop) */
-		if (self.fileHandle == nil || self.transferStatus != TDCFileTransferDialogTransferStatusSending) {
+		/* Closed meanwhile (e.g. the user pressed Stop); read once, it's cleared on main */
+		NSFileHandle *fileHandle = self.fileHandle;
+
+		if (fileHandle == nil || self.transferStatus != TDCFileTransferDialogTransferStatusSending) {
 			return;
 		}
 
@@ -1266,10 +1278,15 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 		NSData *dataToWrite = nil;
 
 		@try {
-			dataToWrite = [self.fileHandle readDataOfLength:lengthToRead];
+			dataToWrite = [fileHandle readDataOfLength:lengthToRead];
 		}
 		@catch (NSException *exception) {
 			LogToConsoleError("Caught exception: %{public}@", exception.reason);
+		}
+
+		/* Stopped while reading: not an error */
+		if (dataToWrite.length == 0 && self.transferStatus != TDCFileTransferDialogTransferStatusSending) {
+			return;
 		}
 
 		/* The file can no longer be read, or became shorter */
@@ -1529,9 +1546,9 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 
 - (void)setTransferStatus:(TDCFileTransferDialogTransferStatus)transferStatus
 {
-	if (self->_transferStatus != transferStatus) {
-		self->_transferStatus = transferStatus;
+	TDCFileTransferDialogTransferStatus previousStatus = __atomic_exchange_n(&self->_transferStatus, transferStatus, __ATOMIC_RELAXED);
 
+	if (previousStatus != transferStatus) {
 		[self reloadStatusInformation];
 	}
 }

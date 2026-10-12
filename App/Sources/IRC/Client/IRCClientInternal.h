@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // Properties that are public in IRCClient.h
-@property (nonatomic, copy, readwrite) IRCClientConfig *config;
+@property (atomic, copy, readwrite) IRCClientConfig *config; // atomic: renderers read it while joins and parts replace it
 @property (nonatomic, copy, readwrite, nullable) IRCServer *server;
 @property (nonatomic, strong, readwrite) IRCISupportInfo *supportInfo;
 @property (nonatomic, assign, readwrite) BOOL isAutojoined;

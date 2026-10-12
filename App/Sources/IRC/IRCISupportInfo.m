@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 #define _channelUserModeValue		100
 
 @interface IRCISupportInfo ()
+/* Object properties are atomic: lines are rendered on other threads while a
+ disconnect (-reset) or ISUPPORT replaces them on the main thread */
 @property (nonatomic, weak) IRCClient *client;
 @property (nonatomic, copy) NSArray<NSDictionary *> *cachedConfiguration;
 @property (nonatomic, assign, readwrite) NSUInteger maximumAwayLength;
@@ -62,14 +64,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) NSUInteger maximumNicknameLength;
 @property (nonatomic, assign, readwrite) NSUInteger maximumTopicLength;
 @property (nonatomic, assign, readwrite) NSUInteger maximumModeCount;
-@property (nonatomic, copy, readwrite) NSArray<NSString *> *channelNamePrefixes;
-@property (nonatomic, copy, readwrite) NSArray<NSString *> *statusMessageModeSymbols;
-@property (nonatomic, copy, readwrite) NSDictionary<NSString *, NSNumber *> *channelModes;
-@property (nonatomic, copy, readwrite) NSDictionary<NSString *, NSArray *> *userModeSymbols;
-@property (nonatomic, copy, readwrite, nullable) NSString *banExceptionModeSymbol;
-@property (nonatomic, copy, readwrite, nullable) NSString *inviteExceptionModeSymbol;
-@property (nonatomic, copy, readwrite, nullable) NSString *networkName;
-@property (nonatomic, copy, readwrite, nullable) NSString *networkNameFormatted;
+@property (atomic, copy, readwrite) NSArray<NSString *> *channelNamePrefixes;
+@property (atomic, copy, readwrite) NSArray<NSString *> *statusMessageModeSymbols;
+@property (atomic, copy, readwrite) NSDictionary<NSString *, NSNumber *> *channelModes;
+@property (atomic, copy, readwrite) NSDictionary<NSString *, NSArray *> *userModeSymbols;
+@property (atomic, copy, readwrite, nullable) NSString *banExceptionModeSymbol;
+@property (atomic, copy, readwrite, nullable) NSString *inviteExceptionModeSymbol;
+@property (atomic, copy, readwrite, nullable) NSString *networkName;
+@property (atomic, copy, readwrite, nullable) NSString *networkNameFormatted;
 @property (nonatomic, assign, readwrite) IRCISupportInfoCaseMapping caseMapping;
 @end
 
@@ -637,15 +639,19 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSParameterAssert(modeSymbol != nil);
 
-	NSArray *modeSymbols = self.userModeSymbols[@"modeSymbols"];
+	/* Read once: PREFIX or a disconnect can replace it between two reads
+	 (on a render thread), and an index from the old list overran the new one */
+	NSDictionary<NSString *, NSArray *> *userModeSymbols = self.userModeSymbols;
+
+	NSArray *modeSymbols = userModeSymbols[@"modeSymbols"];
 
 	NSUInteger modeSymbolIndex = [modeSymbols indexOfObject:modeSymbol];
 
-	if (modeSymbolIndex == NSNotFound) {
-		return 0;
-	}
+	NSArray *characters = userModeSymbols[@"characters"];
 
-	NSArray *characters = self.userModeSymbols[@"characters"];
+	if (modeSymbolIndex == NSNotFound || modeSymbolIndex >= characters.count) {
+		return nil;
+	}
 
 	return characters[modeSymbolIndex];
 }
@@ -661,15 +667,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSParameterAssert(character != nil);
 
-	NSArray *characters = self.userModeSymbols[@"characters"];
+	/* Read once (see -userPrefixForModeSymbol:) */
+	NSDictionary<NSString *, NSArray *> *userModeSymbols = self.userModeSymbols;
+
+	NSArray *characters = userModeSymbols[@"characters"];
 
 	NSUInteger characterIndex = [characters indexOfObject:character];
 
-	if (characterIndex == NSNotFound) {
+	NSArray *modeSymbols = userModeSymbols[@"modeSymbols"];
+
+	if (characterIndex == NSNotFound || characterIndex >= modeSymbols.count) {
 		return nil;
 	}
-
-	NSArray *modeSymbols = self.userModeSymbols[@"modeSymbols"];
 
 	return modeSymbols[characterIndex];
 }

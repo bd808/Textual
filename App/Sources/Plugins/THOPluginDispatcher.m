@@ -282,15 +282,21 @@ NS_ASSUME_NONNULL_BEGIN
 	NSParameterAssert(inputObject != nil);
 	NSParameterAssert(client != nil);
 
+	NSString *lowercaseCommand = inputObject.command.lowercaseString;
+
+	/* Runs for every incoming line: nothing to do unless a plugin asked for this command */
+	if ([sharedPluginManager().supportedServerInputCommands containsObject:lowercaseCommand] == NO) {
+		return;
+	}
+
+	/* Read here (the main thread): a disconnect releases what these read */
+	THOPluginDidReceiveServerInputConcreteObject *messageObject =
+	inputObject.didReceiveServerInputConcreteObject;
+
+	messageObject.networkAddress = client.serverAddress;
+	messageObject.networkName = client.networkName;
+
 	XRPerformBlockAsynchronouslyOnQueue([self dispatchQueue], ^{
-		THOPluginDidReceiveServerInputConcreteObject *messageObject =
-		inputObject.didReceiveServerInputConcreteObject;
-
-		messageObject.networkAddress = client.serverAddress;
-		messageObject.networkName = client.networkName;
-
-		NSString *lowercaseCommand = inputObject.command.lowercaseString;
-
 		for (THOPluginItem *plugin in sharedPluginManager().loadedPlugins)
 		{
 			if ([plugin supportsFeature:THOPluginItemSupportedFeatureSubscribedServerInputCommands] == NO) {

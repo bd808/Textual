@@ -80,18 +80,18 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface TVCLogController ()
-@property (nonatomic, assign, readwrite, getter=viewIsLoaded) BOOL loaded;
+@property (nonatomic, assign, readwrite, getter=viewIsLoaded) BOOL loaded; // atomic accessors below: printing operations ask from their threads (isReady)
 @property (nonatomic, assign) BOOL terminating;
-@property (nonatomic, assign) BOOL historyLoadedForFirstTime;
-@property (nonatomic, assign) BOOL reloadingHistory;
+@property (atomic, assign) BOOL historyLoadedForFirstTime; // atomic (these four): the history reload sets them on a background queue
+@property (atomic, assign) BOOL reloadingHistory;
 @property (nonatomic, assign) BOOL reloadingTheme; // while the new document is built
 @property (nonatomic, assign) BOOL pendingThemeReload; // until that document has loaded
 @property (nonatomic, strong, nullable) NSMutableString *pendingAppendHTML; // lines waiting for -flushPendingAppend
 @property (nonatomic, strong, nullable) NSMutableArray<NSString *> *pendingAppendLineNumbers;
-@property (nonatomic, assign) BOOL historyLoaded;
+@property (atomic, assign) BOOL historyLoaded;
 @property (nonatomic, assign) NSInteger activeLineCount;
 @property (nonatomic, copy, nullable) NSString *lastVisitedHighlight;
-@property (nonatomic, copy, nullable, readwrite) NSString *newestLineNumberFromPreviousSession;
+@property (atomic, copy, nullable, readwrite) NSString *newestLineNumberFromPreviousSession;
 @property (nonatomic, copy, nullable, readwrite) NSString *oldestLineNumber;
 @property (nonatomic, copy, nullable, readwrite) NSString *newestLineNumber;
 @property (atomic, strong, nullable) TVCLogLine *lastLine; // atomic: history results set it off the main thread
@@ -125,6 +125,19 @@ static NSUInteger _deferredDocumentLoadsInFlight = 0;
 NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogControllerViewFinishedLoadingNotification";
 
 @implementation TVCLogController
+
+@synthesize loaded = _loaded;
+
+/* Atomic loads and stores (a property's "atomic" doesn't make a scalar one) */
+- (BOOL)viewIsLoaded
+{
+	return __atomic_load_n(&self->_loaded, __ATOMIC_RELAXED);
+}
+
+- (void)setLoaded:(BOOL)loaded
+{
+	__atomic_store_n(&self->_loaded, loaded, __ATOMIC_RELAXED);
+}
 
 #pragma mark -
 #pragma mark Initialization

@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readwrite) NSArray<NSURL *> *temporaryJSFiles;
 @property (nonatomic, copy, readwrite) NSArray<GRMustacheTemplateRepository *> *templateRepositories;
 @property (nonatomic, strong) GRMustacheTemplateRepository *defaultTemplateRepository;
-@property (nonatomic, strong, readwrite) TPCThemeSettings *settings;
+@property (atomic, strong, readwrite) TPCThemeSettings *settings; // atomic: lines are rendered on other threads while a light/dark switch replaces it
 @property (nonatomic, strong, nullable) XRFileSystemMonitor *fileSystemMonitor;
 @end
 

@@ -132,15 +132,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSArray<TVCLogControllerPrintingOperation *> *pendingOperations = nil;
 
+	/* Copied inside the lock: finished operations are removed on other threads */
 	@synchronized (self.pendingOperations) {
-		pendingOperations = self.pendingOperations[pendingOperationsKey];
+		pendingOperations = [self.pendingOperations[pendingOperationsKey] copy];
 	}
 
 	if (pendingOperations == nil) {
 		return @[];
 	}
 
-	return [pendingOperations copy];
+	return pendingOperations;
 }
 
 - (void)addPendingOperation:(TVCLogControllerPrintingOperation *)operation

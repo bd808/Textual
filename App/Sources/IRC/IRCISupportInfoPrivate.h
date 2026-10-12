@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class IRCClient;
 
 @interface IRCISupportInfo ()
-@property (nonatomic, copy, readwrite, nullable) NSString *serverAddress;
+@property (atomic, copy, readwrite, nullable) NSString *serverAddress; // atomic: read while rendering and by plugins
 
 /* Client-only tags (without the "+") the server lets through (CLIENTTAGDENY) */
 - (BOOL)isClientTagAllowed:(NSString *)tagName;
