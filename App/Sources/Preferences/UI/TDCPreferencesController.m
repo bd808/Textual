@@ -38,7 +38,6 @@
 
 #import "NSViewHelper.h"
 #import "TXMasterController.h"
-#import "TXMenuController.h"
 #import "TPCPathInfoPrivate.h"
 #import "TPCPreferencesLocalPrivate.h"
 #import "TPCPreferencesReload.h"
@@ -46,10 +45,6 @@
 #import "TPCThemeControllerPrivate.h"
 #import "THOPluginManagerPrivate.h"
 #import "IRC.h"
-#import "IRCClientConfig.h"
-#import "IRCClient.h"
-#import "IRCConnectionConfig.h"
-#import "IRCWorld.h"
 #import "TLOLocalization.h"
 #import "TLOpenLink.h"
 #import "TVCMainWindowPrivate.h"
@@ -58,11 +53,8 @@
 #import "TDCFileTransferDialogPrivate.h"
 #import "TDCPreferencesNotificationConfigurationPrivate.h"
 #import "TDCPreferencesUserStyleSheetPrivate.h"
+#import "TDCPreferencesPanePrivate.h"
 #import "TDCPreferencesControllerPrivate.h"
-
-#if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
-#import <Sparkle/Sparkle.h>
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -78,29 +70,34 @@ NS_ASSUME_NONNULL_BEGIN
 #define _fileTransferPortRangeMin			1024
 #define _fileTransferPortRangeMax			TXMaximumTCPPort
 
-#define _toolbarItemIndexGeneral					101
-#define _toolbarItemIndexHighlights					104
-#define _toolbarItemIndexNotifications				103
-#define _toolbarItemIndexBehavior					102
-#define _toolbarItemIndexControls					107
-#define _toolbarItemIndexInterface					105
-#define _toolbarItemIndexStyle						106
-#define _toolbarItemIndexAddons						109
-#define _toolbarItemIndexAdvanced					108
+/* The tags of toolbar items and of the Advanced and Addons menus' items.
+ Items in the Advanced menu select the Advanced toolbar item (as Installed
+ Addons and plugins select Addons). */
+typedef NS_ENUM(NSInteger, TDCPreferencesPaneTag) {
+	TDCPreferencesPaneTagGeneral = 101,
+	TDCPreferencesPaneTagBehavior = 102,
+	TDCPreferencesPaneTagNotifications = 103,
+	TDCPreferencesPaneTagHighlights = 104,
+	TDCPreferencesPaneTagInterface = 105,
+	TDCPreferencesPaneTagStyle = 106,
+	TDCPreferencesPaneTagControls = 107,
+	TDCPreferencesPaneTagAdvanced = 108,
+	TDCPreferencesPaneTagAddons = 109,
 
-#define _toolbarItemIndexChannelManagement			108000
-#define _toolbarItemIndexCommandScope				108001
-#define _toolbarItemIndexFloodControl				108002
-#define _toolbarItemIndexIncomingData				108003
-#define _toolbarItemIndexFileTransfers				108005
-#define _toolbarItemIndexInlineMedia				108006
-#define _toolbarItemIndexLogLocation				108007
-#define _toolbarItemIndexDefaultIdentity			108008
-#define _toolbarItemIndexDefaultIRCopMessages		108009
-#define _toolbarItemIndexHiddenPreferences			108011 // unused
+	TDCPreferencesPaneTagChannelManagement = 108000,
+	TDCPreferencesPaneTagCommandScope = 108001,
+	TDCPreferencesPaneTagFloodControl = 108002,
+	TDCPreferencesPaneTagIncomingData = 108003,
+	TDCPreferencesPaneTagFileTransfers = 108005,
+	TDCPreferencesPaneTagInlineMedia = 108006,
+	TDCPreferencesPaneTagLogLocation = 108007,
+	TDCPreferencesPaneTagDefaultIdentity = 108008,
+	TDCPreferencesPaneTagDefaultIRCopMessages = 108009,
 
-#define _addonsToolbarInstalledAddonsMenuItemIndex		109000
-#define _addonsToolbarItemMultiplier					995
+	TDCPreferencesPaneTagInstalledAddons = 109000,
+
+	TDCPreferencesPaneTagFirstPlugin = 995 // plus the plugin's index
+};
 
 #define _unsignedIntegerString(_value_)			[NSString stringWithUnsignedInteger:_value_]
 
@@ -117,35 +114,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSTableView *installedScriptsTable;
 @property (nonatomic, weak) IBOutlet NSTableView *highlightKeywordsTable;
 @property (nonatomic, weak) IBOutlet NSTextField *fileTransferManuallyEnteredIPAddressTextField;
-@property (nonatomic, strong) IBOutlet NSView *contentViewGeneral;
 @property (nonatomic, strong) IBOutlet NSView *contentViewHighlights;
 @property (nonatomic, strong) IBOutlet NSView *contentViewNotifications;
-@property (nonatomic, strong) IBOutlet NSView *contentViewBehavior;
-@property (nonatomic, strong) IBOutlet NSView *contentViewControls;
 @property (nonatomic, strong) IBOutlet NSView *contentViewInterface;
 @property (nonatomic, strong) IBOutlet NSView *contentViewStyle;
 @property (nonatomic, strong) IBOutlet NSView *contentViewInstalledAddons;
-@property (nonatomic, strong) IBOutlet NSView *contentViewChannelManagement;
-@property (nonatomic, strong) IBOutlet NSView *contentViewCommandScope;
-@property (nonatomic, strong) IBOutlet NSView *contentViewFloodControl;
-@property (nonatomic, strong) IBOutlet NSView *contentViewIncomingData;
 @property (nonatomic, strong) IBOutlet NSView *contentViewFileTransfers;
 @property (nonatomic, strong) IBOutlet NSView *contentViewInlineMedia;
 @property (nonatomic, strong) IBOutlet NSView *contentViewLogLocation;
-@property (nonatomic, strong) IBOutlet NSView *contentViewDefaultIdentity;
-@property (nonatomic, strong) IBOutlet NSView *contentViewDefaultIRCopMessages;
 
 @property (nonatomic, strong) IBOutlet NSView *contentViewHiddenPreferences;
-@property (nonatomic, weak) IBOutlet NSButton *checkForUpdatesDontCheck;
-@property (nonatomic, weak) IBOutlet NSButton *checkForUpdatesAutomaticallyCheck;
-@property (nonatomic, weak) IBOutlet NSButton *checkForUpdatesAutomaticallyDownload;
-@property (nonatomic, weak) IBOutlet NSButton *forwardNoticeToServerConsoleButton;
-@property (nonatomic, weak) IBOutlet NSButton *forwardNoticeToSelectedChannelButton;
-@property (nonatomic, weak) IBOutlet NSButton *forwardNoticeToQueryButton;
 @property (nonatomic, weak) IBOutlet NSButton *inlineMediaEnabledButton;
-@property (nonatomic, weak) IBOutlet NSStackView *contentViewGeneralStackView;
-@property (nonatomic, weak) IBOutlet NSView *contentViewGeneralCheckForUpdatesView;
-@property (nonatomic, weak) IBOutlet NSView *contentViewGeneralShareDataView;
 @property (nonatomic, strong) IBOutlet NSToolbar *navigationToolbar;
 @property (nonatomic, strong) IBOutlet NSMenu *installedAddonsMenu;
 @property (nonatomic, assign) BOOL reloadingTheme;
@@ -153,22 +132,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSView *notificationControllerHostView;
 @property (nonatomic, strong) IBOutlet TVCNotificationConfigurationViewController *notificationController;
 @property (nonatomic, strong, nullable) TDCPreferencesUserStyleSheet *userStyleSheet;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, TDCPreferencesPane *> *panes; // tag → section, once shown
 
 - (IBAction)onAddExcludeKeyword:(nullable id)sender;
 - (IBAction)onAddHighlightKeyword:(nullable id)sender; // changed
 - (IBAction)onChangedAppearance:(nullable id)sender;
-- (IBAction)onChangedCheckForUpdates:(nullable id)sender;
-- (IBAction)onChangedCheckForBetaUpdates:(nullable id)sender;
 - (IBAction)onChangedChannelViewArrangement:(nullable id)sender;
 - (IBAction)onChangedDisableNicknameColorHashing:(nullable id)sender;
 - (IBAction)onChangedDockIconBadges:(nullable id)sender;
-- (IBAction)onChangedForwardNoticeTo:(nullable id)sender;
 - (IBAction)onChangedHighlightLogging:(nullable id)sender;
 - (IBAction)onChangedHighlightType:(nullable id)sender;
 - (IBAction)onChangedInlineMediaOption:(nullable id)sender;
-- (IBAction)onChangedInputHistoryScheme:(nullable id)sender;
-- (IBAction)onChangedMainInputTextViewFontSize:(nullable id)sender; // changed
-- (IBAction)onChangedMainWindowSegmentedController:(nullable id)sender;
 - (IBAction)onChangedScrollbackSaveLimit:(nullable id)sender;
 - (IBAction)onChangedScrollbackVisibleLimit:(nullable id)sender;
 - (IBAction)onChangedServerListUnreadBadgeColor:(nullable id)sender;
@@ -256,6 +230,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[super windowDidLoad];
 
+	self.panes = [NSMutableDictionary dictionary];
+
 	NSMutableArray *notifications = [NSMutableArray array];
 
 	[notifications addObject:[TDCPreferencesNotificationConfiguration objectWithEventType:TXNotificationTypeAddressBookMatch]];
@@ -293,9 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self setUpToolbarItemsAndMenus];
 
-	[self updateCheckForUpdatesMatrix];
 	[self updateFileTransferDownloadDestinationFolder];
-	[self updateForwardNoticeToMatrix];
 	[self updateInlineMediaEnabled];
 	[self updateThemeSelection];
 	[self updateTranscriptFolder];
@@ -323,49 +297,36 @@ NS_ASSUME_NONNULL_BEGIN
 								   name:TVCMainWindowDidReloadThemeNotification
 								 object:nil];
 
-#if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 0
-	/* Hide preferences for updates when support is not enabled. */
-	[self.contentViewGeneralStackView setVisibilityPriority:NSStackViewVisibilityPriorityNotVisible
-													forView:self.contentViewGeneralCheckForUpdatesView];
-#endif
-
-	[self.contentViewGeneral layoutSubtreeIfNeeded];
-
 	[self restoreWindowFrame];
 }
 
 #pragma mark -
 #pragma mark Utilities
 
-- (void)show
-{
-	[self show:TDCPreferencesControllerSelectionDefault];
-}
-
 - (void)show:(TDCPreferencesControllerSelection)selection
 {
 	switch (selection) {
 		case TDCPreferencesControllerSelectionNotifications:
 		{
-			[self _showPane:self.contentViewNotifications selectedItem:_toolbarItemIndexNotifications];
+			[self _showPane:self.contentViewNotifications selectedItem:TDCPreferencesPaneTagNotifications];
 
 			break;
 		}
 		case TDCPreferencesControllerSelectionStyle:
 		{
-			[self _showPane:self.contentViewStyle selectedItem:_toolbarItemIndexStyle];
+			[self _showPane:self.contentViewStyle selectedItem:TDCPreferencesPaneTagStyle];
 
 			break;
 		}
 		case TDCPreferencesControllerSelectionHiddenPreferences:
 		{
-			[self _showPane:self.contentViewHiddenPreferences selectedItem:_toolbarItemIndexAdvanced];
+			[self _showPane:self.contentViewHiddenPreferences selectedItem:TDCPreferencesPaneTagAdvanced];
 
 			break;
 		}
 		default:
 		{
-			[self _showPane:self.contentViewGeneral selectedItem:_toolbarItemIndexGeneral];
+			[self _showPane:[self paneForTag:TDCPreferencesPaneTagGeneral].view selectedItem:TDCPreferencesPaneTagGeneral];
 
 			break;
 		}
@@ -391,7 +352,7 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[plugins enumerateObjectsUsingBlock:^(THOPluginItem *plugin, NSUInteger index, BOOL *stop) {
-		NSUInteger tagIndex = (index + _addonsToolbarItemMultiplier);
+		NSUInteger tagIndex = (index + TDCPreferencesPaneTagFirstPlugin);
 
 		NSMenuItem *pluginMenu = [NSMenuItem menuItemWithTitle:plugin.pluginPreferencesPaneMenuItemTitle
 														target:self
@@ -405,54 +366,95 @@ NS_ASSUME_NONNULL_BEGIN
 
  - (void)onPrefPaneSelected:(nullable id)sender
 {
-#define _de(matchTag, view, selectionIndex)		\
+	NSInteger tag = [sender tag];
+
+	TDCPreferencesPane *pane = [self paneForTag:tag];
+
+	if (pane) {
+		[self firstPane:pane.view selectedItem:[self toolbarItemForTag:tag]];
+
+		return;
+	}
+
+#define _de(matchTag, view)		\
 		case (matchTag): {	\
-			[self firstPane:(view) selectedItem:(selectionIndex)];	\
+			[self firstPane:(view) selectedItem:[self toolbarItemForTag:(matchTag)]];	\
 			break;		\
 		}
 
-	switch ([sender tag]) {
-		_de(_toolbarItemIndexGeneral, self.contentViewGeneral, _toolbarItemIndexGeneral)
-
-		_de(_toolbarItemIndexHighlights, self.contentViewHighlights, _toolbarItemIndexHighlights)
-		_de(_toolbarItemIndexNotifications, self.contentViewNotifications, _toolbarItemIndexNotifications)
-
-		_de(_toolbarItemIndexBehavior, self.contentViewBehavior, _toolbarItemIndexBehavior)
-		_de(_toolbarItemIndexControls, self.contentViewControls, _toolbarItemIndexControls)
-		_de(_toolbarItemIndexInterface, self.contentViewInterface, _toolbarItemIndexInterface)
-		_de(_toolbarItemIndexStyle, self.contentViewStyle, _toolbarItemIndexStyle)
-
-		_de(_toolbarItemIndexChannelManagement, self.contentViewChannelManagement, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexCommandScope, self.contentViewCommandScope, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexFloodControl, self.contentViewFloodControl, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexIncomingData, self.contentViewIncomingData, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexFileTransfers, self.contentViewFileTransfers, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexInlineMedia, self.contentViewInlineMedia, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexLogLocation, self.contentViewLogLocation, _toolbarItemIndexAdvanced);
-		_de(_toolbarItemIndexDefaultIdentity, self.contentViewDefaultIdentity, _toolbarItemIndexAdvanced)
-		_de(_toolbarItemIndexDefaultIRCopMessages, self.contentViewDefaultIRCopMessages, _toolbarItemIndexAdvanced)
-
-		_de(_addonsToolbarInstalledAddonsMenuItemIndex, self.contentViewInstalledAddons, _toolbarItemIndexAddons)
+	switch (tag) {
+		_de(TDCPreferencesPaneTagHighlights, self.contentViewHighlights)
+		_de(TDCPreferencesPaneTagNotifications, self.contentViewNotifications)
+		_de(TDCPreferencesPaneTagInterface, self.contentViewInterface)
+		_de(TDCPreferencesPaneTagStyle, self.contentViewStyle)
+		_de(TDCPreferencesPaneTagFileTransfers, self.contentViewFileTransfers)
+		_de(TDCPreferencesPaneTagInlineMedia, self.contentViewInlineMedia)
+		_de(TDCPreferencesPaneTagLogLocation, self.contentViewLogLocation)
+		_de(TDCPreferencesPaneTagInstalledAddons, self.contentViewInstalledAddons)
 
 		default:
 		{
-			if ([sender tag] < _addonsToolbarItemMultiplier) {
+			if (tag < TDCPreferencesPaneTagFirstPlugin) {
 				break;
 			}
 
-			NSUInteger pluginIndex = ([sender tag] - _addonsToolbarItemMultiplier);
+			NSUInteger pluginIndex = (tag - TDCPreferencesPaneTagFirstPlugin);
 
 			THOPluginItem *plugin = sharedPluginManager().pluginsWithPreferencePanes[pluginIndex];
 
+			/* Shared by every Preferences window (the plugin made it once) */
 			NSView *preferencesView = plugin.pluginPreferencesPaneView;
 
-			[self firstPane:preferencesView selectedItem:_toolbarItemIndexAddons];
+			[self firstPane:preferencesView selectedItem:TDCPreferencesPaneTagAddons];
 
 			break;
 		}
 	}
 
 #undef _de
+}
+
+/* The section shown for a tag, made the first time; nil for one still in
+ TDCPreferences.xib or a plugin's */
+- (nullable TDCPreferencesPane *)paneForTag:(TDCPreferencesPaneTag)tag
+{
+	TDCPreferencesPane *pane = self.panes[@(tag)];
+
+	if (pane) {
+		return pane;
+	}
+
+#define _nib(_name_)	[[TDCPreferencesPane alloc] initWithNibName:@"TDCPreferences" _name_]
+
+	switch (tag) {
+		case TDCPreferencesPaneTagGeneral: { pane = [TDCPreferencesGeneralPane new]; break; }
+		case TDCPreferencesPaneTagBehavior: { pane = _nib(@"Behavior"); break; }
+		case TDCPreferencesPaneTagControls: { pane = [TDCPreferencesControlsPane new]; break; }
+		case TDCPreferencesPaneTagChannelManagement: { pane = _nib(@"ChannelManagement"); break; }
+		case TDCPreferencesPaneTagCommandScope: { pane = [TDCPreferencesCommandScopePane new]; break; }
+		case TDCPreferencesPaneTagFloodControl: { pane = _nib(@"FloodControl"); break; }
+		case TDCPreferencesPaneTagIncomingData: { pane = _nib(@"IncomingData"); break; }
+		case TDCPreferencesPaneTagDefaultIdentity: { pane = _nib(@"DefaultIdentity"); break; }
+		case TDCPreferencesPaneTagDefaultIRCopMessages: { pane = _nib(@"DefaultIRCopMessages"); break; }
+		default: { return nil; }
+	}
+
+#undef _nib
+
+	self.panes[@(tag)] = pane;
+
+	return pane;
+}
+
+- (TDCPreferencesPaneTag)toolbarItemForTag:(NSInteger)tag
+{
+	if (tag == TDCPreferencesPaneTagInstalledAddons) {
+		return TDCPreferencesPaneTagAddons;
+	} else if (tag >= TDCPreferencesPaneTagChannelManagement && tag < TDCPreferencesPaneTagInstalledAddons) {
+		return TDCPreferencesPaneTagAdvanced;
+	}
+
+	return tag;
 }
 
 - (void)firstPane:(NSView *)view selectedItem:(NSInteger)selectedItem
@@ -515,16 +517,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setScrollbackVisibleLimit:(NSString *)value
 {
 	[TPCPreferences setScrollbackVisibleLimit:value.integerValue];
-}
-
-- (NSString *)completionSuffix
-{
-	return [TPCPreferences tabCompletionSuffix];
-}
-
-- (void)setCompletionSuffix:(NSString *)value
-{
-	[TPCPreferences setTabCompletionSuffix:value];
 }
 
 - (NSString *)inlineMediaMaxWidth
@@ -601,16 +593,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setHighlightCurrentNickname:(BOOL)value
 {
 	[TPCPreferences setHighlightCurrentNickname:value];
-}
-
-- (BOOL)preventSleepWhileConnected
-{
-	return [TPCPreferences preventSleepWhileConnected];
-}
-
-- (void)setPreventSleepWhileConnected:(BOOL)preventSleepWhileConnected
-{
-	[TPCPreferences setPreventSleepWhileConnected:preventSleepWhileConnected];
 }
 
 - (BOOL)appNapEnabled
@@ -1143,67 +1125,7 @@ NS_ASSUME_NONNULL_BEGIN
 	self.userStyleSheet = nil;
 }
 
-#pragma mark -
-#pragma mark Forward Notice To
-
-- (void)updateForwardNoticeToMatrix
-{
-	TXNoticeSendLocation location = [TPCPreferences locationToSendNotices];
-
-	self.forwardNoticeToServerConsoleButton.state = (location == TXNoticeSendLocationServerConsole);
-	self.forwardNoticeToSelectedChannelButton.state = (location == TXNoticeSendLocationSelectedChannel);
-	self.forwardNoticeToQueryButton.state = (location == TXNoticeSendLocationQuery);
-}
-
-- (void)onChangedForwardNoticeTo:(nullable id)sender
-{
-	[TPCPreferences setLocationToSendNotices:[sender tag]];
-}
-
-#pragma mark -
-#pragma mark Updates
-
 /* One choice over two settings: download implies checking */
-- (void)updateCheckForUpdatesMatrix
-{
-#if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
-	SPUUpdater *updater = masterController().updateController.updater;
-
-	BOOL checks = updater.automaticallyChecksForUpdates;
-	BOOL downloads = (checks && updater.automaticallyDownloadsUpdates);
-
-	self.checkForUpdatesAutomaticallyDownload.state = downloads;
-	self.checkForUpdatesAutomaticallyCheck.state = (checks && downloads == NO);
-	self.checkForUpdatesDontCheck.state = (checks == NO);
-#endif
-}
-
-- (void)onChangedCheckForUpdates:(nullable id)sender
-{
-#if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
-	SPUUpdater *updater = masterController().updateController.updater;
-
-	BOOL downloads = (sender == self.checkForUpdatesAutomaticallyDownload);
-	BOOL checks = (downloads || sender == self.checkForUpdatesAutomaticallyCheck);
-
-	updater.automaticallyChecksForUpdates = checks;
-	updater.automaticallyDownloadsUpdates = downloads;
-
-	[self updateCheckForUpdatesMatrix];
-#endif
-}
-
-- (void)onChangedCheckForBetaUpdates:(nullable id)sender
-{
-#if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
-	[TPCPreferences performReloadAction:TPCPreferencesReloadActionSparkleFrameworkFeedURL];
-
-	if ([TPCPreferences receiveBetaUpdates]) {
-		[menuController() checkForUpdates:nil];
-	}
-#endif
-}
-
 #pragma mark -
 #pragma mark Actions
 
@@ -1370,11 +1292,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[self onChangedServerListUnreadBadgeColor:sender];
 }
 
-- (void)onChangedInputHistoryScheme:(nullable id)sender
-{
-	[TPCPreferences performReloadAction:TPCPreferencesReloadActionInputHistoryScope];
-}
-
 - (void)onChangedAppearance:(nullable id)sender
 {
 	[TPCPreferences performReloadAction:TPCPreferencesReloadActionAppearance];
@@ -1412,11 +1329,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[TPCPreferences performReloadAction:TPCPreferencesReloadActionChannelViewArrangement];
 }
 
-- (void)onChangedMainWindowSegmentedController:(nullable id)sender
-{
-	[TPCPreferences performReloadAction:TPCPreferencesReloadActionTextFieldSegmentedControllerOrigin];
-}
-
 - (void)onChangedUserListModeColor:(nullable id)sender
 {
 	static NSDictionary<NSNumber *, NSString *> *preferenceMap = nil;
@@ -1443,11 +1355,6 @@ NS_ASSUME_NONNULL_BEGIN
 	} else {
 		[TPCPreferences performReloadAction:TPCPreferencesReloadActionMemberListUserBadges forKey:preferenceKey];
 	}
-}
-
-- (void)onChangedMainInputTextViewFontSize:(nullable id)sender
-{
-	[TPCPreferences performReloadAction:TPCPreferencesReloadActionTextFieldFontSize];
 }
 
 - (void)onFileTransferIPAddressDetectionMethodChanged:(nullable id)sender
@@ -1545,14 +1452,15 @@ NS_ASSUME_NONNULL_BEGIN
 /* An active well keeps its colour from the colour panel, so a reset didn't show */
 - (void)deactivateColorWells
 {
-	NSArray<NSView *> *panes = @[
-		self.contentViewGeneral, self.contentViewHighlights, self.contentViewNotifications,
-		self.contentViewBehavior, self.contentViewControls, self.contentViewInterface,
-		self.contentViewStyle, self.contentViewInstalledAddons, self.contentViewChannelManagement,
-		self.contentViewCommandScope, self.contentViewFloodControl, self.contentViewIncomingData,
-		self.contentViewFileTransfers, self.contentViewInlineMedia, self.contentViewLogLocation,
-		self.contentViewDefaultIdentity, self.contentViewDefaultIRCopMessages, self.contentViewHiddenPreferences
-	];
+	NSMutableArray<NSView *> *panes = [@[
+		self.contentViewHighlights, self.contentViewNotifications, self.contentViewInterface,
+		self.contentViewStyle, self.contentViewInstalledAddons, self.contentViewFileTransfers,
+		self.contentViewInlineMedia, self.contentViewLogLocation, self.contentViewHiddenPreferences
+	] mutableCopy];
+
+	for (TDCPreferencesPane *pane in self.panes.allValues) {
+		[panes addObject:pane.view];
+	}
 
 	for (NSView *pane in panes) {
 		[self deactivateColorWellsInView:pane];
@@ -1586,6 +1494,10 @@ NS_ASSUME_NONNULL_BEGIN
 	/* The font panel is shared: give it back its normal action */
 	if (RZFontManager().action == @selector(onChangedChannelViewFont:)) {
 		RZFontManager().action = @selector(changeFont:);
+	}
+
+	for (TDCPreferencesPane *pane in self.panes.allValues) {
+		[pane paneWillClose];
 	}
 
 	[self saveWindowFrame];
