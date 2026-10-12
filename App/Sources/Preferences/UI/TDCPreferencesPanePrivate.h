@@ -67,6 +67,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* The colour panel keeps sending changes to an active colour well */
 - (void)deactivateColorWells;
+
+/* A folder pop-up button: item 0 shows the folder (or the placeholder), the
+ item tagged 2 chooses another, the one tagged 3 resets it */
+- (void)showFolder:(nullable NSURL *)folderURL inPopUpButton:(NSPopUpButton *)popUpButton placeholder:(NSString *)placeholder;
+
+/* For the pop-up button's action: the block gets the chosen folder's bookmark,
+ or nil to reset; it isn't called when the open panel is cancelled */
+- (void)chooseFolderFromPopUpButton:(NSPopUpButton *)popUpButton completionBlock:(void (^)(NSData * _Nullable bookmark))completionBlock;
 @end
 
 @interface TDCPreferencesGeneralPane : TDCPreferencesPane
@@ -88,6 +96,21 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface TDCPreferencesStylePane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesFileTransfersPane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesInlineMediaPane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesLogLocationPane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesInstalledAddonsPane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesHiddenPane : TDCPreferencesPane
 @end
 
 NS_ASSUME_NONNULL_END

@@ -43,6 +43,8 @@
 #import "TPCPreferencesLocalPrivate.h"
 #import "TPCPreferencesReload.h"
 #import "TVCMainWindowPrivate.h"
+#import "TLOLocalization.h"
+#import "TPCSecurityScopedFolderPrivate.h"
 #import "TDCPreferencesPanePrivate.h"
 
 #if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
@@ -126,6 +128,72 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)paneWillClose
 {
 
+}
+
+- (void)showFolder:(nullable NSURL *)folderURL inPopUpButton:(NSPopUpButton *)popUpButton placeholder:(NSString *)placeholder
+{
+	NSParameterAssert(popUpButton != nil);
+	NSParameterAssert(placeholder != nil);
+
+	NSMenuItem *item = [popUpButton itemAtIndex:0];
+
+	if (folderURL == nil) {
+		item.image = nil;
+
+		item.title = placeholder;
+
+		return;
+	}
+
+	NSImage *icon = [RZWorkspace() iconForFile:folderURL.path];
+
+	icon.size = NSMakeSize(16, 16);
+
+	item.image = icon;
+
+	item.title = folderURL.lastPathComponent;
+}
+
+- (void)chooseFolderFromPopUpButton:(NSPopUpButton *)popUpButton completionBlock:(void (^)(NSData * _Nullable bookmark))completionBlock
+{
+	NSParameterAssert(popUpButton != nil);
+	NSParameterAssert(completionBlock != nil);
+
+	NSInteger selectedTag = popUpButton.selectedTag;
+
+	/* Item 0 shows the folder: it stays selected */
+	[popUpButton selectItemAtIndex:0];
+
+	if (selectedTag == 3) {
+		completionBlock(nil);
+
+		return;
+	} else if (selectedTag != 2) {
+		return;
+	}
+
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
+
+	panel.allowsMultipleSelection = NO;
+	panel.canChooseDirectories = YES;
+	panel.canChooseFiles = NO;
+	panel.canCreateDirectories = YES;
+	panel.resolvesAliases = YES;
+
+	panel.prompt = TXTLS(@"Prompts[xne-79]");
+
+	[panel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger returnCode) {
+		if (returnCode != NSModalResponseOK) {
+			return;
+		}
+
+		/* Keep the folder that was set when there is no bookmark */
+		NSData *bookmark = [TPCSecurityScopedFolder bookmarkForURL:panel.URLs[0]];
+
+		if (bookmark) {
+			completionBlock(bookmark);
+		}
+	}];
 }
 
 - (void)onChangedTheme:(nullable id)sender

@@ -42,6 +42,7 @@
 #import "TPCPreferencesLocal.h"
 #import "TPCPreferencesUserDefaults.h"
 #import "TPCPathInfoPrivate.h"
+#import "TPCSecurityScopedFolderPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -502,32 +503,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TPCPathInfo (TPCPathInfoTranscriptFolderExtension)
 
-static NSURL * _Nullable _transcriptFolderURL = nil;
-static BOOL _transcriptFolderURLIsAccessed = NO;
+/* The transcript folder: used even while logging is off, so that Preferences
+ can show it while choosing another is disabled */
+static TPCSecurityScopedFolder *_transcriptFolderAccess = nil;
+
++ (TPCSecurityScopedFolder *)transcriptFolderAccess
+{
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		_transcriptFolderAccess = [[TPCSecurityScopedFolder alloc] initWithBookmarkKey:@"LogTranscriptDestinationSecurityBookmark_5"];
+	});
+
+	return _transcriptFolderAccess;
+}
 
 + (nullable NSString *)transcriptFolder
 {
-	return _transcriptFolderURL.path;
+	return [self transcriptFolderAccess].URL.path;
 }
 
 + (nullable NSURL *)transcriptFolderURL
 {
-	return _transcriptFolderURL;
+	return [self transcriptFolderAccess].URL;
 }
 
 + (void)setTranscriptFolderURL:(nullable NSData *)transcriptFolderURL
 {
-	if (_transcriptFolderURLIsAccessed) {
-		[_transcriptFolderURL stopAccessingSecurityScopedResource];
-
-		_transcriptFolderURLIsAccessed = NO;
+	if ([[self transcriptFolderAccess] setBookmark:transcriptFolderURL] == NO) {
+		[self warnUserAboutStaleTranscriptFolderURL];
 	}
-
-	_transcriptFolderURL = nil;
-
-	[RZUserDefaults() setObject:transcriptFolderURL forKey:@"LogTranscriptDestinationSecurityBookmark_5"];
-
-	[self startUsingTranscriptFolderURL];
 }
 
 + (void)warnUserAboutStaleTranscriptFolderURL
@@ -546,61 +551,8 @@ static BOOL _transcriptFolderURLIsAccessed = NO;
 
 + (void)startUsingTranscriptFolderURL
 {
-	/* Even if user has logging disabled, we still start using the bookmark
-	 so that we can present it in the Preferences window while the pop up
-	 for selecting a new location is disabled. */
-	NSData *bookmark = [RZUserDefaults() dataForKey:@"LogTranscriptDestinationSecurityBookmark_5"];
-
-	if (bookmark == nil) {
-		return;
-	}
-
-	BOOL resolvedBookmarkIsStale = NO;
-
-	NSError *resolvedBookmarkError = nil;
-
-	NSURL *resolvedBookmark =
-	[NSURL URLByResolvingBookmarkData:bookmark
-							  options:NSURLBookmarkResolutionWithSecurityScope
-						relativeToURL:nil
-				  bookmarkDataIsStale:&resolvedBookmarkIsStale
-								error:&resolvedBookmarkError];
-
-	if (resolvedBookmark == nil) {
-		LogToConsoleError("Error creating bookmark for URL: %{public}@",
-			  resolvedBookmarkError.localizedDescription);
-
+	if ([[self transcriptFolderAccess] startAccessing] == NO) {
 		[self warnUserAboutStaleTranscriptFolderURL];
-
-		return;
-	}
-
-	_transcriptFolderURL = resolvedBookmark;
-
-	_transcriptFolderURLIsAccessed = [resolvedBookmark startAccessingSecurityScopedResource];
-
-	if (_transcriptFolderURLIsAccessed == NO) {
-		LogToConsoleError("Failed to access bookmark");
-
-		return;
-	}
-
-	/* "On return, if YES, the bookmark data is stale. 
-	 Your app should create a new bookmark using the 
-	 returned URL and use it in place of any stored 
-	 copies of the existing bookmark." The new bookmark
-	 can only be created while the URL is being accessed. */
-	if (resolvedBookmarkIsStale) {
-		NSData *newBookmark = [resolvedBookmark bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
-										 includingResourceValuesForKeys:nil
-														  relativeToURL:nil
-																  error:NULL];
-
-		if (newBookmark) {
-			[RZUserDefaults() setObject:newBookmark forKey:@"LogTranscriptDestinationSecurityBookmark_5"];
-		} else {
-			[self warnUserAboutStaleTranscriptFolderURL];
-		}
 	}
 }
 

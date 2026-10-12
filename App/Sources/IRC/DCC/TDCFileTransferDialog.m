@@ -47,6 +47,7 @@
 #import "TVCBasicTableView.h"
 #import "TDCFileTransferDialogTableCellPrivate.h"
 #import "TDCFileTransferDialogTransferControllerPrivate.h"
+#import "TPCSecurityScopedFolderPrivate.h"
 #import "TDCFileTransferDialogInternal.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -62,8 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) TLOInternetAddressLookup *IPAddressRequest;
 @property (readonly) TDCFileTransferDialogSelection navigationSelection;
 @property (nonatomic, strong) TLOTimer *maintenanceTimer;
-@property (nonatomic, copy, nullable) NSURL *downloadDestinationURLPrivate;
-@property (nonatomic, assign) BOOL downloadDestinationURLIsAccessed;
+@property (nonatomic, strong) TPCSecurityScopedFolder *downloadDestination;
 
 - (IBAction)hideWindow:(nullable id)sender;
 
@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self addFileTransfer:controller];
 
-	NSString *savePath = self.downloadDestinationURLPrivate.path;
+	NSString *savePath = self.downloadDestination.URL.path;
 
 	if ([TPCPreferences fileTransferRequestReplyAction] == TXFileTransferRequestReplyAutomaticallyDownload) {
 		if (savePath == nil) {
@@ -390,7 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startTransferOfFile:(nullable id)sender
 {
-	NSString *savePath = self.downloadDestinationURLPrivate.path;
+	NSString *savePath = self.downloadDestination.URL.path;
 
 	NSMutableArray<TDCFileTransferDialogTransferController *> *fileTransfersPending = [NSMutableArray array];
 
@@ -852,79 +852,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TDCFileTransferDialog (TDCFileTransferDialogDownloadDestinationExtension)
 
+- (TPCSecurityScopedFolder *)downloadDestination
+{
+	if (self->_downloadDestination == nil) {
+		self->_downloadDestination = [[TPCSecurityScopedFolder alloc] initWithBookmarkKey:@"File Transfers -> File Transfer Download Folder Bookmark"];
+	}
+
+	return self->_downloadDestination;
+}
+
 - (nullable NSURL *)downloadDestinationURL
 {
-	return self.downloadDestinationURLPrivate;
+	return self.downloadDestination.URL;
 }
 
 - (void)startUsingDownloadDestinationURL
 {
-	NSData *bookmark = [RZUserDefaults() dataForKey:@"File Transfers -> File Transfer Download Folder Bookmark"];
-
-	if (bookmark == nil) {
-		return;
-	}
-
-	BOOL resolvedBookmarkIsStale = NO;
-
-	NSError *resolvedBookmarkError = nil;
-
-	NSURL *resolvedBookmark =
-	[NSURL URLByResolvingBookmarkData:bookmark
-							  options:NSURLBookmarkResolutionWithSecurityScope
-						relativeToURL:nil
-				  bookmarkDataIsStale:&resolvedBookmarkIsStale
-								error:&resolvedBookmarkError];
-
-	if (resolvedBookmark == nil) {
-		LogToConsoleError("Error creating bookmark for URL: %{public}@",
-			  resolvedBookmarkError.localizedDescription);
-
-		return;
-	}
-
-	self.downloadDestinationURLPrivate = resolvedBookmark;
-
-	self.downloadDestinationURLIsAccessed = [resolvedBookmark startAccessingSecurityScopedResource];
-
-	if (self.downloadDestinationURLIsAccessed == NO) {
-		LogToConsoleError("Failed to access bookmark");
-
-		return;
-	}
-
-	/* A stale bookmark (the folder moved or was renamed) still resolves,
-	 but has to be replaced while it is being accessed. */
-	if (resolvedBookmarkIsStale) {
-		NSData *newBookmark = [resolvedBookmark bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
-										 includingResourceValuesForKeys:nil
-														  relativeToURL:nil
-																  error:NULL];
-
-		if (newBookmark) {
-			[RZUserDefaults() setObject:newBookmark forKey:@"File Transfers -> File Transfer Download Folder Bookmark"];
-		}
-	}
+	[self.downloadDestination startAccessing];
 }
 
 - (void)stopUsingDownloadDestinationURL
 {
-	if (self.downloadDestinationURLIsAccessed) {
-		[self.downloadDestinationURLPrivate stopAccessingSecurityScopedResource];
-
-		self.downloadDestinationURLIsAccessed = NO;
-	}
-
-	self.downloadDestinationURLPrivate = nil;
+	[self.downloadDestination stopAccessing];
 }
 
 - (void)setDownloadDestinationBookmark:(nullable NSData *)downloadDestinationBookmark
 {
-	[self stopUsingDownloadDestinationURL];
-
-	[RZUserDefaults() setObject:downloadDestinationBookmark forKey:@"File Transfers -> File Transfer Download Folder Bookmark"];
-
-	[self startUsingDownloadDestinationURL];
+	[self.downloadDestination setBookmark:downloadDestinationBookmark];
 }
 
 @end

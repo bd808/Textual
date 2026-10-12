@@ -123,6 +123,7 @@
 		4C06E65620EC55B90055D09A /* TDCPreferencesNotificationConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31526820EB673E00448776 /* TDCPreferencesNotificationConfiguration.m */; };
 		6629EC30C06F122F65345BBD /* TDCPreferencesPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */; };
 		FF3154F13D955A95E47DEDC5 /* TDCPreferencesAppearancePanes.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */; };
+		A158CC599D81585F02DDA31A /* TDCPreferencesAdvancedPanes.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */; };
 		4C06E65720EC55B90055D09A /* TDCPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31526920EB673E00448776 /* TDCPreferencesController.m */; };
 		4C06E65820EC55B90055D09A /* TDCServerEndpointListSheetTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528E20EB673E00448776 /* TDCServerEndpointListSheetTableCellView.m */; };
 		4C06E65920EC55B90055D09A /* TDCServerEndpointListSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528F20EB673E00448776 /* TDCServerEndpointListSheet.m */; };
@@ -218,6 +219,7 @@
 		4C06E6B220EC55B90055D09A /* TPCTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31512020EB673E00448776 /* TPCTheme.m */; };
 		4C06E6B320EC55B90055D09A /* TPCApplicationInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31511420EB673E00448776 /* TPCApplicationInfo.m */; };
 		4C06E6B420EC55B90055D09A /* TPCPathInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31511A20EB673E00448776 /* TPCPathInfo.m */; };
+		B95598D8CDA0BB5258119DB7 /* TPCSecurityScopedFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AC9D7D2CE396358F02B51ED /* TPCSecurityScopedFolder.m */; };
 		4C06E6B520EC55B90055D09A /* TPCPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C06E28820EC4F000055D09A /* TPCPreferences.m */; };
 		4C06E6B620EC55B90055D09A /* TPCPreferencesLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31511520EB673E00448776 /* TPCPreferencesLocal.m */; };
 		4C06E6B720EC55B90055D09A /* TPCPreferencesImportExport.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31511620EB673E00448776 /* TPCPreferencesImportExport.m */; };
@@ -285,6 +287,11 @@
 		086EA4BD6E6B3D00F9A57708 /* TDCPreferencesNotifications.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27B5E52635D7C40C0585991F /* TDCPreferencesNotifications.xib */; };
 		9471684F5F3C6F86E0580C98 /* TDCPreferencesInterface.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A35D27EF96FFC74A6869D3 /* TDCPreferencesInterface.xib */; };
 		AC4A30CEF9591DAF566A4EBF /* TDCPreferencesStyle.xib in Resources */ = {isa = PBXBuildFile; fileRef = A73A5E526AEB7AC7283655E1 /* TDCPreferencesStyle.xib */; };
+		20E2049F9465339B806E1A4C /* TDCPreferencesFileTransfers.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A86FC252272A4C650A623F9 /* TDCPreferencesFileTransfers.xib */; };
+		3DA478422519A0282F703097 /* TDCPreferencesInlineMedia.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D33E9CCAA97A2C9D9E8F83C /* TDCPreferencesInlineMedia.xib */; };
+		12CD8D31DBC6122AC252F039 /* TDCPreferencesLogLocation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 08D335810934BFDDC1E0256A /* TDCPreferencesLogLocation.xib */; };
+		0D6A5CEB6807BFB03FC79896 /* TDCPreferencesInstalledAddons.xib in Resources */ = {isa = PBXBuildFile; fileRef = 98B0901F0A010630CFEEA02A /* TDCPreferencesInstalledAddons.xib */; };
+		A28C323389D2A5568981950B /* TDCPreferencesHidden.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A60DDFDF7E4D649DFFAB9E0 /* TDCPreferencesHidden.xib */; };
 		4C2F42062C3F4218000D962D /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C2F42042C3F4218000D962D /* UserNotifications.framework */; };
 		4C3155A320EB6CB400448776 /* IRC.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31524120EB673E00448776 /* IRC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C3155A420EB6CB400448776 /* IRCAddressBook.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151A720EB673E00448776 /* IRCAddressBook.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -456,6 +463,7 @@
 		4C31573F20EB6D0500448776 /* TLOSpokenNotificationPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31520320EB673E00448776 /* TLOSpokenNotificationPrivate.h */; };
 		4C31574020EB6D0500448776 /* TPCApplicationInfoPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151EE20EB673E00448776 /* TPCApplicationInfoPrivate.h */; };
 		4C31574120EB6D0500448776 /* TPCPathInfoPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151D220EB673E00448776 /* TPCPathInfoPrivate.h */; };
+		8118A5E5F2192C0E2C55DDEB /* TPCSecurityScopedFolderPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FE17DD6FCA794A5162752BE /* TPCSecurityScopedFolderPrivate.h */; };
 		4C31574420EB6D0500448776 /* TPCPreferencesImportExportPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151E420EB673E00448776 /* TPCPreferencesImportExportPrivate.h */; };
 		4C31574520EB6D0500448776 /* TPCPreferencesLocalPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31521820EB673E00448776 /* TPCPreferencesLocalPrivate.h */; };
 		4C31574820EB6D0500448776 /* TPCResourceManagerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31522520EB673E00448776 /* TPCResourceManagerPrivate.h */; };
@@ -907,6 +915,11 @@
 		0EEAF6E81F57FAC7E2EE9997 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesNotifications.xib; sourceTree = "<group>"; };
 		86575818A34B7185FE1C48CA /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesInterface.xib; sourceTree = "<group>"; };
 		A7C020A1C9A5D01DFE946CE9 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesStyle.xib; sourceTree = "<group>"; };
+		CE0587A74C399654B9F85962 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesFileTransfers.xib; sourceTree = "<group>"; };
+		017E1D4296752D715990554D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesInlineMedia.xib; sourceTree = "<group>"; };
+		12F825AB3D94657314B42D4B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesLogLocation.xib; sourceTree = "<group>"; };
+		E8C81E856846445257533ED3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesInstalledAddons.xib; sourceTree = "<group>"; };
+		9DFF1725DB394BCF89510B8E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesHidden.xib; sourceTree = "<group>"; };
 		4C1DC5521580420500A47BC9 /* Textual.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Textual.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C24DC751A93C9CE0098D1BE /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ../Frameworks/Vendor/Sparkle/Sparkle.framework; sourceTree = SOURCE_ROOT; };
 		4C2BEB622C385189008F8F0D /* PostprocessSparkle.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ../Scripts/PostprocessSparkle.sh; sourceTree = SOURCE_ROOT; };
@@ -917,6 +930,7 @@
 		4C31511820EB673E00448776 /* TPCResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCResourceManager.m; sourceTree = "<group>"; };
 		4C31511920EB673E00448776 /* TPCPreferencesUserDefaultsLocal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCPreferencesUserDefaultsLocal.m; sourceTree = "<group>"; };
 		4C31511A20EB673E00448776 /* TPCPathInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCPathInfo.m; sourceTree = "<group>"; };
+		5AC9D7D2CE396358F02B51ED /* TPCSecurityScopedFolder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCSecurityScopedFolder.m; sourceTree = "<group>"; };
 		4C31511F20EB673E00448776 /* TPCThemeController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCThemeController.m; sourceTree = "<group>"; };
 		4C31512020EB673E00448776 /* TPCTheme.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCTheme.m; sourceTree = "<group>"; };
 		4C31512120EB673E00448776 /* TPCPreferencesReload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPCPreferencesReload.m; sourceTree = "<group>"; };
@@ -1075,6 +1089,7 @@
 		4C3151CF20EB673E00448776 /* THOPluginManagerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = THOPluginManagerPrivate.h; sourceTree = "<group>"; };
 		4C3151D120EB673E00448776 /* TDCChannelSpotlightControlsPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCChannelSpotlightControlsPrivate.h; sourceTree = "<group>"; };
 		4C3151D220EB673E00448776 /* TPCPathInfoPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPCPathInfoPrivate.h; sourceTree = "<group>"; };
+		2FE17DD6FCA794A5162752BE /* TPCSecurityScopedFolderPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPCSecurityScopedFolderPrivate.h; sourceTree = "<group>"; };
 		4C3151D320EB673E00448776 /* TDCLicenseUpgradeCommonActionsPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCLicenseUpgradeCommonActionsPrivate.h; sourceTree = "<group>"; };
 		4C3151D520EB673E00448776 /* TVCAppearancePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCAppearancePrivate.h; sourceTree = "<group>"; };
 		4C3151D620EB673E00448776 /* TPCThemePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPCThemePrivate.h; sourceTree = "<group>"; };
@@ -1217,6 +1232,7 @@
 		4C31526820EB673E00448776 /* TDCPreferencesNotificationConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesNotificationConfiguration.m; sourceTree = "<group>"; };
 		1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesPane.m; sourceTree = "<group>"; };
 		42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesAppearancePanes.m; sourceTree = "<group>"; };
+		0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesAdvancedPanes.m; sourceTree = "<group>"; };
 		4C31526920EB673E00448776 /* TDCPreferencesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesController.m; sourceTree = "<group>"; };
 		4C31526B20EB673E00448776 /* TDCChannelSpotlightPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCChannelSpotlightPanel.m; sourceTree = "<group>"; };
 		4C31526C20EB673E00448776 /* TDCChannelSpotlightSearchResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCChannelSpotlightSearchResult.m; sourceTree = "<group>"; };
@@ -2358,6 +2374,7 @@
 				4C31526820EB673E00448776 /* TDCPreferencesNotificationConfiguration.m */,
 				1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */,
 				42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */,
+				0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */,
 				4C31523920EB673E00448776 /* TDCPreferencesNotificationConfigurationPrivate.h */,
 				1AC03A0E588A1C197CD2B2D0 /* TDCPreferencesPanePrivate.h */,
 				4CB873DB22B4A56B005AB046 /* TDCPreferencesUserStyleSheet.m */,
@@ -2425,7 +2442,9 @@
 				4C51327720F76E980033B703 /* TLOLocalization.swift */,
 				4C06E29320EC4F570055D09A /* TLOTimer.m */,
 				4C31511A20EB673E00448776 /* TPCPathInfo.m */,
+				5AC9D7D2CE396358F02B51ED /* TPCSecurityScopedFolder.m */,
 				4C3151D220EB673E00448776 /* TPCPathInfoPrivate.h */,
+				2FE17DD6FCA794A5162752BE /* TPCSecurityScopedFolderPrivate.h */,
 				4C3152C420EB673E00448776 /* TVCAppearance.m */,
 				4C3151D520EB673E00448776 /* TVCAppearancePrivate.h */,
 				4C31529E20EB673E00448776 /* TXAppearance.m */,
@@ -2624,6 +2643,11 @@
 				27B5E52635D7C40C0585991F /* TDCPreferencesNotifications.xib */,
 				F7A35D27EF96FFC74A6869D3 /* TDCPreferencesInterface.xib */,
 				A73A5E526AEB7AC7283655E1 /* TDCPreferencesStyle.xib */,
+				6A86FC252272A4C650A623F9 /* TDCPreferencesFileTransfers.xib */,
+				3D33E9CCAA97A2C9D9E8F83C /* TDCPreferencesInlineMedia.xib */,
+				08D335810934BFDDC1E0256A /* TDCPreferencesLogLocation.xib */,
+				98B0901F0A010630CFEEA02A /* TDCPreferencesInstalledAddons.xib */,
+				7A60DDFDF7E4D649DFFAB9E0 /* TDCPreferencesHidden.xib */,
 				4C06E16520EC4AC40055D09A /* TDCProgressIndicatorSheet.xib */,
 				4C06E16D20EC4AC40055D09A /* TDCServerChangeNicknameSheet.xib */,
 				4C06E14720EC4AC40055D09A /* TDCServerChannelListDialog.xib */,
@@ -3001,6 +3025,7 @@
 				4C3155B120EB6CB400448776 /* IRCISupportInfo.h in Headers */,
 				4C31577520EB6D0500448776 /* TXWindowControllerPrivate.h in Headers */,
 				4C31574120EB6D0500448776 /* TPCPathInfoPrivate.h in Headers */,
+				8118A5E5F2192C0E2C55DDEB /* TPCSecurityScopedFolderPrivate.h in Headers */,
 				4CEFEDAB22B4AF42002CEE19 /* TDCPreferencesUserStyleSheetPrivate.h in Headers */,
 				4C3155EE20EB6CB400448776 /* TVCMemberListAppearance.h in Headers */,
 				4C3158E320EB6D1600448776 /* GTMEncodeHTML.h in Headers */,
@@ -3299,6 +3324,11 @@
 				086EA4BD6E6B3D00F9A57708 /* TDCPreferencesNotifications.xib in Resources */,
 				9471684F5F3C6F86E0580C98 /* TDCPreferencesInterface.xib in Resources */,
 				AC4A30CEF9591DAF566A4EBF /* TDCPreferencesStyle.xib in Resources */,
+				20E2049F9465339B806E1A4C /* TDCPreferencesFileTransfers.xib in Resources */,
+				3DA478422519A0282F703097 /* TDCPreferencesInlineMedia.xib in Resources */,
+				12CD8D31DBC6122AC252F039 /* TDCPreferencesLogLocation.xib in Resources */,
+				0D6A5CEB6807BFB03FC79896 /* TDCPreferencesInstalledAddons.xib in Resources */,
+				A28C323389D2A5568981950B /* TDCPreferencesHidden.xib in Resources */,
 				4C06E1D820EC4AC40055D09A /* TDCChannelInviteSheet.xib in Resources */,
 				4C06E19820EC4AC40055D09A /* TDCServerEndpointListSheet.xib in Resources */,
 				4C06DF3920EC49A60055D09A /* TemplateLineTypes.plist in Resources */,
@@ -3520,6 +3550,7 @@
 				4C06E65620EC55B90055D09A /* TDCPreferencesNotificationConfiguration.m in Sources */,
 				6629EC30C06F122F65345BBD /* TDCPreferencesPane.m in Sources */,
 				FF3154F13D955A95E47DEDC5 /* TDCPreferencesAppearancePanes.m in Sources */,
+				A158CC599D81585F02DDA31A /* TDCPreferencesAdvancedPanes.m in Sources */,
 				4C06E65720EC55B90055D09A /* TDCPreferencesController.m in Sources */,
 				4C06E65820EC55B90055D09A /* TDCServerEndpointListSheetTableCellView.m in Sources */,
 				4C06E65920EC55B90055D09A /* TDCServerEndpointListSheet.m in Sources */,
@@ -3617,6 +3648,7 @@
 				4C06E6B220EC55B90055D09A /* TPCTheme.m in Sources */,
 				4C06E6B320EC55B90055D09A /* TPCApplicationInfo.m in Sources */,
 				4C06E6B420EC55B90055D09A /* TPCPathInfo.m in Sources */,
+				B95598D8CDA0BB5258119DB7 /* TPCSecurityScopedFolder.m in Sources */,
 				4C469E3E20EC5BDB00094EA4 /* TLOpenLink.swift in Sources */,
 				4C32F2F0C8E5B567191A7F9B /* IRCConnectionTransport.swift in Sources */,
 				4C766EC602CF8DBE08B09AAB /* IRCConnectionSocket.swift in Sources */,
@@ -4297,6 +4329,46 @@
 				A7C020A1C9A5D01DFE946CE9 /* en */,
 			);
 			name = TDCPreferencesStyle.xib;
+			sourceTree = "<group>";
+		};
+		6A86FC252272A4C650A623F9 /* TDCPreferencesFileTransfers.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE0587A74C399654B9F85962 /* en */,
+			);
+			name = TDCPreferencesFileTransfers.xib;
+			sourceTree = "<group>";
+		};
+		3D33E9CCAA97A2C9D9E8F83C /* TDCPreferencesInlineMedia.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				017E1D4296752D715990554D /* en */,
+			);
+			name = TDCPreferencesInlineMedia.xib;
+			sourceTree = "<group>";
+		};
+		08D335810934BFDDC1E0256A /* TDCPreferencesLogLocation.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				12F825AB3D94657314B42D4B /* en */,
+			);
+			name = TDCPreferencesLogLocation.xib;
+			sourceTree = "<group>";
+		};
+		98B0901F0A010630CFEEA02A /* TDCPreferencesInstalledAddons.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E8C81E856846445257533ED3 /* en */,
+			);
+			name = TDCPreferencesInstalledAddons.xib;
+			sourceTree = "<group>";
+		};
+		7A60DDFDF7E4D649DFFAB9E0 /* TDCPreferencesHidden.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9DFF1725DB394BCF89510B8E /* en */,
+			);
+			name = TDCPreferencesHidden.xib;
 			sourceTree = "<group>";
 		};
 		4CEFEDAE22B4B6E8002CEE19 /* TDCPreferencesUserStyleSheet.strings */ = {

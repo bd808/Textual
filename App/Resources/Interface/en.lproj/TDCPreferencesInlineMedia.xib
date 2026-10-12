@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23077.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23077.2"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TDCPreferencesInlineMediaPane">
+            <connections>
+                <outlet property="inlineMediaEnabledButton" destination="Clr-Kc-72d" id="l5P-Kw-58h"/>
+                <outlet property="view" destination="c5A-lx-Ey9" id="x6m-ve-3mh"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="c5A-lx-Ey9" userLabel="Inline Media">
+            <rect key="frame" x="0.0" y="0.0" width="670" height="340"/>
+            <subviews>
+                <tabView translatesAutoresizingMaskIntoConstraints="NO" id="yJ6-b8-T3v">
+                    <rect key="frame" x="13" y="10" width="644" height="316"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="630" id="gDs-qq-DRp"/>
+                        <constraint firstAttribute="height" constant="300" id="nHf-hl-ACP"/>
+                    </constraints>
+                    <font key="font" metaFont="system"/>
+                    <tabViewItems>
+                        <tabViewItem label="General" identifier="1" id="Hhx-gR-bl2">
+                            <view key="view" id="Ib9-4w-05S">
+                                <rect key="frame" x="10" y="33" width="624" height="270"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="Clr-Kc-72d">
+                                        <rect key="frame" x="134" y="223" width="354" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Show images, videos, and other media inline with chat" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="3YM-rY-vwI">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onChangedInlineMediaOption:" target="-2" id="CTM-UG-z5T"/>
+                                            <binding destination="-2" name="enabled" keyPath="self.reloadingTheme" id="5QG-Zi-b4z">
+                                                <dictionary key="options">
+                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                </dictionary>
+                                            </binding>
+                                        </connections>
+                                    </button>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c91-O6-lXk">
+                                        <rect key="frame" x="152" y="186" width="328" height="30"/>
+                                        <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="This preference can be enabled or disabled for individual channels in Channel Properties." id="PMI-yd-MYO">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Clr-Kc-72d" firstAttribute="leading" secondItem="Ib9-4w-05S" secondAttribute="leading" constant="136" id="Dbq-gt-Jcj"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Clr-Kc-72d" secondAttribute="trailing" constant="20" id="cnh-mX-Ngw"/>
+                                    <constraint firstItem="Clr-Kc-72d" firstAttribute="top" secondItem="Ib9-4w-05S" secondAttribute="top" constant="30" id="fRO-79-sjH"/>
+                                    <constraint firstItem="c91-O6-lXk" firstAttribute="top" secondItem="Clr-Kc-72d" secondAttribute="bottom" constant="8" symbolic="YES" id="weN-aT-EdC"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="c91-O6-lXk" secondAttribute="trailing" constant="20" id="yN9-0e-viM"/>
+                                    <constraint firstItem="c91-O6-lXk" firstAttribute="leading" secondItem="Clr-Kc-72d" secondAttribute="leading" constant="18" id="zPP-ez-c2f"/>
+                                </constraints>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Images &amp; Video" identifier="" id="lC7-1K-9Qq">
+                            <view key="view" id="QNZ-KN-tQT">
+                                <rect key="frame" x="10" y="33" width="624" height="270"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" spacing="6" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aw8-jv-vTD">
+                                        <rect key="frame" x="95" y="200" width="434" height="48"/>
+                                        <subviews>
+                                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O4j-qH-gbP">
+                                                <rect key="frame" x="0.0" y="28" width="434" height="20"/>
+                                                <subviews>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gJA-Vk-OGX">
+                                                        <rect key="frame" x="-2" y="3" width="305" height="16"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Do not display images with a file size greater than" id="SSa-tu-2Yq">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SBB-Bw-5cY">
+                                                        <rect key="frame" x="306" y="-4" width="132" height="25"/>
+                                                        <popUpButtonCell key="cell" type="push" title="100 Megabytes" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="10" imageScaling="proportionallyDown" inset="2" selectedItem="Cm7-go-Ofo" id="Dyp-3C-1C2">
+                                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" usesAppearanceFont="YES"/>
+                                                            <menu key="menu" title="OtherViews" id="WBW-c0-Lre">
+                                                                <items>
+                                                                    <menuItem title="1 Megabyte" tag="1" id="QYp-on-TqV"/>
+                                                                    <menuItem title="2 Megabytes" tag="2" id="t1F-VN-p7e"/>
+                                                                    <menuItem title="3 Megabytes" tag="3" id="Wfz-6g-01O"/>
+                                                                    <menuItem title="4 Megabytes" tag="4" id="F4O-wb-ucB"/>
+                                                                    <menuItem title="5 Megabytes" tag="5" id="L2W-6V-I0n"/>
+                                                                    <menuItem title="10 Megabytes" tag="6" id="bIc-5c-e5C"/>
+                                                                    <menuItem title="15 Megabytes" tag="7" id="5ca-8T-UYx"/>
+                                                                    <menuItem title="20 Megabytes" tag="8" id="R2l-gU-6N6"/>
+                                                                    <menuItem title="50 Megabytes" tag="9" id="wCN-ge-BOi"/>
+                                                                    <menuItem title="100 Megabytes" state="on" tag="10" id="Cm7-go-Ofo"/>
+                                                                </items>
+                                                            </menu>
+                                                        </popUpButtonCell>
+                                                        <accessibility description="Maximum File Size for Inline Images"/>
+                                                        <connections>
+                                                            <binding destination="G2Q-fc-ddg" name="selectedTag" keyPath="values.InlineMediaMaximumFilesize" id="fxh-DZ-zVo"/>
+                                                        </connections>
+                                                    </popUpButton>
+                                                </subviews>
+                                                <visibilityPriorities>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                </visibilityPriorities>
+                                                <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                </customSpacing>
+                                            </stackView>
+                                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kg1-A5-vUH">
+                                                <rect key="frame" x="0.0" y="0.0" width="404" height="22"/>
+                                                <subviews>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9ej-U6-DGg">
+                                                        <rect key="frame" x="-2" y="4" width="297" height="16"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Do not display images with a height greater than" id="pOk-J1-xX6">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YCI-pw-b4B">
+                                                        <rect key="frame" x="301" y="0.0" width="60" height="22"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="22" id="MZu-iT-GW3"/>
+                                                            <constraint firstAttribute="width" constant="60" id="zV1-Di-FnT"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" title="300" drawsBackground="YES" usesSingleLineMode="YES" id="WvG-Z3-ijn">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <accessibility description="Maximum Inline Image Height"/>
+                                                        <connections>
+                                                            <binding destination="-2" name="value" keyPath="inlineMediaMaxHeight" id="og0-Jh-heX">
+                                                                <dictionary key="options">
+                                                                    <bool key="NSValidatesImmediately" value="YES"/>
+                                                                </dictionary>
+                                                            </binding>
+                                                        </connections>
+                                                    </textField>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gJo-u9-dr9">
+                                                        <rect key="frame" x="367" y="4" width="39" height="16"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="pixels" id="RZU-od-0LC">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <visibilityPriorities>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                </visibilityPriorities>
+                                                <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                </customSpacing>
+                                            </stackView>
+                                        </subviews>
+                                        <visibilityPriorities>
+                                            <integer value="1000"/>
+                                            <integer value="1000"/>
+                                        </visibilityPriorities>
+                                        <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
+                                            <real value="3.4028234663852886e+38"/>
+                                        </customSpacing>
+                                    </stackView>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="glE-SK-wgV">
+                                        <rect key="frame" x="95" y="68" width="124" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Load everything" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="0hr-Jw-zED">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <accessibility description="Check every link to learn if it is a video or image"/>
+                                        <connections>
+                                            <binding destination="G2Q-fc-ddg" name="value" keyPath="values.InlineMediaCheckEverything" id="SFu-iR-jFH"/>
+                                        </connections>
+                                    </button>
+                                    <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Eeu-56-HJQ">
+                                        <rect key="frame" x="172" y="120" width="281" height="22"/>
+                                        <subviews>
+                                            <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lga-QD-ob3">
+                                                <rect key="frame" x="-2" y="4" width="142" height="16"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Scale to a maximum of" id="E67-vU-c3g">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hI8-8X-GvK">
+                                                <rect key="frame" x="146" y="0.0" width="60" height="22"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="6qs-hh-w1n"/>
+                                                    <constraint firstAttribute="height" constant="22" id="Mee-mu-YfI"/>
+                                                </constraints>
+                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" title="300" drawsBackground="YES" usesSingleLineMode="YES" id="z61-bh-Hbo">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                                <accessibility description="Inline Image Scaled by Width"/>
+                                                <connections>
+                                                    <binding destination="-2" name="value" keyPath="inlineMediaMaxWidth" id="KTp-m6-4vJ">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                </connections>
+                                            </textField>
+                                            <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rB5-7e-5BB">
+                                                <rect key="frame" x="212" y="4" width="71" height="16"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="pixels wide" id="0W1-eT-Pcg">
+                                                    <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                        </subviews>
+                                        <visibilityPriorities>
+                                            <integer value="1000"/>
+                                            <integer value="1000"/>
+                                            <integer value="1000"/>
+                                        </visibilityPriorities>
+                                        <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
+                                            <real value="3.4028234663852886e+38"/>
+                                            <real value="3.4028234663852886e+38"/>
+                                        </customSpacing>
+                                    </stackView>
+                                    <box verticalHuggingPriority="750" alphaValue="0.5" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="KxB-vo-Iq5">
+                                        <rect key="frame" x="40" y="156" width="544" height="5"/>
+                                    </box>
+                                    <box verticalHuggingPriority="750" alphaValue="0.5" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="scO-dk-fBz">
+                                        <rect key="frame" x="40" y="101" width="544" height="5"/>
+                                    </box>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="pdb-Rb-Vk3">
+                                        <rect key="frame" x="111" y="177" width="414" height="15"/>
+                                        <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" selectable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" title="Change the value of this preference to zero (0) to disable height checks." id="sgf-1F-mIV">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FwE-Z9-DZX">
+                                        <rect key="frame" x="113" y="31" width="375" height="30"/>
+                                        <textFieldCell key="cell" controlSize="mini" selectable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" title="Load the contents of every URL posted in a channel to determine which are images or videos." id="Udl-QC-wcp">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Aw8-jv-vTD" firstAttribute="centerX" secondItem="QNZ-KN-tQT" secondAttribute="centerX" id="1H7-aw-HZK"/>
+                                    <constraint firstItem="scO-dk-fBz" firstAttribute="top" secondItem="Eeu-56-HJQ" secondAttribute="bottom" constant="16" id="4g8-9M-mdq"/>
+                                    <constraint firstItem="KxB-vo-Iq5" firstAttribute="leading" secondItem="QNZ-KN-tQT" secondAttribute="leading" constant="40" id="5SU-eM-CyD"/>
+                                    <constraint firstItem="glE-SK-wgV" firstAttribute="leading" secondItem="QNZ-KN-tQT" secondAttribute="leading" constant="97" id="ELv-LM-UWa"/>
+                                    <constraint firstItem="KxB-vo-Iq5" firstAttribute="centerX" secondItem="QNZ-KN-tQT" secondAttribute="centerX" id="Eud-8h-RbZ"/>
+                                    <constraint firstItem="Eeu-56-HJQ" firstAttribute="centerX" secondItem="QNZ-KN-tQT" secondAttribute="centerX" id="N2Q-xq-suL"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="FwE-Z9-DZX" secondAttribute="trailing" constant="20" id="Qfg-36-y9E"/>
+                                    <constraint firstItem="scO-dk-fBz" firstAttribute="trailing" secondItem="KxB-vo-Iq5" secondAttribute="trailing" id="VsF-Ku-9cx"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="glE-SK-wgV" secondAttribute="trailing" constant="20" id="YIW-px-NCF"/>
+                                    <constraint firstItem="pdb-Rb-Vk3" firstAttribute="top" secondItem="Aw8-jv-vTD" secondAttribute="bottom" constant="8" symbolic="YES" id="Zh5-xF-mou"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="pdb-Rb-Vk3" secondAttribute="trailing" constant="20" id="dU6-dt-EJy"/>
+                                    <constraint firstItem="pdb-Rb-Vk3" firstAttribute="leading" secondItem="Aw8-jv-vTD" secondAttribute="leading" constant="18" id="gMn-cd-TA5"/>
+                                    <constraint firstItem="Aw8-jv-vTD" firstAttribute="top" secondItem="QNZ-KN-tQT" secondAttribute="top" constant="22" id="imV-jO-Y04"/>
+                                    <constraint firstItem="Eeu-56-HJQ" firstAttribute="top" secondItem="KxB-vo-Iq5" secondAttribute="bottom" constant="16" id="jHh-Me-ewb"/>
+                                    <constraint firstItem="KxB-vo-Iq5" firstAttribute="top" secondItem="pdb-Rb-Vk3" secondAttribute="bottom" constant="18" id="nzi-P4-lOe"/>
+                                    <constraint firstItem="FwE-Z9-DZX" firstAttribute="top" secondItem="glE-SK-wgV" secondAttribute="bottom" constant="8" symbolic="YES" id="rPQ-Zh-y0u"/>
+                                    <constraint firstItem="glE-SK-wgV" firstAttribute="top" secondItem="scO-dk-fBz" secondAttribute="bottom" constant="18" id="seg-zh-Vee"/>
+                                    <constraint firstItem="scO-dk-fBz" firstAttribute="leading" secondItem="KxB-vo-Iq5" secondAttribute="leading" id="vaj-AD-z7H"/>
+                                    <constraint firstItem="FwE-Z9-DZX" firstAttribute="leading" secondItem="glE-SK-wgV" secondAttribute="leading" constant="18" id="xBG-98-UFp"/>
+                                </constraints>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Limitations" identifier="" id="fOT-be-gFu">
+                            <view key="view" id="PcM-EK-9Mh">
+                                <rect key="frame" x="10" y="33" width="624" height="270"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="oNJ-ok-jAs">
+                                        <rect key="frame" x="113" y="223" width="206" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Only inline images and videos" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="2vc-4Q-CJ8">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <binding destination="-2" name="value" keyPath="self.inlineMediaLimitToBasics" id="UgE-VO-ael"/>
+                                        </connections>
+                                    </button>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="Ceh-Ul-KZi">
+                                        <rect key="frame" x="131" y="201" width="346" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Including video services such as YouTube and others" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="nXf-63-MkU">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <binding destination="-2" name="value" keyPath="self.inlineMediaLimitBasicsToFiles" id="xsv-3y-iMV">
+                                                <dictionary key="options">
+                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                </dictionary>
+                                            </binding>
+                                            <binding destination="G2Q-fc-ddg" name="enabled" keyPath="values.InlineMediaLimitToBasics" id="NR7-a0-huY"/>
+                                        </connections>
+                                    </button>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="I6X-6F-yH4">
+                                        <rect key="frame" x="113" y="171" width="301" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Only inline media that is safe to view in public" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="NlC-I6-LZo">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <binding destination="G2Q-fc-ddg" name="value" keyPath="values.InlineMediaLimitNaughtyContent" id="uxl-r1-y6v"/>
+                                        </connections>
+                                    </button>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZhW-5j-NXk">
+                                        <rect key="frame" x="131" y="119" width="328" height="45"/>
+                                        <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" selectable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" id="Kjb-nu-50w">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <string key="title">This preference works by disabling certain services.
+It doesn't know whether a specific image or video is safe.
+You should therefore not rely solely on this preference.</string>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="36L-dm-E2y">
+                                        <rect key="frame" x="113" y="92" width="242" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Only inline media from safe sources" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="pmi-Al-qyW">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <binding destination="G2Q-fc-ddg" name="value" keyPath="values.InlineMediaLimitUnsafeContent" id="pe2-wx-tqt"/>
+                                        </connections>
+                                    </button>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zk5-W6-ihe">
+                                        <rect key="frame" x="131" y="55" width="305" height="30"/>
+                                        <textFieldCell key="cell" controlSize="mini" selectable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" title="Safe sources are services that don't inject HTML nor load external JavaScript resoures to appear inline." id="Ygv-nr-zSp">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="I6X-6F-yH4" firstAttribute="top" secondItem="Ceh-Ul-KZi" secondAttribute="bottom" constant="14" id="5gJ-eO-TwY"/>
+                                    <constraint firstItem="36L-dm-E2y" firstAttribute="top" secondItem="ZhW-5j-NXk" secondAttribute="bottom" constant="10" id="61y-bI-KFp"/>
+                                    <constraint firstItem="ZhW-5j-NXk" firstAttribute="leading" secondItem="I6X-6F-yH4" secondAttribute="leading" constant="18" id="7bc-8Y-Gkb"/>
+                                    <constraint firstItem="Zk5-W6-ihe" firstAttribute="leading" secondItem="36L-dm-E2y" secondAttribute="leading" constant="18" id="9Vp-bD-qVh"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="I6X-6F-yH4" secondAttribute="trailing" constant="20" id="D2U-fE-5zW"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ceh-Ul-KZi" secondAttribute="trailing" constant="20" id="IhX-GA-AdU"/>
+                                    <constraint firstItem="Ceh-Ul-KZi" firstAttribute="leading" secondItem="oNJ-ok-jAs" secondAttribute="leading" constant="18" id="MJG-ag-Cn8"/>
+                                    <constraint firstItem="I6X-6F-yH4" firstAttribute="leading" secondItem="oNJ-ok-jAs" secondAttribute="leading" id="QgZ-Ax-aDj"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="36L-dm-E2y" secondAttribute="trailing" constant="20" id="XPR-le-PYT"/>
+                                    <constraint firstItem="36L-dm-E2y" firstAttribute="leading" secondItem="I6X-6F-yH4" secondAttribute="leading" id="ZFe-9j-UWM"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="oNJ-ok-jAs" secondAttribute="trailing" constant="20" id="aax-N4-hDw"/>
+                                    <constraint firstItem="oNJ-ok-jAs" firstAttribute="top" secondItem="PcM-EK-9Mh" secondAttribute="top" constant="30" id="bho-gk-o9y"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ZhW-5j-NXk" secondAttribute="trailing" constant="20" id="fCH-k4-HnV"/>
+                                    <constraint firstItem="Ceh-Ul-KZi" firstAttribute="top" secondItem="oNJ-ok-jAs" secondAttribute="bottom" constant="6" symbolic="YES" id="ge1-qs-WLY"/>
+                                    <constraint firstItem="Zk5-W6-ihe" firstAttribute="top" secondItem="36L-dm-E2y" secondAttribute="bottom" constant="8" symbolic="YES" id="jdk-2I-37Y"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Zk5-W6-ihe" secondAttribute="trailing" constant="20" id="onk-Pi-W5R"/>
+                                    <constraint firstItem="oNJ-ok-jAs" firstAttribute="leading" secondItem="PcM-EK-9Mh" secondAttribute="leading" constant="115" id="qSP-Ti-zoH"/>
+                                    <constraint firstItem="ZhW-5j-NXk" firstAttribute="top" secondItem="I6X-6F-yH4" secondAttribute="bottom" constant="8" symbolic="YES" id="zzf-XD-GBh"/>
+                                </constraints>
+                            </view>
+                        </tabViewItem>
+                    </tabViewItems>
+                </tabView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="yJ6-b8-T3v" secondAttribute="trailing" constant="20" id="7um-dT-e1i"/>
+                <constraint firstItem="yJ6-b8-T3v" firstAttribute="top" secondItem="c5A-lx-Ey9" secondAttribute="top" constant="20" id="UM4-Pf-WKI"/>
+                <constraint firstAttribute="bottom" secondItem="yJ6-b8-T3v" secondAttribute="bottom" constant="20" id="W78-sK-Shm"/>
+                <constraint firstItem="yJ6-b8-T3v" firstAttribute="leading" secondItem="c5A-lx-Ey9" secondAttribute="leading" constant="20" id="ysY-1T-MZS"/>
+            </constraints>
+            <point key="canvasLocation" x="325" y="-1782"/>
+        </customView>
+        <userDefaultsController id="G2Q-fc-ddg" userLabel="Preferences User Defaults Controller" customClass="TPCPreferencesUserDefaultsController"/>
+    </objects>
+</document>
