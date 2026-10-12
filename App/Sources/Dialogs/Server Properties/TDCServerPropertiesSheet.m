@@ -36,50 +36,32 @@
  *
  *********************************************************************** */
 
-#import <SecurityInterface/SFChooseIdentityPanel.h>
-
 #import "NSStringHelper.h"
 #import "IRCClientConfigPrivate.h"
 #import "IRCClientPrivate.h"
 #import "IRCAddressBook.h"
 #import "IRCChannel.h"
-#import "IRCHighlightMatchCondition.h"
-#import "IRCNetworkList.h"
-#import "IRCSASLECDSAPrivate.h"
-#import "IRCServer.h"
-#import "TLOKeychainPrivate.h"
 #import "TLOLocalization.h"
-#import "TLOpenLink.h"
-#import "TPCPreferencesLocal.h"
 #import "TPCPreferencesUserDefaults.h"
-#import "TVCBasicTableView.h"
-#import "TVCValidatedComboBox.h"
 #import "TVCContentNavigationOutlineViewPrivate.h"
 #import "TVCValidatedTextField.h"
 #import "TDCAlert.h"
 #import "TDCPreferencesControllerPrivate.h"
-#import "TDCServerEndpointListSheetPrivate.h"
 #import "TDCServerPropertiesSheetPrivate.h"
 #import "TDCServerPropertiesPanePrivate.h"
-#import "TXWebsiteLinks.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TDCServerPropertiesSheet () <NSControlTextEditingDelegate>
+@interface TDCServerPropertiesSheet ()
 @property (nonatomic, strong, readwrite, nullable) IRCClient *client;
 @property (nonatomic, copy, readwrite, nullable) NSString *clientId;
 @property (nonatomic, strong) IRCClientConfigMutable *config;
 @property (nonatomic, copy) NSArray *navigationTreeMatrix;
-@property (nonatomic, strong, nullable) IRCSASLECDSAKey *currentSASLECDSAKey;
 @property (nonatomic, copy) NSDictionary *encodingList;
-@property (nonatomic, strong) IRCNetworkList *networkList;
-@property (nonatomic, strong) IBOutlet NSView *contentViewClientCertificate;
 @property (nonatomic, strong) IBOutlet NSView *contentViewConnectCommands;
 @property (nonatomic, strong) IBOutlet NSView *contentViewDisconnectMessages;
 @property (nonatomic, strong) IBOutlet NSView *contentViewEncoding;
 @property (nonatomic, strong) IBOutlet NSView *contentViewFloodControl;
-@property (nonatomic, strong) IBOutlet NSView *contentViewGeneral;
-@property (nonatomic, strong) IBOutlet NSView *contentViewIdentity;
 @property (nonatomic, strong) IBOutlet NSView *contentViewNetworkSocket;
 @property (nonatomic, strong) IBOutlet NSView *contentViewProxyServer;
 @property (nonatomic, strong) IBOutlet NSView *contentViewProxyServerInputView;
@@ -87,25 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) IBOutlet NSView *contentViewProxyServerTorBrowserView;
 @property (nonatomic, strong) IBOutlet NSView *contentViewRedundancy;
 @property (nonatomic, strong) IBOutlet NSView *contentViewZncBouncer;
-@property (nonatomic, strong, nullable) TDCServerEndpointListSheet *serverEndpointSheet;
-@property (nonatomic, weak) IBOutlet NSButton *autoConnectCheck;
-@property (nonatomic, weak) IBOutlet NSButton *autoDisconnectOnSleepCheck;
-@property (nonatomic, weak) IBOutlet NSButton *autoReconnectCheck;
-@property (nonatomic, weak) IBOutlet NSButton *autojoinWaitsForNickServCheck;
-@property (nonatomic, weak) IBOutlet NSButton *clientCertificateChangeCertificateButton;
-@property (nonatomic, weak) IBOutlet NSButton *clientCertificateResetCertificateButton;
-@property (nonatomic, weak) IBOutlet NSButton *clientCertificateMD5FingerprintCopyButton;
-@property (nonatomic, weak) IBOutlet NSButton *clientCertificateSHA1FingerprintCopyButton;
-@property (nonatomic, weak) IBOutlet NSButton *clientCertificateSHA2FingerprintCopyButton;
-@property (nonatomic, weak) IBOutlet NSButton *clientCertificateSHA512FingerprintCopyButton;
 @property (nonatomic, weak) IBOutlet NSButton *connectionIPv4AddressTypeCheck;
 @property (nonatomic, weak) IBOutlet NSButton *connectionIPv6AddressTypeCheck;
 @property (nonatomic, weak) IBOutlet NSButton *connectionDefaultAddressTypeCheck;
 @property (nonatomic, weak) IBOutlet NSButton *disconnectOnReachabilityChangeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *hideAutojoinDelayedWarningsCheck;
 @property (nonatomic, weak) IBOutlet NSButton *performDisconnectOnPongTimerCheck;
 @property (nonatomic, weak) IBOutlet NSButton *pongTimerCheck;
-@property (nonatomic, weak) IBOutlet NSButton *prefersSecuredConnectionCheck;
 @property (nonatomic, weak) IBOutlet NSButton *setInvisibleModeOnConnectCheck;
 @property (nonatomic, weak) IBOutlet NSButton *validateServerCertificateChainCheck;
 @property (nonatomic, weak) IBOutlet NSButton *viewListOfPreferredCipherSuitesButton;
@@ -116,71 +85,30 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSPopUpButton *primaryEncodingButton;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *preferredCipherSuitesButton;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *proxyTypeButton;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *saslECDSAKeyButton;
 @property (nonatomic, weak) IBOutlet NSSlider *floodControlDelayTimerSlider;
 @property (nonatomic, weak) IBOutlet NSSlider *floodControlMessageCountSlider;
-@property (nonatomic, weak) IBOutlet NSTextField *clientCertificateCommonNameField;
-@property (nonatomic, weak) IBOutlet NSTextField *clientCertificateMD5FingerprintField;
-@property (nonatomic, weak) IBOutlet NSTextField *clientCertificateSHA1FingerprintField;
-@property (nonatomic, weak) IBOutlet NSTextField *clientCertificateSHA2FingerprintField;
-@property (nonatomic, weak) IBOutlet NSTextField *clientCertificateSHA512FingerprintField;
-@property (nonatomic, weak) IBOutlet NSTextField *nicknamePasswordTextField;
-@property (nonatomic, weak) IBOutlet NSTextField *nickServHostTextField;
 @property (nonatomic, weak) IBOutlet NSTextField *proxyPasswordTextField;
 @property (nonatomic, weak) IBOutlet NSTextField *proxyUsernameTextField;
-@property (nonatomic, weak) IBOutlet NSTextField *saslECDSAKeyField;
-@property (nonatomic, weak) IBOutlet NSTextField *serverPasswordTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedComboBox *serverAddressComboBox;
 @property (nonatomic, weak) IBOutlet TVCContentNavigationOutlineView *navigationOutlineView;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *alternateNicknamesTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *awayNicknameTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *connectionNameTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *nicknameTextField;
 @property (nonatomic, weak) IBOutlet TVCValidatedTextField *normalLeavingCommentTextField;
 @property (nonatomic, weak) IBOutlet TVCValidatedTextField *proxyAddressTextField;
 @property (nonatomic, weak) IBOutlet TVCValidatedTextField *proxyPortTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *realNameTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *serverPortTextField;
 @property (nonatomic, weak) IBOutlet TVCValidatedTextField *sleepModeQuitMessageTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *usernameTextField;
 @property (nonatomic, unsafe_unretained) IBOutlet NSTextView *connectCommandsField;
 @property (nonatomic, assign) NSUInteger floodControlDelayTimerSliderTempValue;
 @property (nonatomic, assign) NSUInteger floodControlMessageCountSliderTempValue;
-@property (nonatomic, weak) NSPanel *clientCertificateSelectCertificatePanel;
-@property (nonatomic, strong) IBOutlet NSArrayController *serverListArrayController;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesChannelsPane *channelsPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesHighlightsPane *highlightsPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesAddressBookPane *addressBookPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesGeneralPane *generalPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesIdentityPane *identityPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesClientCertificatePane *clientCertificatePane;
 @property (nonatomic, copy) NSArray<TDCServerPropertiesPane *> *panes;
-@property (readonly, copy) NSArray<IRCServer *> *serverList;
-@property (nonatomic, assign) BOOL populatingPrimaryServer;
-@property (nonatomic, assign) BOOL primaryServerIsPredefined;
-@property (nonatomic, copy, nullable) NSString *lastServerAddressValue;
-@property (nonatomic, copy, nullable) IRCServer *previousPrimaryServer;
 
 - (IBAction)proxyTypeChanged:(nullable id)sender;
 - (IBAction)toggleAdvancedEncodings:(nullable id)sender;
 
 - (IBAction)openProxySettingsInSystemPreferences:(nullable id)sender;
-
-- (IBAction)editSeverEndpoints:(nullable id)sender;
-
-- (IBAction)useSSLCheckChanged:(nullable id)sender;
-
-- (IBAction)autojoinWaitsForNickServChanged:(nullable id)sender;
-
-- (IBAction)onClientCertificateResetRequested:(nullable id)sender;
-- (IBAction)onClientCertificateChangeRequested:(nullable id)sender;
-- (IBAction)onClientCertificateFingerprintSHA512CopyRequested:(nullable id)sender;
-- (IBAction)onClientCertificateFingerprintSHA2CopyRequested:(nullable id)sender;
-- (IBAction)onClientCertificateFingerprintSHA1CopyRequested:(nullable id)sender;
-- (IBAction)onClientCertificateFingerprintMD5CopyRequested:(nullable id)sender;
-
-- (IBAction)onSASLECDSAKeyGenerateRequested:(nullable id)sender;
-- (IBAction)onSASLECDSAKeyImportRequested:(nullable id)sender;
-- (IBAction)onSASLECDSAKeyCopyPublicKeyRequested:(nullable id)sender;
-- (IBAction)onSASLECDSAKeyCopyNickServCommandRequested:(nullable id)sender;
-- (IBAction)onSASLECDSAKeyRemoveRequested:(nullable id)sender;
 
 - (IBAction)preferredCipherSuitesChanged:(nullable id)sender;
 - (IBAction)preferredCipherSuitesViewList:(nullable id)sender;
@@ -220,97 +148,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[self loadNib];
 
-	/* Populate server list combo box */
-	self.networkList = [IRCNetworkList new];
-
-	NSArray *listOfNetworks = self.networkList.listOfNetworks;
-
-	for (IRCNetwork *network in listOfNetworks) {
-		[self.serverAddressComboBox addItemWithObjectValue:network.networkName];
-	}
-
 	/* Connect commands text box better font */
 	self.connectCommandsField.font = [NSFont systemFontOfSize:13.0];
 
 	self.connectCommandsField.textContainerInset = NSMakeSize(1, 3);
-
-	/* Alternate nicknameS */
-	self.alternateNicknamesTextField.textDidChangeCallback = self;
-
-	self.alternateNicknamesTextField.stringValueIsInvalidOnEmpty = NO;
-	self.alternateNicknamesTextField.stringValueIsTrimmed = YES;
-
-	self.alternateNicknamesTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		NSArray *nicknames = [currentValue componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-
-		for (NSString *nickname in nicknames) {
-			if (nickname.isHostmaskNickname == NO) {
-				return TXTLS(@"TDCServerPropertiesSheet[wlz-tb]", nickname);
-			}
-		}
-
-		return nil;
-	};
-
-	/* Away nickname */
-	self.awayNicknameTextField.textDidChangeCallback = self;
-
-	self.awayNicknameTextField.stringValueIsInvalidOnEmpty = NO;
-	self.awayNicknameTextField.stringValueIsTrimmed = YES;
-	self.awayNicknameTextField.stringValueUsesOnlyFirstToken = YES;
-
-	self.awayNicknameTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if (currentValue.isHostmaskNickname == NO) {
-			return TXTLS(@"CommonErrors[och-j5]");
-		}
-
-		return nil;
-	};
-
-	/* Nickname */
-	self.nicknameTextField.textDidChangeCallback = self;
-
-	self.nicknameTextField.stringValueIsInvalidOnEmpty = YES;
-	self.nicknameTextField.stringValueIsTrimmed = YES;
-	self.nicknameTextField.stringValueUsesOnlyFirstToken = YES;
-
-	self.nicknameTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if (currentValue.isHostmaskNickname == NO) {
-			return TXTLS(@"CommonErrors[och-j5]");
-		}
-
-		return nil;
-	};
-
-	/* Username */
-	self.usernameTextField.textDidChangeCallback = self;
-
-	self.usernameTextField.stringValueIsInvalidOnEmpty = YES;
-	self.usernameTextField.stringValueIsTrimmed = YES;
-	self.usernameTextField.stringValueUsesOnlyFirstToken = YES;
-
-	self.usernameTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if (currentValue.isHostmaskUsername == NO) {
-			return TXTLS(@"TDCServerPropertiesSheet[8iw-q8]");
-		}
-
-		return nil;
-	};
-
-	/* Real name */
-	self.realNameTextField.textDidChangeCallback = self;
-
-	self.realNameTextField.stringValueIsInvalidOnEmpty = YES;
-	self.realNameTextField.stringValueIsTrimmed = YES;
-	self.realNameTextField.stringValueUsesOnlyFirstToken = NO;
-
-	self.realNameTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if ([currentValue containsCharactersFromCharacterSet:[NSCharacterSet newlineCharacterSet]]) {
-			return TXTLS(@"TDCServerPropertiesSheet[agy-bp]");
-		}
-
-		return nil;
-	};
 
 	/* Normal leaving comment */
 	self.normalLeavingCommentTextField.textDidChangeCallback = self;
@@ -345,51 +186,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 		if (currentValue.length > 390) {
 			return TXTLS(@"CommonErrors[2cb-af]", 390);
-		}
-
-		return nil;
-	};
-
-	/* Connection name */
-	self.connectionNameTextField.textDidChangeCallback = self;
-
-	self.connectionNameTextField.stringValueIsInvalidOnEmpty = YES;
-	self.connectionNameTextField.stringValueIsTrimmed = YES;
-	self.connectionNameTextField.stringValueUsesOnlyFirstToken = NO;
-
-	self.connectionNameTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if ([currentValue containsCharactersFromCharacterSet:[NSCharacterSet newlineCharacterSet]]) {
-			return TXTLS(@"CommonErrors[gas-v8]");
-		}
-
-		return nil;
-	};
-
-	/* Server address */
-	self.serverAddressComboBox.textDidChangeCallback = self;
-
-	self.serverAddressComboBox.stringValueIsInvalidOnEmpty = YES;
-	self.serverAddressComboBox.stringValueIsTrimmed = YES;
-	self.serverAddressComboBox.stringValueUsesOnlyFirstToken = YES;
-
-	self.serverAddressComboBox.validationBlock = ^NSString *(NSString *currentValue) {
-		if (currentValue.isValidInternetAddress == NO) {
-			return TXTLS(@"CommonErrors[yyx-l3]");
-		}
-
-		return nil;
-	};
-
-	/* Server port */
-	self.serverPortTextField.textDidChangeCallback = self;
-
-	self.serverPortTextField.stringValueIsInvalidOnEmpty = YES;
-	self.serverPortTextField.stringValueIsTrimmed = YES;
-	self.serverPortTextField.stringValueUsesOnlyFirstToken = NO;
-
-	self.serverPortTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if (currentValue.isValidInternetPort == NO) {
-			return TXTLS(@"CommonErrors[l0c-nb]");
 		}
 
 		return nil;
@@ -452,7 +248,8 @@ NS_ASSUME_NONNULL_BEGIN
 	/* Setup others */
 	[self addConfigurationDidChangeObserver];
 
-	self.panes = @[self.channelsPane, self.highlightsPane, self.addressBookPane];
+	self.panes = @[self.generalPane, self.identityPane, self.clientCertificatePane,
+				   self.channelsPane, self.highlightsPane, self.addressBookPane];
 
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane prepareInitialState];
@@ -472,15 +269,15 @@ NS_ASSUME_NONNULL_BEGIN
 	[[TVCContentNavigationOutlineViewItem alloc] initWithLabel:TXTLS(_label_) identifier:TDCServerPropertiesSheetSelection ##_identifier_ view:self.contentView ##_identifier_ firstResponder:nil]
 
 #define _paneItem(_label_, _identifier_, _pane_) 	\
-	[[TVCContentNavigationOutlineViewItem alloc] initWithLabel:TXTLS(_label_) identifier:TDCServerPropertiesSheetSelection ##_identifier_ view:(_pane_).view firstResponder:nil]
+	[self navigationItemWithLabel:TXTLS(_label_) selection:TDCServerPropertiesSheetSelection ##_identifier_ pane:(_pane_)]
 
 	NSArray *generalSectionChildren = @[
 		_paneItem(@"TDCServerPropertiesSheet[8zc-6y]", AddressBook, self.addressBookPane),
 		_paneItem(@"TDCServerPropertiesSheet[5oz-07]", Autojoin, self.channelsPane),
 		_childItem(@"TDCServerPropertiesSheet[hip-13]", ConnectCommands),
 		_childItem(@"TDCServerPropertiesSheet[8ug-ka]", Encoding),
-		_childItem(@"TDCServerPropertiesSheet[ehx-4d]", General),
-		_childItem(@"TDCServerPropertiesSheet[8ik-qo]", Identity),
+		_paneItem(@"TDCServerPropertiesSheet[ehx-4d]", General, self.generalPane),
+		_paneItem(@"TDCServerPropertiesSheet[8ik-qo]", Identity, self.identityPane),
 		_paneItem(@"TDCServerPropertiesSheet[jtx-hn]", Highlights, self.highlightsPane),
 		_childItem(@"TDCServerPropertiesSheet[j34-yr]", DisconnectMessages),
 	];
@@ -490,7 +287,7 @@ NS_ASSUME_NONNULL_BEGIN
 	];
 
 	NSArray *advancedSectionChildren = @[
-		_childItem(@"TDCServerPropertiesSheet[ce7-kc]", ClientCertificate),
+		_paneItem(@"TDCServerPropertiesSheet[ce7-kc]", ClientCertificate, self.clientCertificatePane),
 		_childItem(@"TDCServerPropertiesSheet[fcr-w8]", FloodControl),
 		_childItem(@"TDCServerPropertiesSheet[ffy-xt]", NetworkSocket),
 		_childItem(@"TDCServerPropertiesSheet[t52-7a]", ProxyServer),
@@ -517,6 +314,13 @@ NS_ASSUME_NONNULL_BEGIN
 	self.navigationOutlineView.expandParentOnDoubleClick = YES;
 
 	[self.navigationOutlineView expandItem:navigationTreeMatrix[0]];
+}
+
+- (TVCContentNavigationOutlineViewItem *)navigationItemWithLabel:(NSString *)label selection:(TDCServerPropertiesSheetSelection)selection pane:(TDCServerPropertiesPane *)pane
+{
+	pane.selection = selection;
+
+	return [[TVCContentNavigationOutlineViewItem alloc] initWithLabel:label identifier:selection view:pane.view firstResponder:nil];
 }
 
 - (void)populateEncodings
@@ -640,12 +444,6 @@ NS_ASSUME_NONNULL_BEGIN
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane closeChildSheets];
 	}
-
-	if (self.serverEndpointSheet) {
-		[self.serverEndpointSheet close];
-	} else if (self.clientCertificateSelectCertificatePanel) {
-		[NSApp stopModalWithCode:NSModalResponseCancel];
-	}
 }
 
 - (void)ok:(nullable id)sender
@@ -660,8 +458,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self saveConfig];
 
-	if ([self.delegate respondsToSelector:@selector(serverPropertiesSheet:onOk:)]) {
-		[self.delegate serverPropertiesSheet:self onOk:[self.config copy]];
+	id delegate = self.delegate;
+
+	if ([delegate respondsToSelector:@selector(serverPropertiesSheet:onOk:)]) {
+		[delegate serverPropertiesSheet:self onOk:[self.config copy]];
 	}
 
 	[super ok:nil];
@@ -671,25 +471,48 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	TDCServerPropertiesSheetSelection selection = self.navigationOutlineView.selectedItem.identifier;
 
+	/* We want to show the error for the visible view first so that
+	 the user isn't jerked around. */
 	if ([self okOrErrorForSelection:selection] == NO) {
 		return NO;
 	}
 
-	/* We want to show the error for the visible view first so that
-	 the user isn't jerked around. To accomplish this, we keep an
-	 array of views in which error occurs. Check error in visible
-	 view, remove that from array, then enumerate the rest. */
-	NSMutableArray *remainingSelections =
-	[@[
-	   @(TDCServerPropertiesSheetSelectionGeneral),
-	   @(TDCServerPropertiesSheetSelectionIdentity),
-	   @(TDCServerPropertiesSheetSelectionDisconnectMessages),
-	   @(TDCServerPropertiesSheetSelectionProxyServer),
-	   ] mutableCopy];
+	NSMutableArray<TDCServerPropertiesPane *> *panes = [self.panes mutableCopy];
 
-	[remainingSelections removeObject:@(selection)];
+	NSUInteger visiblePaneIndex =
+	[panes indexOfObjectPassingTest:^BOOL(TDCServerPropertiesPane *pane, NSUInteger index, BOOL *stop) {
+		return (pane.selection == selection);
+	}];
+
+	if (visiblePaneIndex != NSNotFound) {
+		TDCServerPropertiesPane *visiblePane = panes[visiblePaneIndex];
+
+		[panes removeObjectAtIndex:visiblePaneIndex];
+
+		[panes insertObject:visiblePane atIndex:0];
+	}
+
+	for (TDCServerPropertiesPane *pane in panes) {
+		id field = pane.firstInvalidField;
+
+		if (field) {
+			[self showValidationErrorForField:field inSelection:pane.selection];
+
+			return NO;
+		}
+	}
+
+	NSArray *remainingSelections =
+	@[
+	  @(TDCServerPropertiesSheetSelectionDisconnectMessages),
+	  @(TDCServerPropertiesSheetSelectionProxyServer),
+	  ];
 
 	for (NSNumber *selectionRemaining in remainingSelections) {
+		if (selectionRemaining.integerValue == selection) {
+			continue;
+		}
+
 		if ([self okOrErrorForSelection:selectionRemaining.integerValue] == NO) {
 			return NO;
 		}
@@ -701,36 +524,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)okOrErrorForSelection:(TDCServerPropertiesSheetSelection)selection
 {
 	switch (selection) {
-		case TDCServerPropertiesSheetSelectionGeneral:
-		{
-			if ([self okOrErrorForTextField:self.connectionNameTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForComboBox:self.serverAddressComboBox inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.serverPortTextField inSelection:selection] == NO) {
-				return NO;
-			}
-
-			break;
-		}
-
-		case TDCServerPropertiesSheetSelectionIdentity:
-		{
-			if ([self okOrErrorForTextField:self.nicknameTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.awayNicknameTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.alternateNicknamesTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.usernameTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.realNameTextField inSelection:selection] == NO) {
-				return NO;
-			}
-
-			break;
-		}
-
 		case TDCServerPropertiesSheetSelectionDisconnectMessages:
 		{
 			if ([self okOrErrorForTextField:self.normalLeavingCommentTextField inSelection:selection] == NO) {
@@ -761,35 +554,26 @@ NS_ASSUME_NONNULL_BEGIN
 	return YES;
 }
 
-- (BOOL)okOrErrorForComboBox:(TVCValidatedComboBox *)comboBox inSelection:(TDCServerPropertiesSheetSelection)selection
-{
-	if (comboBox.valueIsValid) {
-		return YES;
-	}
-
-	[self navigateToSelection:selection];
-
-	XRPerformBlockAsynchronouslyOnMainQueue(^{
-		[comboBox showValidationErrorPopover];
-	});
-
-	return NO;
-}
-
 - (BOOL)okOrErrorForTextField:(TVCValidatedTextField *)textField inSelection:(TDCServerPropertiesSheetSelection)selection
 {
 	if (textField.valueIsValid) {
 		return YES;
 	}
 
+	[self showValidationErrorForField:textField inSelection:selection];
+
+	return NO;
+}
+
+/* A validated text field or combo box */
+- (void)showValidationErrorForField:(id)field inSelection:(TDCServerPropertiesSheetSelection)selection
+{
 	[self navigateToSelection:selection];
 
 	/* Give navigation time to settle before trying to attach popover */
 	XRPerformBlockAsynchronouslyOnMainQueue(^{
-		[textField showValidationErrorPopover];
+		[field showValidationErrorPopover];
 	});
-
-	return NO;
 }
 
 - (void)cancel:(nullable id)sender
@@ -845,13 +629,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadConfig
 {
-	/* General */
-	self.connectionNameTextField.stringValue = self.config.connectionName;
-
-	self.autoConnectCheck.state = self.config.autoConnect;
-	self.autoReconnectCheck.state = self.config.autoReconnect;
-	self.autoDisconnectOnSleepCheck.state = self.config.autoSleepModeDisconnect;
-
 	/* ZNC Bouncer */
 	self.zncIgnoreConfiguredAutojoinCheck.state = self.config.zncIgnoreConfiguredAutojoin;
 	self.zncIgnorePlaybackNotificationsCheck.state = self.config.zncIgnorePlaybackNotifications;
@@ -872,45 +649,6 @@ NS_ASSUME_NONNULL_BEGIN
 	self.validateServerCertificateChainCheck.state = self.config.validateServerCertificateChain;
 
 	[self.preferredCipherSuitesButton selectItemWithTag:self.config.cipherSuites];
-
-	/* Identity */
-	if (self.config.nickname.length > 0) {
-		self.nicknameTextField.stringValue = self.config.nickname;
-	} else {
-		self.nicknameTextField.stringValue = [TPCPreferences defaultNickname];
-	}
-
-	self.awayNicknameTextField.stringValue = (self.config.awayNickname ?: @"");
-
-	NSString *alternateNicknamesString = [self.config.alternateNicknames componentsJoinedByString:@" "];
-
-	self.alternateNicknamesTextField.stringValue = alternateNicknamesString;
-
-	if (self.config.username.length > 0) {
-		self.usernameTextField.stringValue = self.config.username;
-	} else {
-		self.usernameTextField.stringValue = [TPCPreferences defaultUsername];
-	}
-
-	if (self.config.realName.length > 0) {
-		self.realNameTextField.stringValue = self.config.realName;
-	} else {
-		self.realNameTextField.stringValue = [TPCPreferences defaultRealName];
-	}
-
-	self.nicknamePasswordTextField.stringValue = (self.config.nicknamePassword ?: @"");
-
-	self.nickServHostTextField.stringValue = (self.config.nickServHost ?: @"");
-
-	NSString *knownNickServHost = [IRCClient knownNickServHostForServerAddress:self.config.serverList.firstObject.serverAddress];
-
-	if (knownNickServHost) {
-		self.nickServHostTextField.placeholderString = knownNickServHost;
-	}
-
-	self.autojoinWaitsForNickServCheck.state = self.config.autojoinWaitsForNickServ;
-
-	self.hideAutojoinDelayedWarningsCheck.state = (self.config.hideAutojoinDelayedWarnings == NO);
 
 	/* Messages */
 	self.normalLeavingCommentTextField.stringValue = self.config.normalLeavingComment;
@@ -945,63 +683,15 @@ NS_ASSUME_NONNULL_BEGIN
 	self.floodControlDelayTimerSliderTempValue = self.config.floodControlDelayTimerInterval;
 	self.floodControlMessageCountSliderTempValue = self.config.floodControlMaximumMessages;
 
-	/* Mutable Stores */
-	[self.serverListArrayController addObjects:self.config.serverList];
-
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane loadFromConfig:self.config];
 	}
 
-	/* Special loads */
-	[self loadPrimaryServerEndpoint];
-
 	[self loadConfigPostflight];
-}
-
-- (void)loadPrimaryServerEndpoint
-{
-	IRCServer *server = self.serverList.firstObject;
-
-	if (server == nil) {
-		self.serverAddressComboBox.stringValue = @"";
-
-		self.serverPortTextField.integerValue = IRCConnectionDefaultServerPort;
-
-		self.prefersSecuredConnectionCheck.state = NSControlStateValueOff;
-
-		self.serverPasswordTextField.stringValue = @"";
-
-		return;
-	}
-
-	self.populatingPrimaryServer = YES;
-
-	NSString *serverAddress = server.serverAddress;
-
-	if (serverAddress) {
-		IRCNetwork *serverAddressNetwork = [self.networkList networkWithServerAddress:serverAddress];
-
-		if (serverAddressNetwork) {
-			self.serverAddressComboBox.stringValue = serverAddressNetwork.networkName;
-		} else {
-			self.serverAddressComboBox.stringValue = serverAddress;
-		}
-	}
-
-	self.serverPortTextField.integerValue = server.serverPort;
-
-	self.prefersSecuredConnectionCheck.state = server.prefersSecuredConnection;
-
-	self.serverPasswordTextField.stringValue = (server.serverPassword ?: @"");
-
-	self.populatingPrimaryServer = NO;
 }
 
 - (void)loadConfigPostflight
 {
-	[self updateClientCertificatePage];
-	[self updateIdentityPage];
-
 	[self preferredCipherSuitesChanged:nil];
 
 	[self proxyTypeChanged:nil];
@@ -1009,13 +699,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveConfig
 {
-	/* General */
-	self.config.connectionName = self.connectionNameTextField.value;
-
-	self.config.autoConnect	= (self.autoConnectCheck.state == NSControlStateValueOn);
-	self.config.autoReconnect = (self.autoReconnectCheck.state == NSControlStateValueOn);
-	self.config.autoSleepModeDisconnect = (self.autoDisconnectOnSleepCheck.state == NSControlStateValueOn);
-
 	/* ZNC Bouncer */
 	self.config.zncIgnoreConfiguredAutojoin = (self.zncIgnoreConfiguredAutojoinCheck.state == NSControlStateValueOn);
 	self.config.zncIgnorePlaybackNotifications = (self.zncIgnorePlaybackNotificationsCheck.state == NSControlStateValueOn);
@@ -1030,30 +713,6 @@ NS_ASSUME_NONNULL_BEGIN
 	self.config.validateServerCertificateChain = (self.validateServerCertificateChainCheck.state == NSControlStateValueOn);
 
 	self.config.cipherSuites = self.preferredCipherSuitesButton.selectedTag;
-
-	/* Identity */
-	self.config.nickname = self.nicknameTextField.value;
-	self.config.username = self.usernameTextField.value;
-	self.config.realName = self.realNameTextField.value;
-
-	self.config.awayNickname = self.awayNicknameTextField.value;
-
-	self.config.nicknamePassword = self.nicknamePasswordTextField.trimmedStringValue;
-
-	NSString *nickServHost = self.nickServHostTextField.trimmedStringValue;
-
-	self.config.nickServHost = ((nickServHost.length > 0) ? nickServHost : nil);
-
-	self.config.autojoinWaitsForNickServ = (self.autojoinWaitsForNickServCheck.state == NSControlStateValueOn);
-
-	self.config.hideAutojoinDelayedWarnings = (self.hideAutojoinDelayedWarningsCheck.state != NSControlStateValueOn);
-
-	/* Alternate nicknames */
-	NSString *alternateNicknamesString = self.alternateNicknamesTextField.value;
-
-	NSArray *alternateNicknames = [alternateNicknamesString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-
-	self.config.alternateNicknames = [alternateNicknames arrayByRemovingEmptyValuesAndUniquing];
 
 	/* Messages */
 	self.config.sleepModeLeavingComment	= self.sleepModeQuitMessageTextField.value;
@@ -1089,155 +748,8 @@ NS_ASSUME_NONNULL_BEGIN
 	self.config.floodControlMaximumMessages = self.floodControlMessageCountSlider.integerValue;
 	self.config.floodControlDelayTimerInterval = self.floodControlDelayTimerSlider.integerValue;
 
-	/* Mutable stores. */
-	self.config.serverList = self.serverListArrayController.arrangedObjects;
-
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane saveToConfig:self.config];
-	}
-}
-
-- (void)restorePreviousValuesForPrimaryServer
-{
-	IRCServer *previousServer = self.previousPrimaryServer;
-
-	if (previousServer == nil) {
-		return;
-	}
-
-	self.populatingPrimaryServer = YES;
-
-	self.serverPortTextField.integerValue = previousServer.serverPort;
-
-	self.prefersSecuredConnectionCheck.state = previousServer.prefersSecuredConnection;
-
-	self.previousPrimaryServer = nil;
-
-	self.populatingPrimaryServer = NO;
-}
-
-- (void)saveCurrentValuesForPrimaryServer
-{
-	/* Do not change the previous primary server between predefined servers. */
-	if (self.previousPrimaryServer != nil) {
-		return;
-	}
-
-	IRCServer *server = self.serverList.firstObject;
-
-	if (server) {
-		self.previousPrimaryServer = server;
-
-		return;
-	}
-
-	IRCServerMutable *serverMutable = [IRCServerMutable new];
-
-	serverMutable.serverPort = self.serverPortTextField.integerValue;
-
-	serverMutable.prefersSecuredConnection = (self.prefersSecuredConnectionCheck.state == NSControlStateValueOn);
-
-	self.previousPrimaryServer = serverMutable;
-}
-
-- (void)populateDefaultsForPreconfiguredNetwork
-{
-	if (self.populatingPrimaryServer) {
-		return;
-	}
-
-	NSString *serverAddress = self.serverAddressComboBox.value;
-
-	if ([serverAddress isEqualToString:self.lastServerAddressValue]) {
-		return;
-	}
-
-	self.lastServerAddressValue = serverAddress;
-
-	IRCNetwork *network = [self.networkList networkNamed:serverAddress];
-
-	if (network == nil) {
-		network = [self.networkList networkWithServerAddress:serverAddress];
-	}
-
-	if (network == nil) {
-		[self restorePreviousValuesForPrimaryServer];
-
-		return;
-	}
-
-	self.populatingPrimaryServer = YES;
-
-	/* The predefined list in the combo box is only the network name.
-	 IRCNetwork is also capable of matching known server addresses.
-	 If we have a known network but it's not a predefined value,
-	 then it very might be a server address. */
-	/* Let's replace the given input that matches a network with the
-	 network name itself. */
-	if (self.serverAddressComboBox.valueIsPredefined == NO) {
-		NSString *networkName = network.networkName;
-
-		self.serverAddressComboBox.stringValue = networkName;
-
-		self.lastServerAddressValue = networkName;
-	}
-
-	/* Populate other defaults */
-	[self saveCurrentValuesForPrimaryServer];
-
-	self.serverPortTextField.integerValue = network.serverPort;
-
-	self.prefersSecuredConnectionCheck.state = (network.prefersSecuredConnection == NSControlStateValueOn);
-
-	self.populatingPrimaryServer = NO;
-}
-
-- (void)useSSLCheckChanged:(nullable id)sender
-{
-	NSInteger serverPort = self.serverPortTextField.integerValue;
-
-	BOOL useSSL = (self.prefersSecuredConnectionCheck.state == NSControlStateValueOn);
-
-	if (useSSL) {
-		if (serverPort == 6667) {
-			self.serverPortTextField.stringValue = TXLocalizationNotNeeded(@"6697");
-		}
-	} else {
-		if (serverPort == 6697) {
-			self.serverPortTextField.stringValue = TXLocalizationNotNeeded(@"6667");
-		}
-	}
-
-	[self rebuildMutableServerEndpointListIfNeeded:sender];
-}
-
-- (void)updateIdentityPage
-{
-	self.hideAutojoinDelayedWarningsCheck.hidden =
-	(self.autojoinWaitsForNickServCheck.state == NSControlStateValueOff);
-
-	[self updateSASLECDSAKey];
-}
-
-- (void)updateSASLECDSAKey
-{
-	NSString *storedKey = self.config.saslECDSAKey;
-
-	IRCSASLECDSAKey *key = ((storedKey) ? [IRCSASLECDSAKey keyWithStoredValue:storedKey] : nil);
-
-	self.currentSASLECDSAKey = key;
-
-	if (key) {
-		self.saslECDSAKeyField.stringValue = key.publicKey;
-		self.saslECDSAKeyField.textColor = [NSColor labelColor];
-	} else {
-		self.saslECDSAKeyField.stringValue = TXTLS(@"TDCServerPropertiesSheet[ek1-n0]");
-		self.saslECDSAKeyField.textColor = [NSColor secondaryLabelColor];
-	}
-
-	/* Copy (3, 4) and Remove (5) need a key */
-	for (NSInteger tag = 3; tag <= 5; tag++) {
-		[self.saslECDSAKeyButton.menu itemWithTag:tag].enabled = (key != nil);
 	}
 }
 
@@ -1249,57 +761,8 @@ NS_ASSUME_NONNULL_BEGIN
 	return self.channelsPane.items;
 }
 
-- (NSArray<IRCServer *> *)serverList
-{
-	return self.serverListArrayController.arrangedObjects;
-}
-
-#pragma mark -
-#pragma mark Delegates
-
-- (void)controlTextDidChange:(NSNotification *)notification
-{
-	NSControl *sender = notification.object;
-
-	if (sender == self.serverPasswordTextField) {
-		[self rebuildMutableServerEndpointListIfNeeded:sender];
-	}
-}
-
-- (void)validatedTextFieldTextDidChange:(nullable id)sender
-{
-	if (sender == self.serverAddressComboBox) {
-		[self populateDefaultsForPreconfiguredNetwork];
-
-		[self rebuildMutableServerEndpointListIfNeeded:sender];
-	} else if (sender == self.serverPortTextField) {
-		[self rebuildMutableServerEndpointListIfNeeded:sender];
-	}
-}
-
 #pragma mark -
 #pragma mark Actions
-
-- (void)autojoinWaitsForNickServChanged:(nullable id)sender
-{
-	[self updateIdentityPage];
-
-	if (self.autojoinWaitsForNickServCheck.state != NSControlStateValueOn) {
-		return;
-	}
-
-	if (self.nicknamePasswordTextField.stringValue.length > 0 ||
-		self.clientCertificateResetCertificateButton.enabled ||
-		self.currentSASLECDSAKey != nil)
-	{
-		return;
-	}
-	
-	[TDCAlert modalAlertWithMessage:TXTLS(@"TDCServerPropertiesSheet[26u-j8]")
-							  title:TXTLS(@"TDCServerPropertiesSheet[94r-eq]")
-					  defaultButton:TXTLS(@"Prompts[c7s-dq]")
-					alternateButton:nil];
-}
 
 - (void)preferredCipherSuitesChanged:(nullable id)sender
 {
@@ -1406,451 +869,6 @@ TEXTUAL_IGNORE_DEPRECATION_END
 }
 
 #pragma mark -
-#pragma mark Login Key
-
-- (void)setSASLECDSAKey:(nullable IRCSASLECDSAKey *)key
-{
-	/* Written to (or removed from) the Keychain when the sheet is saved */
-	self.config.saslECDSAKey = ((key) ? key.storedValue : @"");
-
-	[self updateSASLECDSAKey];
-}
-
-/* The old key is gone once the sheet is saved: the network must be given the new one */
-- (void)confirmReplacingSASLECDSAKey:(void (^)(void))replaceBlock
-{
-	[self confirmReplacingSASLECDSAKeyWithTitle:TXTLS(@"TDCServerPropertiesSheet[ek1-r0]")
-								  defaultButton:TXTLS(@"TDCServerPropertiesSheet[ek1-r2]")
-								   replaceBlock:replaceBlock];
-}
-
-- (void)confirmReplacingSASLECDSAKeyWithTitle:(NSString *)title defaultButton:(NSString *)defaultButton replaceBlock:(void (^)(void))replaceBlock
-{
-	if (self.currentSASLECDSAKey == nil) {
-		replaceBlock();
-
-		return;
-	}
-
-	[TDCAlert alertSheetWithWindow:self.sheet
-							  body:TXTLS(@"TDCServerPropertiesSheet[ek1-r1]")
-							 title:title
-					 defaultButton:defaultButton
-				   alternateButton:TXTLS(@"Prompts[qso-2g]")
-					   otherButton:nil
-				   completionBlock:^(TDCAlertResponse buttonClicked, BOOL suppressed, id underlyingAlert) {
-					   if (buttonClicked != TDCAlertResponseDefault) {
-						   return;
-					   }
-
-					   /* After this alert has left the sheet */
-					   XRPerformBlockAsynchronouslyOnMainQueue(replaceBlock);
-				   }];
-}
-
-- (void)onSASLECDSAKeyGenerateRequested:(nullable id)sender
-{
-	[self confirmReplacingSASLECDSAKey:^{
-		[self setSASLECDSAKey:[IRCSASLECDSAKey generatedKey]];
-	}];
-}
-
-- (void)onSASLECDSAKeyImportRequested:(nullable id)sender
-{
-	[self confirmReplacingSASLECDSAKey:^{
-		NSOpenPanel *panel = [NSOpenPanel openPanel];
-
-		panel.canChooseDirectories = NO;
-		panel.canChooseFiles = YES;
-		panel.allowsMultipleSelection = NO;
-
-		panel.message = TXTLS(@"TDCServerPropertiesSheet[ek1-i0]");
-
-		[panel beginSheetModalForWindow:self.sheet completionHandler:^(NSModalResponse response) {
-			if (response != NSModalResponseOK || panel.URL == nil) {
-				return;
-			}
-
-			NSString *pem = [NSString stringWithContentsOfURL:panel.URL encoding:NSUTF8StringEncoding error:NULL];
-
-			IRCSASLECDSAKey *key = ((pem) ? [IRCSASLECDSAKey keyWithPEM:pem] : nil);
-
-			if (key) {
-				[self setSASLECDSAKey:key];
-
-				return;
-			}
-
-			XRPerformBlockAsynchronouslyOnMainQueue(^{
-				[TDCAlert alertSheetWithWindow:self.sheet
-										  body:TXTLS(@"TDCServerPropertiesSheet[ek1-i2]")
-										 title:TXTLS(@"TDCServerPropertiesSheet[ek1-i1]", panel.URL.lastPathComponent)
-								 defaultButton:TXTLS(@"Prompts[c7s-dq]")
-							   alternateButton:nil
-								   otherButton:nil];
-			});
-		}];
-	}];
-}
-
-- (void)onSASLECDSAKeyCopyPublicKeyRequested:(nullable id)sender
-{
-	NSString *publicKey = self.currentSASLECDSAKey.publicKey;
-
-	if (publicKey == nil) {
-		return;
-	}
-
-	RZPasteboard().stringContent = publicKey;
-}
-
-- (void)onSASLECDSAKeyCopyNickServCommandRequested:(nullable id)sender
-{
-	NSString *publicKey = self.currentSASLECDSAKey.publicKey;
-
-	if (publicKey == nil) {
-		return;
-	}
-
-	RZPasteboard().stringContent = [NSString stringWithFormat:@"/msg NickServ SET PUBKEY %@", publicKey];
-}
-
-- (void)onSASLECDSAKeyRemoveRequested:(nullable id)sender
-{
-	[self confirmReplacingSASLECDSAKeyWithTitle:TXTLS(@"TDCServerPropertiesSheet[ek1-x0]")
-								  defaultButton:TXTLS(@"TDCServerPropertiesSheet[ek1-x2]")
-								   replaceBlock:^{
-		[self setSASLECDSAKey:nil];
-	}];
-}
-
-#pragma mark -
-#pragma mark SSL Certificate
-
-- (void)onClientCertificateFingerprintSHA512CopyRequested:(nullable id)sender
-{
-    NSString *fingerprint = self.clientCertificateSHA512FingerprintField.stringValue;
-
-    NSString *command = [NSString stringWithFormat:@"/msg NickServ cert add %@", fingerprint];
-
-    RZPasteboard().stringContent = command;
-}
-
-- (void)onClientCertificateFingerprintSHA2CopyRequested:(nullable id)sender
-{
-	NSString *fingerprint = self.clientCertificateSHA2FingerprintField.stringValue;
-
-	NSString *command = [NSString stringWithFormat:@"/msg NickServ cert add %@", fingerprint];
-
-	RZPasteboard().stringContent = command;
-}
-
-- (void)onClientCertificateFingerprintSHA1CopyRequested:(nullable id)sender
-{
-	NSString *fingerprint = self.clientCertificateSHA1FingerprintField.stringValue;
-
-	NSString *command = [NSString stringWithFormat:@"/msg NickServ cert add %@", fingerprint];
-
-	RZPasteboard().stringContent = command;
-}
-
-- (void)onClientCertificateFingerprintMD5CopyRequested:(nullable id)sender
-{
-	NSString *fingerprint = self.clientCertificateMD5FingerprintField.stringValue;
-
-	NSString *command = [NSString stringWithFormat:@"/msg NickServ cert add %@", fingerprint];
-
-	RZPasteboard().stringContent = command;
-}
-
-- (void)readClientCertificateCommonName:(NSString **)commonNameOut
-					  sha512Fingerprint:(NSString **)sha512FingerprintOut
-						sha2Fingerprint:(NSString **)sha2FingerprintOut
-						sha1Fingerprint:(NSString **)sha1FingerprintOut
-						 md5Fingerprint:(NSString **)md5FingerprintOut
-{
-	NSData *certificateDataIn = self.config.identityClientSideCertificate;
-
-	if (certificateDataIn == nil) {
-		return;
-	}
-
-	/* ====================================== */
-
-	SecIdentityRef identityRef = [TLOKeychain copyClientCertificateIdentityForReference:certificateDataIn];
-
-	if (identityRef == NULL) {
-		return;
-	}
-
-	SecCertificateRef certificateRef;
-
-	OSStatus status = SecIdentityCopyCertificate(identityRef, &certificateRef);
-
-	CFRelease(identityRef);
-
-	if (status != noErr) {
-		return;
-	}
-
-	/* ====================================== */
-
-	CFStringRef commonNameRef;
-
-	status = SecCertificateCopyCommonName(certificateRef, &commonNameRef);
-
-	if (status != noErr) {
-		CFRelease(certificateRef);
-
-		return;
-	}
-
-	*commonNameOut = (__bridge_transfer NSString *)commonNameRef;
-
-	/* ====================================== */
-
-	CFDataRef certificateDataRef = SecCertificateCopyData(certificateRef);
-
-	if (certificateDataRef) {
-		NSData *certificateData = (__bridge NSData *)certificateDataRef;
-
-		*sha512FingerprintOut = certificateData.sha512;
-		*sha2FingerprintOut = certificateData.sha256;
-		*sha1FingerprintOut = certificateData.sha1;
-		*md5FingerprintOut = certificateData.md5;
-
-		CFRelease(certificateDataRef);
-	}
-
-	/* ====================================== */
-
-	CFRelease(certificateRef);
-}
-
-- (void)saveClientCertificateWithIdentity:(SecIdentityRef)identityInRef
-{
-	if (identityInRef == NULL) {
-		return;
-	}
-
-	/* ====================================== */
-
-	NSData *certificateReference = [TLOKeychain referenceForClientCertificateIdentity:identityInRef];
-
-	if (certificateReference == nil) {
-		return;
-	}
-
-	self.config.identityClientSideCertificate = certificateReference;
-
-	if (self.prefersSecuredConnectionCheck.state == NSControlStateValueOff) {
-		self.prefersSecuredConnectionCheck.state = NSControlStateValueOn;
-
-		[self useSSLCheckChanged:nil];
-	}
-}
-
-- (void)updateClientCertificatePage
-{
-	NSString *commonName = nil;
-
-	NSString *sha512Fingerprint = nil;
-	NSString *sha2Fingerprint = nil;
-	NSString *sha1Fingerprint = nil;
-	NSString *md5Fingerprint = nil;
-
-	[self readClientCertificateCommonName:&commonName
-						sha512Fingerprint:&sha512Fingerprint
-						  sha2Fingerprint:&sha2Fingerprint
-						  sha1Fingerprint:&sha1Fingerprint
-						   md5Fingerprint:&md5Fingerprint];
-
-	BOOL hasNoCertificate = (commonName.length == 0);
-
-	/* Saved, but its identity is no longer in the Keychain: choose it again or remove it */
-	BOOL certificateMissing = (hasNoCertificate && self.config.identityClientSideCertificate != nil);
-
-	if (hasNoCertificate) {
-		if (certificateMissing) {
-			self.clientCertificateCommonNameField.stringValue = TXTLS(@"TDCServerPropertiesSheet[c3r-m1]");
-		} else {
-			self.clientCertificateCommonNameField.stringValue = TXTLS(@"TDCServerPropertiesSheet[6xz-ec]");
-		}
-		
-		self.clientCertificateSHA512FingerprintField.stringValue = TXTLS(@"TDCServerPropertiesSheet[6xz-ec]");
-		self.clientCertificateSHA2FingerprintField.stringValue = TXTLS(@"TDCServerPropertiesSheet[6xz-ec]");
-		self.clientCertificateSHA1FingerprintField.stringValue = TXTLS(@"TDCServerPropertiesSheet[6xz-ec]");
-		self.clientCertificateMD5FingerprintField.stringValue = TXTLS(@"TDCServerPropertiesSheet[6xz-ec]");
-	} else {
-		self.clientCertificateCommonNameField.stringValue = commonName;
-
-		self.clientCertificateSHA512FingerprintField.stringValue = (sha512Fingerprint.uppercaseString ?: @"");
-		self.clientCertificateSHA2FingerprintField.stringValue = (sha2Fingerprint.uppercaseString ?: @"");
-		self.clientCertificateSHA1FingerprintField.stringValue = (sha1Fingerprint.uppercaseString ?: @"");
-		self.clientCertificateMD5FingerprintField.stringValue = (md5Fingerprint.uppercaseString ?: @"");
-	}
-
-	self.clientCertificateResetCertificateButton.enabled = (hasNoCertificate == NO || certificateMissing);
-
-	self.clientCertificateSHA512FingerprintCopyButton.enabled = (hasNoCertificate == NO);
-	self.clientCertificateSHA2FingerprintCopyButton.enabled = (hasNoCertificate == NO);
-	self.clientCertificateSHA1FingerprintCopyButton.enabled = (hasNoCertificate == NO);
-	self.clientCertificateMD5FingerprintCopyButton.enabled = (hasNoCertificate == NO);
-}
-
-- (void)onClientCertificateResetRequested:(nullable id)sender
-{
-	self.config.identityClientSideCertificate = nil;
-
-	[self updateClientCertificatePage];
-}
-
-- (void)onClientCertificateChangeRequested:(nullable id)sender
-{
-	CFArrayRef identities = NULL;
-
-	NSDictionary *queryFlags = @{
-		(id)kSecClass		: (id)kSecClassIdentity,
-		(id)kSecMatchLimit	: (id)kSecMatchLimitAll,
-		(id)kSecReturnRef	: (id)kCFBooleanTrue
-	};
-
-	OSStatus queryStatus = SecItemCopyMatching((__bridge CFDictionaryRef)queryFlags, (CFTypeRef *)&identities);
-
-	if (queryStatus != noErr) {
-		LogToConsoleError("Operation Failed (1): %{public}i", queryStatus);
-	}
-
-	if (identities == NULL || CFArrayGetCount(identities) == 0) {
-		[TDCAlert alertWithMessage:TXTLS(@"TDCServerPropertiesSheet[489-hG]")
-							 title:TXTLS(@"TDCServerPropertiesSheet[pmk-os]")
-					 defaultButton:TXTLS(@"Prompts[c7s-dq]")
-				   alternateButton:nil
-					   otherButton:TXTLS(@"TDCServerPropertiesSheet[3ju-lo]")
-				   completionBlock:^(TDCAlertResponse buttonClicked, BOOL suppressed, id underlyingAlert) {
-			if (buttonClicked == TDCAlertResponseOther) {
-				[TLOpenLink openWithString:TXWebsiteClientCertificates inBackground:NO];
-			}
-		}];
-
-		return;
-	}
-
-	SFChooseIdentityPanel *panel = [SFChooseIdentityPanel sharedChooseIdentityPanel];
-
-	self.clientCertificateSelectCertificatePanel = panel;
-
-	[panel setInformativeText:TXTLS(@"TDCServerPropertiesSheet[mi4-fd]")];
-
-	[panel setAlternateButtonTitle:TXTLS(@"Prompts[qso-2g]")];
-
-	NSInteger panelResponse =
-	[panel runModalForIdentities:(__bridge NSArray *)(identities)
-						 message:TXTLS(@"TDCServerPropertiesSheet[6wq-i4]")];
-
-	CFRelease(identities);
-
-	if (panelResponse == NSModalResponseOK) {
-		SecIdentityRef identity = [panel identity];
-
-		[self saveClientCertificateWithIdentity:identity];
-
-		[self updateClientCertificatePage];
-	}
-
-	self.clientCertificateSelectCertificatePanel = nil;
-}
-
-#pragma mark -
-#pragma mark Redundancy
-
-- (void)editSeverEndpoints:(nullable id)sender
-{
-	TDCServerEndpointListSheet *sheet = [[TDCServerEndpointListSheet alloc] initWithWindow:self.sheet];
-
-	sheet.delegate = self;
-
-	[sheet startWithServerList:self.serverList];
-
-	self.serverEndpointSheet = sheet;
-}
-
-- (void)serverEndpointListSheet:(TDCServerEndpointListSheet *)ender onOk:(NSArray<IRCServer *> *)serverList
-{
-	[self.serverListArrayController removeAllArrangedObjects];
-
-	[self.serverListArrayController addObjects:serverList];
-
-	[self loadPrimaryServerEndpoint];
-}
-
-- (void)serverEndpointListSheetWillClose:(TDCServerEndpointListSheet *)sender
-{
-	self.serverEndpointSheet = nil;
-}
-
-- (void)rebuildMutableServerEndpointList:(nullable id)sender
-{
-	NSParameterAssert(sender != nil);
-
-	if (self.populatingPrimaryServer) {
-		return;
-	}
-
-	IRCServer *server = self.serverList.firstObject;
-
-	IRCServerMutable *serverMutable = nil;
-
-	if (server == nil) {
-		serverMutable = [IRCServerMutable new];
-	} else {
-		serverMutable = [server mutableCopy];
-	}
-
-	{
-		NSString *serverAddress = self.serverAddressComboBox.value;
-
-		IRCNetwork *serverAddressNetwork = [self.networkList networkNamed:serverAddress];
-
-		if (serverAddressNetwork) {
-			serverMutable.serverAddress = serverAddressNetwork.serverAddress;
-		} else {
-			serverMutable.serverAddress = serverAddress.lowercaseString;
-		}
-	}
-
-	serverMutable.serverPort = self.serverPortTextField.integerValue;
-
-	serverMutable.prefersSecuredConnection = (self.prefersSecuredConnectionCheck.state == NSControlStateValueOn);
-
-	serverMutable.serverPassword = self.serverPasswordTextField.trimmedStringValue;
-
-	server = [serverMutable copy];
-
-	if (self.serverList.count == 0) {
-		[self.serverListArrayController addObject:server];
-	} else {
-		[self.serverListArrayController replaceObjectAtArrangedObjectIndex:0 withObject:server];
-	}
-}
-
-- (void)rebuildMutableServerEndpointListIfNeeded:(nullable id)sender
-{
-	NSParameterAssert(sender != nil);
-
-	/* We only want to rebuild the IRCServer at index 0 when the
-	 user changes it. This method is invoked whenever something
-	 changes related to that server. If it was not changed while
-	 the server endpoint sheet was open, then we must update the
-	 mutable server list to include the change. */
-	if (self.serverEndpointSheet != nil) {
-		return;
-	}
-
-	[self rebuildMutableServerEndpointList:sender];
-}
-
-#pragma mark -
 #pragma mark NSWindow Delegate
 
 - (void)windowWillClose:(NSNotification *)note
@@ -1861,8 +879,10 @@ TEXTUAL_IGNORE_DEPRECATION_END
 
 	[self.sheet makeFirstResponder:nil];
 
-	if ([self.delegate respondsToSelector:@selector(serverPropertiesSheetWillClose:)]) {
-		[self.delegate serverPropertiesSheetWillClose:self];
+	id delegate = self.delegate;
+
+	if ([delegate respondsToSelector:@selector(serverPropertiesSheetWillClose:)]) {
+		[delegate serverPropertiesSheetWillClose:self];
 	}
 
 	[super windowWillClose:note];

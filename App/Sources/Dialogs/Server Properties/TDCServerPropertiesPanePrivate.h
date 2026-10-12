@@ -37,12 +37,14 @@
  *
  *********************************************************************** */
 
+#import "TDCServerEndpointListSheetPrivate.h"
 #import "TDCServerPropertiesSheetPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class IRCAddressBookEntry, IRCChannelConfig, IRCClientConfig, IRCClientConfigMutable;
+@class IRCAddressBookEntry, IRCChannelConfig, IRCClientConfig, IRCClientConfigMutable, IRCServer;
 @class TVCBasicTableView;
+@class TDCServerPropertiesClientCertificatePane, TDCServerPropertiesGeneralPane;
 
 /* One part of the Server Properties sheet: its view and the controls in it,
  in the sheet's nib (an object whose outlets and actions go to it). The sheet
@@ -51,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TDCServerPropertiesPane : NSObject
 @property (nonatomic, weak) IBOutlet TDCServerPropertiesSheet *propertiesSheet;
 @property (nonatomic, strong) IBOutlet NSView *view;
+
+/* Its item in the sheet's navigation list */
+@property (nonatomic, assign) TDCServerPropertiesSheetSelection selection;
 
 /* After the nib loaded, before -loadFromConfig: */
 - (void)prepareInitialState;
@@ -118,6 +123,28 @@ NS_ASSUME_NONNULL_BEGIN
 /* From the sheet's -startWithSelection:context: */
 - (void)addIgnoreEntryWithHostmask:(nullable NSString *)hostmask;
 - (void)editEntry:(IRCAddressBookEntry *)entry;
+@end
+
+/* The connection name, the primary server and the alternate servers */
+@interface TDCServerPropertiesGeneralPane : TDCServerPropertiesPane <TDCServerEndpointListSheetDelegate>
+@property (readonly, copy) NSArray<IRCServer *> *serverList;
+
+/* A client certificate is only sent on a secured connection */
+- (void)turnOnSecuredConnection;
+
+- (IBAction)editServerEndpoints:(nullable id)sender;
+@end
+
+/* Nicknames, user and real name, NickServ and the login key */
+@interface TDCServerPropertiesIdentityPane : TDCServerPropertiesPane
+@property (nonatomic, weak) IBOutlet TDCServerPropertiesClientCertificatePane *clientCertificatePane;
+@end
+
+@interface TDCServerPropertiesClientCertificatePane : TDCServerPropertiesPane
+@property (nonatomic, weak) IBOutlet TDCServerPropertiesGeneralPane *generalPane;
+
+/* One is set, even when it is no longer in the Keychain */
+@property (readonly) BOOL hasCertificate;
 @end
 
 /* What panes need from the sheet */
