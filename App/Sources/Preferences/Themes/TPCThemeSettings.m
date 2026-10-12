@@ -329,6 +329,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 	BOOL removeValue = (objectValue == nil || [objectValue isKindOfClass:[NSNull class]]);
 
+	/* JSON with a null inside isn't a property list: saving it raised an exception */
+	if (removeValue == NO && [NSPropertyListSerialization propertyList:objectValue isValidForFormat:NSPropertyListBinaryFormat_v1_0] == NO) {
+		if (resultError) {
+			*resultError = @"The value can't be stored (null inside an object or array?)";
+		}
+
+		return NO;
+	}
+
 	NSDictionary *styleSettings = [RZUserDefaults() dictionaryForKey:storeKey];
 
 	NSMutableDictionary<NSString *, id> *styleSettingsMutable = nil;

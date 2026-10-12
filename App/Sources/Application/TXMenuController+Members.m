@@ -341,7 +341,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[textView replaceCharactersInRange:selectedRange withString:stringToInsert];
 
-	[textView resetFontColorInRange:selectedRange];
+	/* The inserted text: the selection it replaced could be longer */
+	[textView resetFontColorInRange:NSMakeRange(selectedRange.location, stringToInsert.length)];
 
 	[textView focus];
 }

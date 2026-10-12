@@ -87,6 +87,19 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqualObjects(link.channelList, @"#a,#b,#c,#d,#e");
 }
 
+/* A channel name never has spaces or control characters: decoded line
+ breaks in one would send the rest as a command of its own when joining */
+- (void)testChannelsWithLineBreaksAreDropped
+{
+	IRCProtocolLink *link = [IRCProtocolLink linkWithString:@"irc://irc.example.com/%23x%0D%0APRIVMSG%20NickServ%20:SET%20EMAIL%20evil,%23ok"];
+
+	XCTAssertEqualObjects(link.channels, (@[@"#ok"]));
+
+	link = [IRCProtocolLink linkWithString:@"irc://irc.example.com/%23a%07b,%23c%20d"];
+
+	XCTAssertEqualObjects(link.channels, (@[]));
+}
+
 - (void)testUnreadableLinksAreRefused
 {
 	for (NSString *location in @[@"irc:irc.example.com", @"irc://", @"irc://irc.example.com/a/b", @"irc.example.com/#chat", @""]) {

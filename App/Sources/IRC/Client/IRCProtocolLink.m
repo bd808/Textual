@@ -54,6 +54,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation IRCProtocolLink
 
++ (NSCharacterSet *)invalidChannelCharacters
+{
+	static NSCharacterSet *characters = nil;
+
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		NSMutableCharacterSet *charactersMutable = [NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
+
+		[charactersMutable formUnionWithCharacterSet:[NSCharacterSet controlCharacterSet]];
+
+		characters = [charactersMutable copy];
+	});
+
+	return characters;
+}
+
 + (nullable instancetype)linkWithString:(NSString *)location
 {
 	NSParameterAssert(location != nil);
@@ -113,6 +130,12 @@ NS_ASSUME_NONNULL_BEGIN
 			if ((index + 1) == sectionCount && [section isEqualToStringIgnoringCase:@"needssl"]) {
 				secure = YES;
 
+				return;
+			}
+
+			/* No channel name has spaces or control characters; a decoded
+			 %0D%0A would have sent the rest as its own command */
+			if ([section rangeOfCharacterFromSet:[self invalidChannelCharacters]].location != NSNotFound) {
 				return;
 			}
 

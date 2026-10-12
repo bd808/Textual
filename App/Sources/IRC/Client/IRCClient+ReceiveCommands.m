@@ -120,6 +120,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSParameterAssert(m != nil);
 
+	/* A WALLOPS without text crashed reading it */
+	NSAssertReturn([m paramsCount] > 0);
+
 	/* WALLOPS are rewritten so that they can be parsed as regular notices */
 	NSMutableArray *paramsMutable = [m.params mutableCopy];
 

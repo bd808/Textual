@@ -181,6 +181,11 @@ NSString * const THOPluginManagerFinishedLoadingPluginsNotification = @"THOPlugi
 
 		NSString *comparisonVersion = infoDictionary[@"MinimumTextualVersion"];
 
+		/* A number (<real>7.3</real>) crashed the version compare at every launch */
+		if ([comparisonVersion isKindOfClass:[NSString class]] == NO) {
+			comparisonVersion = nil;
+		}
+
 		if (comparisonVersion == nil) {
 			[obsoleteBundles addObject:bundle];
 

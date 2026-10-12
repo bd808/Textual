@@ -228,6 +228,27 @@ async def scenario_long_line(client):
 	result(not still_connected, "client disconnected after 64 KiB without a line break")
 
 
+async def scenario_review_crashes(client):
+	"""Review fixes, group 1. Connect with Development/dev connect
+	'irc://127.0.0.1:6680/%23ok,%23x%0D%0APRIVMSG%20NickServ%20:hijacked': the link's
+	second channel hides a line break and must be dropped, so the client joins #ok
+	and never messages NickServ. Then a WALLOPS without text (crashed the client)
+	and a normal one, which must show in the console."""
+	await client.collect(4)
+
+	result(len(client.sent(lambda line: "NICKSERV" in line.upper())) == 0, "no line from the link's hidden command")
+	result(len(client.sent(lambda line: line.upper().startswith("JOIN") and "#OK" in line.upper())) >= 1, "joined #ok from the link")
+
+	await client.send(":irc.textual.test WALLOPS")
+	await client.send(":irc.textual.test WALLOPS :A normal WALLOPS after the empty one")
+
+	still_connected = await client.collect(4)
+	result(still_connected, "client still connected after a WALLOPS without text")
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_ctcp_flood(client):
 	"""20 CTCP VERSION queries from one host and one to a channel: at most 2 replies
 	to that host, none to the channel, and another host still gets an answer."""
@@ -1427,6 +1448,7 @@ async def scenario_silent(client):
 SCENARIOS = {
 	"styles": scenario_styles,
 	"idle": scenario_idle,
+	"review-crashes": scenario_review_crashes,
 	"links": scenario_links,
 	"nickserv-spoof": scenario_nickserv_spoof,
 	"long-line": scenario_long_line,

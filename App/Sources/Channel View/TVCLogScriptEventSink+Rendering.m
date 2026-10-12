@@ -105,12 +105,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_notifyLinesAdded:(BOOL)added context:(TVCLogScriptEventSinkContext *)context
 {
-	NSArray *arguments = context.arguments;
+	/* The page sends one line number or an array of them; an array arrives
+	 spread over the arguments, so only the first line was counted */
+	NSMutableArray<NSString *> *lineNumbersUncut = [NSMutableArray array];
 
-	id lineNumbersUncut = [self.class objectValueToCommon:arguments[0]];
+	for (id argument in context.arguments) {
+		id value = [self.class objectValueToCommon:argument];
 
-	if ([lineNumbersUncut isKindOfClass:[NSString class]]) {
-		lineNumbersUncut = @[lineNumbersUncut];
+		if (value == nil) {
+			continue;
+		}
+
+		NSArray *values = ([value isKindOfClass:[NSArray class]] ? value : @[value]);
+
+		for (id lineNumber in values) {
+			/* A number from a style's script crashed -standardizeLineNumber: */
+			if ([lineNumber isKindOfClass:[NSString class]]) {
+				[lineNumbersUncut addObject:lineNumber];
+			}
+		}
 	}
 
 	NSArray *lineNumbers = [self.class standardizeLineNumbers:lineNumbersUncut];

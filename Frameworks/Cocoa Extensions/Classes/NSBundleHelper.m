@@ -52,7 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 	NSMutableArray<NSString *> *bundleNames = [NSMutableArray arrayWithCapacity:bundles.count];
 
 	for (NSBundle *bundle in bundles) {
-		[bundleNames addObject:bundle.displayName];
+		/* A bundle without a name (or with a non-string one) crashed this */
+		NSString *bundleName = bundle.displayName;
+
+		if ([bundleName isKindOfClass:[NSString class]] == NO || bundleName.length == 0) {
+			bundleName = bundle.bundleURL.lastPathComponent;
+		}
+
+		[bundleNames addObject:bundleName];
 	}
 
 	return [bundleNames componentsJoinedByString:@", "];
