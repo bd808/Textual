@@ -111,9 +111,18 @@ static NSUInteger IRCTimedCommandLastIdentifier = 0;
 
 	__weak typeof(self) weakSelf = self;
 
+	/* Weak: the client owns its timed commands; a strong reference kept a deleted client alive */
+	__weak IRCClient *weakClient = client;
+
 	self.timer =
 	[TLOTimer timerWithActionBlock:^(TLOTimer * _Nonnull sender) {
-		[client onTimedCommand:weakSelf];
+		IRCTimedCommand *timedCommand = weakSelf;
+
+		if (timedCommand == nil) {
+			return;
+		}
+
+		[weakClient onTimedCommand:timedCommand];
 	}];
 }
 

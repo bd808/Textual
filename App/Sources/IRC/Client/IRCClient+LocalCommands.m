@@ -2311,6 +2311,13 @@ NS_ASSUME_NONNULL_BEGIN
 					destinationToSelect = destination;
 				}
 			}
+		} else if (destination == nil) {
+			/* The echo (echo-message) must not open a query either */
+			if (self.secretMessageTargets == nil) {
+				self.secretMessageTargets = [NSMutableSet set];
+			}
+
+			[self.secretMessageTargets addObject:[self.supportInfo foldedString:destinationName]];
 		}
 
 		/* Add prefix back if the destination is a channel */

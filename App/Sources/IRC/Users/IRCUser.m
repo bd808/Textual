@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 		case TXHostmaskBanFormatWHANNI:
 		{
-			return [NSString stringWithFormat:@"%@!*%@", nickname, address];
+			return [NSString stringWithFormat:@"%@!*@%@", nickname, address];
 		}
 		case TXHostmaskBanFormatExact:
 		{

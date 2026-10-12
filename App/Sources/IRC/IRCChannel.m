@@ -71,7 +71,8 @@ NSString * const IRCChannelMemberListWasCreatedNotification = @"IRCChannelMember
 @property (nonatomic, copy, readwrite) IRCChannelConfig *config;
 @property (nonatomic, assign, readwrite) NSTimeInterval channelJoinTime;
 @property (nonatomic, strong, readwrite, nullable) IRCChannelMode *modeInfo;
-@property (nonatomic, strong, readwrite, nullable) IRCChannelMemberList *memberInfo;
+/* Atomic: the render queue reads it while the main thread replaces it */
+@property (atomic, strong, readwrite, nullable) IRCChannelMemberList *memberInfo;
 @property (nonatomic, strong, nullable) TLOFileLogger *logFile;
 @property (nonatomic, assign, readwrite) NSUInteger logFileSessionCount;
 @end

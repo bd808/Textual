@@ -153,6 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) IRCSASLECDSAKey *saslECDSAKey;
 @property (nonatomic, assign) NSUInteger saslStep; // of a mechanism with several exchanges
 @property (nonatomic, strong, nullable) NSMutableString *saslIncomingData; // an AUTHENTICATE message arriving in 400-byte parts
+@property (nonatomic, strong, nullable) NSMutableSet<NSString *> *secretMessageTargets; // folded names sent /SMSG or /SME without a query; their echoes open none
 @property (nonatomic, strong) NSMutableSet<NSString *> *chatHistoryPendingTargets; // folded names with an automatic CHATHISTORY request open
 @property (nonatomic, copy, nullable) NSDate *chatHistoryDisconnectTime; // when the last connection ended
 @property (nonatomic, assign) NSTimeInterval lastAnsweredLagCheckTime; // the "time" of the last /LAGCHECK answered

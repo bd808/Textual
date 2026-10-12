@@ -340,6 +340,7 @@ The identifier for a timer can be found using “/timer list”";
 "ty9-2b" = "%1$@ and %2$@ are typing";
 "ty9-3c" = "%lu people are typing";
 "sc7-v1" = "The server could not prove it knows your password (%@ signature mismatch); authentication was cancelled";
+"sc7-v2" = "The server reported a successful login without proving it knows your password (%@); Textual disconnected";
 "c1h-fq" = "%1$@ is away (%2$@)";
 "6bh-br" = "You are now an IRC Operator on %@";
 "ziu-p9" = "\002%1$@\002 (%2$@@%3$@) joined the channel";

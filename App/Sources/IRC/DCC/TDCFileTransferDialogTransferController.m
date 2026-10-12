@@ -869,22 +869,30 @@ static NSString * _Nullable _identityOfFileAtPath(NSString *path)
 	}
 
 	if (postNotification) {
+		TXNotificationType notificationType = 0;
+
 		if (self.transferStatus == TDCFileTransferDialogTransferStatusFatalError ||
 			self.transferStatus == TDCFileTransferDialogTransferStatusRecoverableError)
 		{
-			if (self.isSender) {
-				[self.client notifyFileTransfer:TXNotificationTypeFileTransferSendFailed nickname:self.peerNickname filename:self.filename filesize:self.totalFilesize requestIdentifier:self.uniqueIdentifier];
-			} else {
-				[self.client notifyFileTransfer:TXNotificationTypeFileTransferReceiveFailed nickname:self.peerNickname filename:self.filename filesize:self.totalFilesize requestIdentifier:self.uniqueIdentifier];
-			}
+			notificationType = (self.isSender) ? TXNotificationTypeFileTransferSendFailed : TXNotificationTypeFileTransferReceiveFailed;
 		}
 		else if (self.transferStatus == TDCFileTransferDialogTransferStatusComplete)
 		{
-			if (self.isSender) {
-				[self.client notifyFileTransfer:TXNotificationTypeFileTransferSendSuccessful nickname:self.peerNickname filename:self.filename filesize:self.totalFilesize requestIdentifier:self.uniqueIdentifier];
-			} else {
-				[self.client notifyFileTransfer:TXNotificationTypeFileTransferReceiveSuccessful nickname:self.peerNickname filename:self.filename filesize:self.totalFilesize requestIdentifier:self.uniqueIdentifier];
-			}
+			notificationType = (self.isSender) ? TXNotificationTypeFileTransferSendSuccessful : TXNotificationTypeFileTransferReceiveSuccessful;
+		}
+
+		/* Transfers close on their own queue; notifications use AppKit */
+		if (notificationType != 0) {
+			IRCClient *client = self.client;
+
+			NSString *peerNickname = self.peerNickname;
+			NSString *filename = self.filename;
+			uint64_t totalFilesize = self.totalFilesize;
+			NSString *uniqueIdentifier = self.uniqueIdentifier;
+
+			XRPerformBlockAsynchronouslyOnMainQueue(^{
+				[client notifyFileTransfer:notificationType nickname:peerNickname filename:filename filesize:totalFilesize requestIdentifier:uniqueIdentifier];
+			});
 		}
 	}
 

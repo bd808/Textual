@@ -249,6 +249,55 @@ async def scenario_review_crashes(client):
 		pass
 
 
+async def scenario_review_irc(client):
+	"""Review fixes, group 3. Set AutojoinChannelOnInvite to YES before starting
+	Textual Dev. Registers with echo-message, server-time and message-tags. Checked
+	here: invites to "0" and "#a,0" are not joined, "#invited" is. To look at: alice
+	left #r's member list (QUIT without a reason), carol's line (empty time= tag)
+	shows today's time, the query "bob" is now "Bob". Then type /smsg dave secret
+	and /msg nick@server hi: the server echoes them and no query may open."""
+	if not await client.register_with_capabilities("echo-message server-time message-tags"):
+		return
+
+	nick = client.nickname
+	await client.send(f":{nick}!user@client.textual.test JOIN #r")
+	await client.send(f":{SERVER} 353 {nick} = #r :@{nick} alice bob carol")
+	await client.send(f":{SERVER} 366 {nick} #r :End of /NAMES list.")
+	await client.collect(2)
+
+	await client.send(":alice!a@friend.test QUIT")
+	await client.send("@time= :carol!c@friend.test PRIVMSG #r :this line has an empty time tag and must show today's time")
+	await client.send(f":bob!b@friend.test PRIVMSG {nick} :hi from bob, this query must become Bob")
+	await client.collect(2)
+	await client.send(":bob!b@friend.test NICK Bob")
+	await client.send(f":Bob!b@friend.test PRIVMSG {nick} :now I am Bob")
+	result(await client.is_alive("quit"), "still connected after a QUIT without a reason")
+
+	await client.send(f":inviter!i@friend.test INVITE {nick} 0")
+	await client.send(f":inviter!i@friend.test INVITE {nick} :#a,0")
+	await client.send(f":inviter!i@friend.test INVITE {nick} #invited")
+	await client.collect(4)
+
+	joined = [line.split(" ")[1].lstrip(":").split(",") for line in client.received if line.upper().startswith("JOIN ")]
+	result(not any("0" in targets for targets in joined), "no JOIN 0 from an invite")
+	result(any("#invited" in targets for targets in joined), "an invite to #invited was joined")
+
+	print("WAITING: type /smsg dave secret and /msg nick@server hi", flush=True)
+	end = time.monotonic() + 600
+	while (remaining := end - time.monotonic()) > 0:
+		try:
+			line = await asyncio.wait_for(client.read_line(), remaining)
+		except asyncio.TimeoutError:
+			break
+		if line is None:
+			break
+		command, _, rest = line.partition(" ")
+		if command.upper() == "PING":
+			await client.send(f":{SERVER} PONG {SERVER} {rest}")
+		elif command.upper() in ("PRIVMSG", "NOTICE"):
+			await client.send(f":{nick}!user@client.textual.test {line}")
+
+
 async def scenario_ctcp_flood(client):
 	"""20 CTCP VERSION queries from one host and one to a channel: at most 2 replies
 	to that host, none to the channel, and another host still gets an answer."""
@@ -1100,6 +1149,12 @@ async def run_sasl_scram(client, variant):
 				server_signature = hmac_module.new(server_key, auth_message, hashlib.sha512).digest()
 				if variant == "badsig":
 					server_signature = bytes(64)
+				if variant == "noproof":
+					# Success without ever sending the server signature
+					await client.send(f":{SERVER} 900 {nickname} {nickname}!u@h {username} :You are now logged in as {username}")
+					await client.send(f":{SERVER} 903 {nickname} :SASL authentication successful")
+					state = "done"
+					continue
 				await send_authenticate("v=" + base64.b64encode(server_signature).decode())
 				state = "server-final"
 			elif state == "server-final":
@@ -1118,6 +1173,9 @@ async def run_sasl_scram(client, variant):
 	if variant == "badsig":
 		result(outcome == ["proof valid", "after server-final: *", "CAP END"],
 			"the client aborted on the wrong server signature and didn't fall back to PLAIN")
+	elif variant == "noproof":
+		result(outcome == ["proof valid"],
+			"the client disconnected when the server reported success without its signature")
 	elif variant == "fallback":
 		result(outcome == ["after 904: PLAIN", "PLAIN accepted", "CAP END"], "the client fell back to PLAIN after 904")
 	else:
@@ -1289,6 +1347,12 @@ async def scenario_sasl_scram_fallback(client):
 	await run_sasl_scram(client, "fallback")
 
 
+async def scenario_sasl_scram_noproof(client):
+	"""The server answers the client-final with 903 and never proves it knows the
+	password: the client must disconnect instead of finishing registration."""
+	await run_sasl_scram(client, "noproof")
+
+
 async def scenario_sasl_scram_badsig(client):
 	"""The server sends a wrong signature: the client must abort (AUTHENTICATE *)
 	and must not fall back to PLAIN with the password."""
@@ -1449,6 +1513,7 @@ SCENARIOS = {
 	"styles": scenario_styles,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
+	"review-irc": scenario_review_irc,
 	"links": scenario_links,
 	"nickserv-spoof": scenario_nickserv_spoof,
 	"long-line": scenario_long_line,
@@ -1479,12 +1544,13 @@ SCENARIOS = {
 	"whox": scenario_whox,
 	"sasl-scram-fallback": scenario_sasl_scram_fallback,
 	"sasl-scram-badsig": scenario_sasl_scram_badsig,
+	"sasl-scram-noproof": scenario_sasl_scram_noproof,
 	"sasl-ecdsa": scenario_sasl_ecdsa,
 	"sasl-ecdsa-wrongkey": scenario_sasl_ecdsa_wrongkey,
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

@@ -105,6 +105,37 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqual([self messagesForLine:oversizedCharacter].count, 1);
 }
 
+/* A long line in alternating colours: the split must not repeat or lose text
+ (wrapping used to reach back into the previous colour and miscount its codes) */
+- (void)testLongColouredLinesSplitWithoutRepeating
+{
+	IRCClient *client = [[IRCClient alloc] initWithConfig:[IRCClientConfig new]];
+
+	NSMutableAttributedString *line = [NSMutableAttributedString new];
+
+	for (NSUInteger i = 0; i < 300; i++) {
+		NSDictionary *attributes = @{IRCTextFormatterForegroundColorAttributeName : @((i % 2 == 0) ? 4 : 12)};
+
+		[line appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"w%03lu ", (unsigned long)i] attributes:attributes]];
+	}
+
+	NSString *expected = line.string;
+
+	NSMutableString *joined = [NSMutableString string];
+
+	NSUInteger messageCount = 0;
+
+	while (line.length > 0 && messageCount < 50) {
+		[joined appendString:[line stringFormattedForChannel:@"#channel" onClient:client withLineType:TVCLogLineTypePrivateMessage].stripIRCEffects];
+
+		messageCount += 1;
+	}
+
+	XCTAssertGreaterThan(messageCount, 1);
+
+	XCTAssertEqualObjects(joined, expected);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

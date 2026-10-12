@@ -173,6 +173,24 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 		return nil;
 	}
 
+	/* It goes back to the server as one parameter (CHATHISTORY, read markers):
+	 a decoded space or control character would split or break that line */
+	static NSCharacterSet *invalidCharacters = nil;
+
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		NSMutableCharacterSet *characters = [NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
+
+		[characters formUnionWithCharacterSet:[NSCharacterSet controlCharacterSet]];
+
+		invalidCharacters = [characters copy];
+	});
+
+	if ([msgid rangeOfCharacterFromSet:invalidCharacters].location != NSNotFound) {
+		return nil;
+	}
+
 	return msgid;
 }
 
@@ -365,7 +383,8 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 			dateString = extensions[@"t"];
 		}
 
-		if (dateString) {
+		/* An empty value would date the message 1970 */
+		if (dateString.length > 0) {
 			NSDate *dateObject = nil;
 
 			if ([dateString onlyContainsCharactersFromCharacterSet:[NSCharacterSet ZeroToNineDecimalCharacterSet]]) {

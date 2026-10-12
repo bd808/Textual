@@ -40,6 +40,7 @@
 #import "IRC.h"
 #import "IRCClientConfig.h"
 #import "IRCClient.h"
+#import "IRCISupportInfo.h"
 #import "IRCColorFormatPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -440,7 +441,8 @@ NSString * const IRCTextFormatterSpoilerAttributeName = @"IRCTextFormatterSpoile
 	/* Perform truncation */
 	NSString *string = self.string;
 
-	NSStringEncoding encoding = client.config.primaryEncoding;
+	/* Count bytes in the encoding the line is sent in (UTF8ONLY: always UTF-8) */
+	NSStringEncoding encoding = (client.supportInfo.utf8Only) ? NSUTF8StringEncoding : client.config.primaryEncoding;
 
 	NSMutableString *result = [NSMutableString string];
 
@@ -512,6 +514,10 @@ NSString * const IRCTextFormatterSpoilerAttributeName = @"IRCTextFormatterSpoile
 		/* Append formatter openers */
 		[formatters appendToStartOf:result];
 
+		/* Where this segment's text starts in result: wrapping further back
+		 would take formatter characters that deletionLength never counted */
+		NSUInteger segmentTextStart = result.length;
+
 		/* We now go character by character and append that. We keep appending until
 		 the segment is completed or we run out  of space. When that happens, we break.
 		 We have already added the formatter bytes into the math so any math checked in
@@ -550,7 +556,7 @@ NSString * const IRCTextFormatterSpoilerAttributeName = @"IRCTextFormatterSpoile
 				}
 
 				/* Look for best character to wrap on, as long as something stays */
-				NSUInteger wrapIndex = [result indexToWrapIRCTextFormatterResultAt:segmentRange.location maxDistance:_textTruncationWrapMaxDistance];
+				NSUInteger wrapIndex = [result indexToWrapIRCTextFormatterResultAt:segmentTextStart maxDistance:_textTruncationWrapMaxDistance];
 
 				if (wrapIndex != NSNotFound) {
 					NSUInteger indexDifference = (result.length - wrapIndex);

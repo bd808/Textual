@@ -138,7 +138,12 @@ NS_ASSUME_NONNULL_BEGIN
 		inputString = @"(no input)";
 	}
 
-	[self printDebugInformation:TXTLS(@"IRC[2mc-h0]", filename, inputString, errorDescription)];
+	NSString *message = TXTLS(@"IRC[2mc-h0]", filename, inputString, errorDescription);
+
+	/* Scripts finish on background queues */
+	XRPerformBlockAsynchronouslyOnMainQueue(^{
+		[self printDebugInformation:message];
+	});
 
 	LogToConsoleError("%{public}@", TXTLS(@"IRC[ax0-mt]", errorDescription));
 }

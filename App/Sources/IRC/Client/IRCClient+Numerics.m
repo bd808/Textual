@@ -111,6 +111,7 @@
 #import "IRCWhoReplyPrivate.h"
 #import "TVCMemberListPrivate.h"
 #import "IRCClientInternal.h"
+#import "IRCSASLSCRAMPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1857,6 +1858,15 @@ NS_ASSUME_NONNULL_BEGIN
 		case ERR_SASLABORTED:
 		case ERR_SASLALREADY:
 		{
+			/* SCRAM success only counts after the server proved it knows the password (step 4) */
+			if (numeric == RPL_SASLSUCCESS && self.saslSCRAM != nil && self.saslStep != 4) {
+				[self printDebugInformationToConsole:TXTLS(@"IRC[sc7-v2]", self.saslSCRAM.mechanismName)];
+
+				[self quit];
+
+				break;
+			}
+
 			if (numeric == RPL_SASLSUCCESS) {
 				self.isAuthenticatedWithSASL = YES;
 			}

@@ -93,10 +93,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[self loadNib];
 
+	/* On the main queue: it reads the array controller; each transfer
+	 then does its own work on its queue */
 	self.maintenanceTimer =
 	[TLOTimer timerWithActionBlock:^(TLOTimer *sender) {
 		[self onMaintenanceTimer];
-	} onQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
+	} onQueue:dispatch_get_main_queue()];
 
 	[RZNotificationCenter() addObserver:self selector:@selector(clientWillBeDestroyed:) name:IRCWorldWillDestroyClientNotification object:nil];
 }

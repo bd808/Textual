@@ -441,6 +441,12 @@ NS_ASSUME_NONNULL_BEGIN
 		query = [self findChannel:sender];
 	}
 
+	/* Our own echoed line to someone without a query: /SMSG, /SME and targets
+	 that aren't nicknames (nick@server) open none, as without echo-message */
+	BOOL isSelfMessageWithoutQuery =
+	(isSelfMessage && query == nil && [self isChatHistoryMessage:m] == NO &&
+	 ([self stringIsNickname:target] == NO || [self.secretMessageTargets containsObject:[self.supportInfo foldedString:target]]));
+
 	BOOL newPrivateMessage = NO;
 
 	if (isPlainText == NO) {
@@ -461,6 +467,10 @@ NS_ASSUME_NONNULL_BEGIN
 		/* Do not create query until after ChanServ notices have been processed
 		 so that entry messages do not create a new window. */
 		if (query == nil) {
+			if (isSelfMessageWithoutQuery) {
+				return;
+			}
+
 			if ([TPCPreferences locationToSendNotices] == TXNoticeSendLocationQuery) {
 //				newPrivateMessage = YES;
 
@@ -495,6 +505,10 @@ NS_ASSUME_NONNULL_BEGIN
 		/* Logic for regular messages */
 
 		if (query == nil) {
+			if (isSelfMessageWithoutQuery) {
+				return;
+			}
+
 			newPrivateMessage = YES;
 
 			if (isSelfMessage) {
@@ -1448,9 +1462,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSParameterAssert(m != nil);
 
-	NSAssertReturn([m paramsCount] > 0);
-
 	BOOL isPrintOnlyMessage = m.isPrintOnlyMessage;
+
+	/* A QUIT without a reason has no parameters; print-only messages carry the channel first */
+	NSAssertReturn(isPrintOnlyMessage == NO || [m paramsCount] > 0);
 
 	NSString *channelName = nil;
 
@@ -1722,9 +1737,10 @@ NS_ASSUME_NONNULL_BEGIN
 						return;
 					}
 
+					/* A case-only change (bob -> Bob) finds this query itself */
 					IRCChannel *newNicknameQuery = [self findChannel:newNickname];
 
-					if (newNicknameQuery) {
+					if (newNicknameQuery && newNicknameQuery != channel) {
 						break;
 					}
 
@@ -1958,7 +1974,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self notifyEvent:TXNotificationTypeInvite lineType:TVCLogLineTypeInvite target:nil nickname:sender text:channelName];
 
-	if ([TPCPreferences autoJoinOnInvite]) {
+	/* Only one real channel: "0" or "#a,0" would make us leave every channel */
+	if ([TPCPreferences autoJoinOnInvite] &&
+		[self stringIsChannelName:channelName] &&
+		[channelName containsCharacters:@", "] == NO)
+	{
 		[self joinUnlistedChannel:channelName];
 	}
 }

@@ -152,6 +152,8 @@ NS_ASSUME_NONNULL_BEGIN
 	self.CTCPReplyCountStarted = 0;
 	self.CTCPReplyCountBySender = nil;
 
+	self.secretMessageTargets = nil;
+
 	self.userIsAway = NO;
 	self.userIsIRCop = NO;
 
