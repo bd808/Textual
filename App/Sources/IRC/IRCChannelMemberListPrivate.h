@@ -39,7 +39,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class IRCChannel, TVCMemberList;
+@class IRCChannel;
+
+/* Told about every change to a member list, on the main thread, in order */
+@protocol IRCChannelMemberListObserver <NSObject>
+- (void)memberListInsertedRowAtIndex:(NSUInteger)index;
+- (void)memberListRemovedRowAtIndex:(NSUInteger)index;
+- (void)memberListMovedRowAtIndex:(NSUInteger)oldIndex toIndex:(NSUInteger)newIndex; // the same index: the member changed in place
+- (void)memberListReloaded;
+- (void)memberListWasDestroyed;
+@end
 
 @protocol IRCChannelMemberListPrivatePrototype <NSObject>
 - (void)addMember:(IRCChannelUser *)member checkForDuplicates:(BOOL)checkForDuplicates;
@@ -67,8 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface IRCChannelMemberList () <IRCChannelMemberListPrivatePrototype>
 - (instancetype)initWithChannel:(IRCChannel *)channel NS_DESIGNATED_INITIALIZER;
 
-/* The member list's table, while it shows this list; told about every change */
-- (void)assignToTableView:(nullable TVCMemberList *)tableView;
+/* What shows this list (the member list's controller) */
+@property (nonatomic, weak, nullable) id <IRCChannelMemberListObserver> observer;
 
 /* From a channel's first NAMES reply to its end */
 - (void)beginNamesBatch;

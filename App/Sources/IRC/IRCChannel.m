@@ -42,9 +42,6 @@
 #import "TXMasterController.h"
 #import "TXWindowControllerPrivate.h"
 #import "TVCMainWindowPrivate.h"
-#import "TVCMemberListAppearance.h"
-#import "TVCMemberListPrivate.h"
-#import "TVCMemberListCellPrivate.h"
 #import "TVCLogControllerPrivate.h"
 #import "TDCSharedProtocolDefinitionsPrivate.h"
 #import "TDCSheetBase.h"
@@ -67,9 +64,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString * const IRCChannelConfigurationWasUpdatedNotification = @"IRCChannelConfigurationWasUpdatedNotification";
+NSString * const IRCChannelMemberListWasCreatedNotification = @"IRCChannelMemberListWasCreatedNotification";
 
 @interface IRCChannel ()
-@property (readonly) BOOL isSelectedChannel;
 @property (nonatomic, assign) BOOL statusChangedByAction;
 @property (nonatomic, copy, readwrite) IRCChannelConfig *config;
 @property (nonatomic, assign, readwrite) NSTimeInterval channelJoinTime;
@@ -390,13 +387,9 @@ NSString * const IRCChannelConfigurationWasUpdatedNotification = @"IRCChannelCon
 	if (self.isUtility == NO) {
 		self.memberInfo = [[IRCChannelMemberList alloc] initWithChannel:self];
 
-		/* A channel is only assigned by TVCMainWindow when it's switched to.
-		 Because of that we have to assign it here as the user already has
-		 the channel selected, but it was never assigned because the member
-		 list did not exist up to this point. */
-		if (self.isSelectedChannel) {
-			[mainWindowMemberList() assignToChannel:self];
-		}
+		/* The member list shows a channel's list from when it's selected;
+		 one selected before joining has a new list to show now */
+		[RZNotificationCenter() postNotificationName:IRCChannelMemberListWasCreatedNotification object:self];
 	}
 
 	if (self.isChannel) {
@@ -654,54 +647,7 @@ NSString * const IRCChannelConfigurationWasUpdatedNotification = @"IRCChannelCon
 }
 
 #pragma mark -
-#pragma mark Table View Data Source
-
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
-{
-	return self.memberInfo.numberOfMembers;
-}
-
-- (nullable id)tableView:(NSTableView *)tableView objectValueForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
-{
-	return [self.memberInfo memberAtIndex:row];
-}
-
-#pragma mark -
-#pragma mark Table View Delegate
-
-- (nullable NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
-{
-	NSView *newView = [tableView makeViewWithIdentifier:@"GroupView" owner:self];
-
-	return newView;
-}
-
-/* Reused: one was made for every row the table showed */
-- (nullable NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
-{
-	TVCMemberListRowCell *rowView = [tableView makeViewWithIdentifier:@"MemberRow" owner:self];
-
-	if (rowView == nil) {
-		rowView = [[TVCMemberListRowCell alloc] initWithMemberList:(id)tableView];
-
-		rowView.identifier = @"MemberRow";
-	}
-
-	return rowView;
-}
-
-- (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
-{
-	[mainWindowMemberList() refreshDrawingForRow:row];
-}
-
-#pragma mark -
 #pragma mark IRCTreeItem Properties
-
-- (BOOL)isSelectedChannel
-{
-	return (self == mainWindow().selectedItem);
-}
 
 - (BOOL)isActive
 {

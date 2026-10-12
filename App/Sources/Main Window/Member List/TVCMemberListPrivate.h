@@ -56,12 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)assignToChannel:(nullable IRCChannel *)channel;
 
-/* From the assigned channel's IRCChannelMemberList, on the main thread */
-- (void)memberListInsertedRowAtIndex:(NSUInteger)index;
-- (void)memberListRemovedRowAtIndex:(NSUInteger)index;
-- (void)memberListMovedRowAtIndex:(NSUInteger)oldIndex toIndex:(NSUInteger)newIndex; // the same index: the member changed in place
-- (void)memberListReloaded;
-- (void)memberListWasDestroyed;
+/* From its controller: rows now hold other people */
+- (void)memberListContentChanged;
 @end
 
 @protocol TVCMemberListDelegate <NSObject>

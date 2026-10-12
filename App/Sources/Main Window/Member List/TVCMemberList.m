@@ -48,6 +48,7 @@
 #import "TVCMemberListAppearancePrivate.h"
 #import "TVCMemberListUserInfoPopoverPrivate.h"
 #import "TVCMemberListPrivate.h"
+#import "TVCMemberListControllerPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -62,8 +63,7 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 @property (nonatomic, strong, readwrite) TVCMemberListAppearance *userInterfaceObjects;
 @property (nonatomic, weak, readwrite) IBOutlet NSVisualEffectView *visualEffectView;
 @property (nonatomic, strong, readwrite) IBOutlet TVCMemberListUserInfoPopover *memberListUserInfoPopover;
-@property (nonatomic, weak, nullable) IRCChannel *channel;
-@property (nonatomic, weak, nullable) IRCChannelMemberList *memberListShown;
+@property (nonatomic, strong) TVCMemberListController *controller;
 @end
 
 @implementation TVCMemberList
@@ -71,6 +71,14 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 - (void)awakeFromNib
 {
 	[super awakeFromNib];
+
+	/* The table's rows come from the channel it shows */
+	TVCMemberListController *controller = [[TVCMemberListController alloc] initWithMemberList:self];
+
+	self.controller = controller;
+
+	self.dataSource = controller;
+	self.delegate = controller;
 
 	/* 0 was the first row: hovering it first showed nothing */
 	self.lastRowShownUserInfoPopover = (-1);
@@ -116,35 +124,19 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 #pragma mark -
 #pragma mark Utilities
 
-/* The channel is the data source; its member list tells the table about
- each change (rows inserted, removed, moved), so a selection stays with the
- same people. It was bound to an array controller and kept by row number. */
 - (void)assignToChannel:(nullable IRCChannel *)channel
 {
 	/* Its row belongs to the previous channel's list */
 	[self destroyUserInfoPopover];
 
-	[self.memberListShown assignToTableView:nil];
-
-	IRCChannelMemberList *memberList = channel.memberInfo;
-
-	self.channel = channel;
-
-	self.memberListShown = memberList;
-
-	self.dataSource = (id)channel;
-	self.delegate = (id)channel;
-
-	[memberList assignToTableView:self];
-
-	[self reloadData];
+	[self.controller showChannel:channel];
 }
 
 - (nullable id)itemAtRow:(NSInteger)row
 {
 	NSParameterAssert(row >= 0);
 
-	return [self.memberListShown memberAtIndex:row];
+	return [self.controller.memberListShown memberAtIndex:row];
 }
 
 - (NSInteger)rowForItem:(nullable id)item
@@ -153,7 +145,7 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 		return (-1);
 	}
 
-	return [self.memberListShown indexOfMember:item];
+	return [self.controller.memberListShown indexOfMember:item];
 }
 
 #pragma mark -
@@ -163,71 +155,6 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 {
 	/* The row under the mouse may hold someone else now */
 	self.lastRowShownUserInfoPopover = (-1);
-}
-
-- (void)memberListInsertedRowAtIndex:(NSUInteger)index
-{
-	[self insertRowsAtIndexes:[NSIndexSet indexSetWithIndex:index] withAnimation:NSTableViewAnimationEffectNone];
-
-	[self memberListContentChanged];
-}
-
-- (void)memberListRemovedRowAtIndex:(NSUInteger)index
-{
-	[self removeRowsAtIndexes:[NSIndexSet indexSetWithIndex:index] withAnimation:NSTableViewAnimationEffectNone];
-
-	[self memberListContentChanged];
-}
-
-- (void)memberListMovedRowAtIndex:(NSUInteger)oldIndex toIndex:(NSUInteger)newIndex
-{
-	if (oldIndex != newIndex) {
-		[self moveRowAtIndex:oldIndex toIndex:newIndex];
-
-		[self memberListContentChanged];
-	}
-
-	/* A new member object: its cell shows the old one */
-	[self reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:newIndex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
-}
-
-/* Sorted again or cleared: the same people stay selected */
-- (void)memberListReloaded
-{
-	NSMutableArray<IRCChannelUser *> *selectedMembers = [NSMutableArray array];
-
-	[self.selectedRowIndexes enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
-		IRCChannelUser *member = [self itemAtRow:index];
-
-		if (member) {
-			[selectedMembers addObject:member];
-		}
-	}];
-
-	[self reloadData];
-
-	NSMutableIndexSet *rowsToSelect = [NSMutableIndexSet indexSet];
-
-	for (IRCChannelUser *member in selectedMembers) {
-		NSInteger row = [self rowForItem:member];
-
-		if (row >= 0) {
-			[rowsToSelect addIndex:row];
-		}
-	}
-
-	[self selectRowIndexes:rowsToSelect byExtendingSelection:NO];
-
-	[self memberListContentChanged];
-}
-
-- (void)memberListWasDestroyed
-{
-	self.memberListShown = nil;
-
-	[self reloadData];
-
-	[self memberListContentChanged];
 }
 
 #pragma mark -
@@ -532,7 +459,7 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 {
 	TVCMemberListAppearance *appearance = self.userInterfaceObjects;
 
-	NSArray *rows = (self.memberListShown.memberList ?: @[]);
+	NSArray *rows = (self.controller.memberListShown.memberList ?: @[]);
 
 	[rows enumerateObjectsUsingBlock:^(IRCChannelUser *member, NSUInteger index, BOOL *stop) {
 		if ((member.ranks & rank) == 0 && (isIRCop && isIRCop != member.user.isIRCop)) {

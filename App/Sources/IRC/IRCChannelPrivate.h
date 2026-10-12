@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TVCLogLine, IRCChannelHighlightKeywords;
 
+/* A new member list (memberInfo) after joining; object: the channel */
+TEXTUAL_EXTERN NSNotificationName const IRCChannelMemberListWasCreatedNotification;
+
 @interface IRCChannel () <IRCChannelMemberListPrivatePrototype>
 @property (atomic, strong, nullable) IRCChannelHighlightKeywords *highlightKeywords; // built by IRCClient (Logging)
 

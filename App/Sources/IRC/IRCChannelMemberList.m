@@ -47,8 +47,6 @@
 #import "IRCUserPrivate.h"
 #import "IRCWorld.h"
 #import "TPCPreferencesLocal.h"
-#import "TVCMemberListPrivate.h"
-#import "TVCMainWindow.h"
 #import "TXMasterController.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -60,7 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface IRCChannelMemberList ()
 @property (nonatomic, weak) IRCClient *client;
 @property (nonatomic, weak) IRCChannel *channel;
-@property (nonatomic, weak, nullable) TVCMemberList *tableView;
 @property (nonatomic, strong) NSMutableArray<IRCChannelUser *> *memberContainer;
 @property (nonatomic, assign) BOOL batchingNames; // from the first NAMES reply to its end: unsorted, no table updates
 @end
@@ -103,20 +100,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
 	/* Send a last message before death. */
-	TVCMemberList *tableView = self.tableView;
+	id <IRCChannelMemberListObserver> observer = self.observer;
 
-	if (tableView == nil) {
+	if (observer == nil) {
 		return;
 	}
 
 	XRPerformBlockSynchronouslyOnMainQueue(^{
-		[tableView memberListWasDestroyed];
+		[observer memberListWasDestroyed];
 	});
-}
-
-- (void)assignToTableView:(nullable TVCMemberList *)tableView
-{
-	self.tableView = tableView;
 }
 
 - (void)withContainer:(void (NS_NOESCAPE ^)(NSMutableArray<IRCChannelUser *> *container))block
@@ -130,16 +122,16 @@ NS_ASSUME_NONNULL_BEGIN
 	os_unfair_lock_unlock(&self->_memberContainerLock);
 }
 
-/* The table is told on the main thread, in the order of the changes */
-- (void)updateTableView:(void (^)(TVCMemberList *tableView))block
+/* The observer is told on the main thread, in the order of the changes */
+- (void)notifyObserver:(void (^)(id <IRCChannelMemberListObserver> observer))block
 {
 	NSParameterAssert(block != nil);
 
 	XRPerformBlockSynchronouslyOnMainQueue(^{
-		TVCMemberList *tableView = self.tableView;
+		id <IRCChannelMemberListObserver> observer = self.observer;
 
-		if (tableView) {
-			block(tableView);
+		if (observer) {
+			block(observer);
 		}
 	});
 }
@@ -270,8 +262,8 @@ NS_ASSUME_NONNULL_BEGIN
 		return; // NAMES: the table is reloaded at its end
 	}
 
-	[self updateTableView:^(TVCMemberList *tableView) {
-		[tableView memberListInsertedRowAtIndex:insertedIndex];
+	[self notifyObserver:^(id <IRCChannelMemberListObserver> observer) {
+		[observer memberListInsertedRowAtIndex:insertedIndex];
 	}];
 
 	if (channel.isChannel) {
@@ -317,8 +309,8 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
-	[self updateTableView:^(TVCMemberList *tableView) {
-		[tableView memberListRemovedRowAtIndex:removedIndex];
+	[self notifyObserver:^(id <IRCChannelMemberListObserver> observer) {
+		[observer memberListRemovedRowAtIndex:removedIndex];
 	}];
 
 	if (channel.isChannel) {
@@ -378,11 +370,11 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
-	[self updateTableView:^(TVCMemberList *tableView) {
+	[self notifyObserver:^(id <IRCChannelMemberListObserver> observer) {
 		if (oldIndex < 0) {
-			[tableView memberListInsertedRowAtIndex:newIndex];
+			[observer memberListInsertedRowAtIndex:newIndex];
 		} else {
-			[tableView memberListMovedRowAtIndex:oldIndex toIndex:newIndex];
+			[observer memberListMovedRowAtIndex:oldIndex toIndex:newIndex];
 		}
 	}];
 }
@@ -525,8 +517,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reloadTableView
 {
-	[self updateTableView:^(TVCMemberList *tableView) {
-		[tableView memberListReloaded];
+	[self notifyObserver:^(id <IRCChannelMemberListObserver> observer) {
+		[observer memberListReloaded];
 	}];
 }
 

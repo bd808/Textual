@@ -263,6 +263,7 @@
 		4C06E6EA20EC55B90055D09A /* TVCMemberListAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3152B220EB673E00448776 /* TVCMemberListAppearance.m */; };
 		4C06E6EB20EC55B90055D09A /* TVCMemberListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3152B120EB673E00448776 /* TVCMemberListCell.m */; };
 		4C06E6EC20EC55B90055D09A /* TVCMemberListUserInfoPopover.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3152B420EB673E00448776 /* TVCMemberListUserInfoPopover.m */; };
+		66DFD10C7E3C644C01D898A6 /* TVCMemberListController.m in Sources */ = {isa = PBXBuildFile; fileRef = E5554E128D5404764DD44D7B /* TVCMemberListController.m */; };
 		4C06E6ED20EC55B90055D09A /* TVCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3152C420EB673E00448776 /* TVCAppearance.m */; };
 		4C06E6EE20EC55B90055D09A /* TVCBasicTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3152A320EB673E00448776 /* TVCBasicTableView.m */; };
 		4C06E6EF20EC55B90055D09A /* TVCContentNavigationOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3152B520EB673E00448776 /* TVCContentNavigationOutlineView.m */; };
@@ -472,6 +473,7 @@
 		4C31576520EB6D0500448776 /* TVCMemberListCellPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151C520EB673E00448776 /* TVCMemberListCellPrivate.h */; };
 		4C31576620EB6D0500448776 /* TVCMemberListPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151BF20EB673E00448776 /* TVCMemberListPrivate.h */; };
 		4C31576720EB6D0500448776 /* TVCMemberListUserInfoPopoverPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151B620EB673E00448776 /* TVCMemberListUserInfoPopoverPrivate.h */; };
+		BB61C4271B0CB30464466F86 /* TVCMemberListControllerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 12BC3C891308A71A47B081BC /* TVCMemberListControllerPrivate.h */; };
 		4C31576820EB6D0500448776 /* TVCNotificationConfigurationViewControllerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31522320EB673E00448776 /* TVCNotificationConfigurationViewControllerPrivate.h */; };
 		4C31576920EB6D0500448776 /* TVCServerListAppearancePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31521720EB673E00448776 /* TVCServerListAppearancePrivate.h */; };
 		4C31576A20EB6D0500448776 /* TVCServerListCellPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151F720EB673E00448776 /* TVCServerListCellPrivate.h */; };
@@ -1018,6 +1020,7 @@
 		4C3151B420EB673E00448776 /* IRCUserRelationsPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCUserRelationsPrivate.h; sourceTree = "<group>"; };
 		4C3151B520EB673E00448776 /* TDCChannelPropertiesNotificationConfigurationPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCChannelPropertiesNotificationConfigurationPrivate.h; sourceTree = "<group>"; };
 		4C3151B620EB673E00448776 /* TVCMemberListUserInfoPopoverPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCMemberListUserInfoPopoverPrivate.h; sourceTree = "<group>"; };
+		12BC3C891308A71A47B081BC /* TVCMemberListControllerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCMemberListControllerPrivate.h; sourceTree = "<group>"; };
 		4C3151B820EB673E00448776 /* IRCTimedCommandPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCTimedCommandPrivate.h; sourceTree = "<group>"; };
 		4C3151B920EB673E00448776 /* TDCChannelBanListSheetPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCChannelBanListSheetPrivate.h; sourceTree = "<group>"; };
 		4C3151BA20EB673E00448776 /* TDCAddressBookSheetPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCAddressBookSheetPrivate.h; sourceTree = "<group>"; };
@@ -1238,6 +1241,7 @@
 		4C3152B220EB673E00448776 /* TVCMemberListAppearance.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCMemberListAppearance.m; sourceTree = "<group>"; };
 		4C3152B320EB673E00448776 /* TVCMemberList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCMemberList.m; sourceTree = "<group>"; };
 		4C3152B420EB673E00448776 /* TVCMemberListUserInfoPopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCMemberListUserInfoPopover.m; sourceTree = "<group>"; };
+		E5554E128D5404764DD44D7B /* TVCMemberListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCMemberListController.m; sourceTree = "<group>"; };
 		4C3152B520EB673E00448776 /* TVCContentNavigationOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCContentNavigationOutlineView.m; sourceTree = "<group>"; };
 		4C3152B720EB673E00448776 /* TVCLogScriptEventSink.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogScriptEventSink.m; sourceTree = "<group>"; };
 		4C3152B820EB673E00448776 /* TVCLogPolicy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogPolicy.m; sourceTree = "<group>"; };
@@ -2193,6 +2197,8 @@
 				4C3151BF20EB673E00448776 /* TVCMemberListPrivate.h */,
 				4C5E169316F99796CBB95275 /* TVCMemberListRowCell.m */,
 				4C3152B420EB673E00448776 /* TVCMemberListUserInfoPopover.m */,
+				E5554E128D5404764DD44D7B /* TVCMemberListController.m */,
+				12BC3C891308A71A47B081BC /* TVCMemberListControllerPrivate.h */,
 				4C3151B620EB673E00448776 /* TVCMemberListUserInfoPopoverPrivate.h */,
 			);
 			path = "Member List";
@@ -2968,6 +2974,7 @@
 				4C31576020EB6D0500448776 /* TVCMainWindowSplitViewPrivate.h in Headers */,
 				BE0696763E6E3D9BAF74C04E /* TVCListViewsPrivate.h in Headers */,
 				4C31576720EB6D0500448776 /* TVCMemberListUserInfoPopoverPrivate.h in Headers */,
+				BB61C4271B0CB30464466F86 /* TVCMemberListControllerPrivate.h in Headers */,
 				4C31570C20EB6D0500448776 /* TDCChannelModifyTopicSheetPrivate.h in Headers */,
 				4C3156FE20EB6D0500448776 /* IRCWorldPrivate.h in Headers */,
 				4C3155F120EB6CB400448776 /* TVCTextViewWithIRCFormatter.h in Headers */,
@@ -3600,6 +3607,7 @@
 				4C06E6EA20EC55B90055D09A /* TVCMemberListAppearance.m in Sources */,
 				4C06E6EB20EC55B90055D09A /* TVCMemberListCell.m in Sources */,
 				4C06E6EC20EC55B90055D09A /* TVCMemberListUserInfoPopover.m in Sources */,
+				66DFD10C7E3C644C01D898A6 /* TVCMemberListController.m in Sources */,
 				4C06E6ED20EC55B90055D09A /* TVCAppearance.m in Sources */,
 				4C06E6EE20EC55B90055D09A /* TVCBasicTableView.m in Sources */,
 				4C06E6EF20EC55B90055D09A /* TVCContentNavigationOutlineView.m in Sources */,
