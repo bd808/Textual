@@ -186,6 +186,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sortChannelListNames:(nullable id)sender
 {
+	BOOL listChanged = NO;
+
 	for (IRCClient *u in worldController().clientList) {
 		NSMutableArray *channelList = [u.channelList mutableCopy];
 
@@ -208,7 +210,16 @@ NS_ASSUME_NONNULL_BEGIN
 		u.channelList = channelList;
 
 		[u reloadServerListItems];
+
+		listChanged = YES;
 	}
+
+	if (listChanged == NO) {
+		return;
+	}
+
+	/* The Navigate menu and its shortcuts follow the new order */
+	[self populateNavigationChannelList];
 
 	[worldController() save];
 }

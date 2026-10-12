@@ -50,6 +50,7 @@
 #import "TDCAlert.h"
 #import "TDCPreferencesNotificationConfigurationPrivate.h"
 #import "TDCPreferencesUserStyleSheetPrivate.h"
+#import "TDCPreferencesControllerPrivate.h"
 #import "TDCPreferencesPanePrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -418,7 +419,14 @@ NS_ASSUME_NONNULL_BEGIN
 /* Also resets the no-mode colour (in Hidden Preferences, which follows the default) */
 - (void)onResetUserListModeColorsToDefaults:(nullable id)sender
 {
-	[self deactivateColorWells];
+	/* Hidden Preferences' well too: an active one would set the colour again */
+	TDCPreferencesController *controller = self.view.window.windowController;
+
+	if ([controller isKindOfClass:[TDCPreferencesController class]]) {
+		[controller deactivateColorWellsInAllPanes];
+	} else {
+		[self deactivateColorWells];
+	}
 
 	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +y"];
 	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +q"];
@@ -652,11 +660,18 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
+	/* The section may have left the window (closed) before the style loaded */
+	NSWindow *window = self.view.window;
+
+	if (window == nil) {
+		return;
+	}
+
 	NSString *currentTheme = [TPCPreferences themeName];
 
 	NSString *themeName = [TPCThemeController extractThemeName:currentTheme];
 
-	[TDCAlert alertSheetWithWindow:self.view.window
+	[TDCAlert alertSheetWithWindow:window
 							  body:TXTLS(@"TDCPreferencesController[q4o-2f]", themeName, forcedValues)
 							 title:TXTLS(@"TDCPreferencesController[uc0-z7]")
 					 defaultButton:TXTLS(@"Prompts[c7s-dq]")

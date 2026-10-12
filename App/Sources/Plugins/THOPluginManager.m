@@ -288,7 +288,9 @@ static NSString * const _thirdPartyPluginDecisionsDefaultsKey = @"THOPluginManag
 	NSDirectoryEnumerator *enumerator = [RZFileManager() enumeratorAtPath:bundlePath];
 
 	for (NSString *relativePath in enumerator) {
-		if ([enumerator.fileAttributes.fileType isEqualToString:NSFileTypeRegular]) {
+		NSString *fileType = enumerator.fileAttributes.fileType;
+
+		if ([fileType isEqualToString:NSFileTypeRegular] || [fileType isEqualToString:NSFileTypeSymbolicLink]) {
 			[relativePaths addObject:relativePath];
 		}
 	}
@@ -301,8 +303,30 @@ static NSString * const _thirdPartyPluginDecisionsDefaultsKey = @"THOPluginManag
 
 	NSMutableData *contents = [NSMutableData data];
 
+	NSString *resolvedBundlePath = [bundlePath.stringByResolvingSymlinksInPath stringByAppendingString:@"/"];
+
 	for (NSString *relativePath in relativePaths) {
-		NSData *fileContents = [NSData dataWithContentsOfFile:[bundlePath stringByAppendingPathComponent:relativePath]];
+		NSString *filePath = [bundlePath stringByAppendingPathComponent:relativePath];
+
+		/* A link counts by its destination, whose files are hashed where they are.
+		 One pointing outside the plugin could change without the hash changing. */
+		NSString *linkDestination = [RZFileManager() destinationOfSymbolicLinkAtPath:filePath error:NULL];
+
+		if (linkDestination) {
+			if ([filePath.stringByResolvingSymlinksInPath hasPrefix:resolvedBundlePath] == NO) {
+				LogToConsoleError("Not loading %{public}@: %{public}@ links outside the plugin", bundlePath, relativePath);
+
+				return nil;
+			}
+
+			NSString *linkEntry = [NSString stringWithFormat:@"%@\n-> %@\n", relativePath, linkDestination];
+
+			[contents appendData:[linkEntry dataUsingEncoding:NSUTF8StringEncoding]];
+
+			continue;
+		}
+
+		NSData *fileContents = [NSData dataWithContentsOfFile:filePath];
 
 		if (fileContents == nil) {
 			return nil;

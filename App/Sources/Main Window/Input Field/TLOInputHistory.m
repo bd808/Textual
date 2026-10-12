@@ -314,6 +314,11 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 
 	if (self.historyBuffer.count > _inputHistoryMax) {
 		[self.historyBuffer removeObjectAtIndex:0];
+
+		/* The entries moved down one: so does the position (Up showed the line just typed) */
+		if (self.historyBufferPosition > 0) {
+			self.historyBufferPosition -= 1;
+		}
 	}
 }
 

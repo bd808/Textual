@@ -380,6 +380,11 @@ typedef NSMutableDictionary	<NSString *, id> 	*TPCThemeControllerThemeListMutabl
 	NSParameterAssert(name.length > 0);
 	NSParameterAssert(storageLocation != TPCThemeStorageLocationUnknown);
 
+	/* One folder inside the styles folder: an imported "custom:../../x" must not reach outside it */
+	if ([name containsString:@"/"] || [name isEqualToString:@"."] || [name isEqualToString:@".."]) {
+		return nil;
+	}
+
 	NSString *basePath = [self pathOfStorageLocation:storageLocation];
 
 	if (basePath == nil) {

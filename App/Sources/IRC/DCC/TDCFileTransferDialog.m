@@ -847,13 +847,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return TDCFileTransferDropAnswerSend;
 }
 
-@end
-
-#pragma mark -
-#pragma mark Destination Folder
-
-@implementation TDCFileTransferDialog (TDCFileTransferDialogDownloadDestinationExtension)
-
+/* The property's getter belongs to the class, not to a category */
 - (TPCSecurityScopedFolder *)downloadDestination
 {
 	if (self->_downloadDestination == nil) {
@@ -862,6 +856,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 	return self->_downloadDestination;
 }
+
+@end
+
+#pragma mark -
+#pragma mark Destination Folder
+
+@implementation TDCFileTransferDialog (TDCFileTransferDialogDownloadDestinationExtension)
 
 - (nullable NSURL *)downloadDestinationURL
 {

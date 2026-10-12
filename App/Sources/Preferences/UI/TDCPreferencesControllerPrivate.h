@@ -54,6 +54,9 @@ typedef NS_ENUM(NSUInteger, TDCPreferencesControllerSelection) {
 @property (nonatomic, weak, nullable) id <TDCPreferencesControllerDelegate> delegate;
 
 - (void)show:(TDCPreferencesControllerSelection)selection;
+
+/* In every section made so far, also ones not shown (a reset can cover another section's well) */
+- (void)deactivateColorWellsInAllPanes;
 @end
 
 @protocol TDCPreferencesControllerDelegate <NSObject>

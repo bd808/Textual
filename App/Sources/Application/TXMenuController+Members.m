@@ -744,7 +744,14 @@ NS_ASSUME_NONNULL_BEGIN
 			return;
 		}
 
-		[self.fileTransferController.fileTransferTable beginUpdates];
+		/* Disconnected (or deleted) while the panel was open */
+		if (u.isLoggedIn == NO) {
+			return;
+		}
+
+		NSTableView *fileTransferTable = self.fileTransferController.fileTransferTable;
+
+		[fileTransferTable beginUpdates];
 
 		for (NSString *nickname in nicknames) {
 			for (NSURL *path in openPanel.URLs) {
@@ -752,7 +759,7 @@ NS_ASSUME_NONNULL_BEGIN
 			}
 		}
 
-		[self.fileTransferController.fileTransferTable endUpdates];
+		[fileTransferTable endUpdates];
 	}];
 }
 
@@ -906,13 +913,15 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
-	[self.fileTransferController.fileTransferTable beginUpdates];
+	NSTableView *fileTransferTable = self.fileTransferController.fileTransferTable;
+
+	[fileTransferTable beginUpdates];
 
 	for (NSString *file in files) {
 		[self.fileTransferController addSenderForClient:client nickname:nickname path:file autoOpen:YES];
 	}
 
-	[self.fileTransferController.fileTransferTable endUpdates];
+	[fileTransferTable endUpdates];
 }
 
 @end

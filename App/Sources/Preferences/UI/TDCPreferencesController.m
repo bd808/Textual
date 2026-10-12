@@ -338,6 +338,13 @@ typedef NS_ENUM(NSInteger, TDCPreferencesPaneTag) {
 }
 
 
+- (void)deactivateColorWellsInAllPanes
+{
+	for (TDCPreferencesPane *pane in self.panes.allValues) {
+		[pane deactivateColorWells];
+	}
+}
+
 #pragma mark -
 #pragma mark NSWindow Delegate
 

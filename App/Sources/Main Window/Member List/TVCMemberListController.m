@@ -77,9 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	IRCChannel *channelShown = self.channel;
 
-	if (channelShown) {
-		[RZNotificationCenter() removeObserver:self name:IRCChannelMemberListWasCreatedNotification object:channelShown];
-	}
+	/* By name: a channel freed since (weak, now nil) still has its registration */
+	[RZNotificationCenter() removeObserver:self name:IRCChannelMemberListWasCreatedNotification object:nil];
 
 	self.memberListShown.observer = nil;
 
@@ -98,7 +97,14 @@ NS_ASSUME_NONNULL_BEGIN
 									 object:channel];
 	}
 
-	[self.memberList reloadData];
+	TVCMemberList *memberListView = self.memberList;
+
+	/* Rows selected in the previous channel would pick people in this one */
+	if (channel != channelShown) {
+		[memberListView deselectAll:nil];
+	}
+
+	[memberListView reloadData];
 }
 
 /* Joined while shown: the list didn't exist when the channel was selected */
@@ -224,7 +230,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)memberListWasDestroyed
 {
-	self.memberListShown = nil;
+	/* The shown list is weak, so it is nil when it is the one destroyed. A list
+	 freed late (on another thread) must not clear the one shown since. */
+	if (self.memberListShown != nil) {
+		return;
+	}
 
 	TVCMemberList *memberList = self.memberList;
 

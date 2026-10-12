@@ -824,6 +824,11 @@ COCOA_EXTENSIONS_IGNORE_DEPRECATION_END
         bob = [bob stringByReplacingOccurrencesOfString:@"|" withString:@"_"];
     }
 
+	/* "." and ".." name the folder itself and its parent */
+	if ([bob isEqualToString:@"."] || [bob isEqualToString:@".."]) {
+		bob = [bob stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+	}
+
 	return bob;
 }
 

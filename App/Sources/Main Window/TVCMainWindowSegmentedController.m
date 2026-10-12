@@ -42,6 +42,7 @@
 #import "TPCPreferencesLocal.h"
 #import "TVCMainWindow.h"
 #import "TVCMainWindowLoadingScreen.h"
+#import "IRCChannel.h"
 #import "IRCClient.h"
 #import "IRCWorld.h"
 #import "TVCMainWindowSegmentedControllerPrivate.h"
@@ -100,16 +101,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self setMenu:cell0Menu forSegment:0];
 
-	// Cell 1
-	NSMenuItem *cell1MenuItem = nil;
+	// Cell 1 (the same menu as a right click in the server list)
+	NSMenu *cell1Menu = nil;
 
 	if (selectedChannel == nil) {
-		cell1MenuItem = menuController().mainMenuServerMenuItem;
+		cell1Menu = menuController().mainMenuServerMenuItem.submenu;
+	} else if (selectedChannel.isChannel) {
+		cell1Menu = menuController().mainMenuChannelMenu;
 	} else {
-		cell1MenuItem = menuController().mainMenuChannelMenuItem;
+		cell1Menu = menuController().mainMenuQueryMenu;
 	}
 
-	[self setMenu:cell1MenuItem.submenu forSegment:1];
+	[self setMenu:cell1Menu forSegment:1];
 
 	// Cell 2
 	[self setEnabled:(selectedClient.isConnected) forSegment:2];
