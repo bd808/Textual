@@ -70,54 +70,20 @@ NS_ASSUME_NONNULL_BEGIN
 	; // Do nothing for this...
 }
 
-- (void)setSelected:(BOOL)selected
+- (nullable NSColor *)selectionColorForActiveWindow:(BOOL)activeWindow
 {
-	super.selected = selected;
-
-	if (selected == NO && self.invalidatingBackgroundForSelection) {
-		return;
-	}
-
-	[self setNeedsDisplayOnChild];
-}
-
-- (void)setNeedsDisplayOnChild
-{
-	self.childCell.needsDisplay = YES;
-}
-
-- (void)drawSelectionInRect:(NSRect)dirtyRect
-{
-	if ([self needsToDrawRect:dirtyRect] == NO) {
-		return;
-	}
-
-	BOOL isWindowActive = self.mainWindow.isActiveForDrawing;
-
 	TVCServerListAppearance *appearance = self.userInterfaceObjects;
 
-	NSColor *selectionColor = nil;
-
-	if (isWindowActive) {
-		selectionColor = appearance.rowSelectionColorActiveWindow;
+	if (activeWindow) {
+		return appearance.rowSelectionColorActiveWindow;
 	} else {
-		selectionColor = appearance.rowSelectionColorInactiveWindow;
-	} // isWindowActive
-
-	if (selectionColor) {
-		[selectionColor set];
-
-		NSRect selectionRect = self.bounds;
-
-		NSRectFill(selectionRect);
-	} else {
-		[super drawSelectionInRect:dirtyRect];
-	} // selectionColor
+		return appearance.rowSelectionColorInactiveWindow;
+	}
 }
 
 - (void)didAddSubview:(NSView *)subview
 {
-	TVCServerListCellGroupItem *childCell = self.childCell;
+	TVCServerListCell *childCell = self.childCell;
 
 	[childCell defineConstraints];
 
@@ -127,35 +93,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Cell Information
 
-- (BOOL)isEmphasized
+- (BOOL)wantsEmphasis
 {
 	TVCServerListAppearance *appearance = self.userInterfaceObjects;
 
-	BOOL emphasized = NO;
-
 	if (self.isGroupItem) {
-		emphasized = appearance.serverRowEmphasized;
+		return appearance.serverRowEmphasized;
 	} else {
-		emphasized = appearance.channelRowEmphasized;
+		return appearance.channelRowEmphasized;
 	}
-
-	NSWindow *window = self.window;
-
-	return (emphasized &&
-			(window == nil || window.isKeyWindow));
-}
-
-- (__kindof TVCServerListCell * _Nullable)childCell
-{
-	if (self->_childCell == nil) {
-		if (self.numberOfColumns == 0) {
-			return nil;
-		}
-
-		self->_childCell = [self viewAtColumn:0];
-	}
-
-	return self->_childCell;
 }
 
 - (TVCServerListAppearance *)userInterfaceObjects

@@ -50,7 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) TVCMemberListRowCell *rowCell;
 @property (readonly) TVCMemberListAppearance *userInterfaceObjects;
 @property (readonly) IRCChannelUser *cellItem;
-@property (readonly) NSInteger rowIndex;
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *markBadgeLeftMarginConstraint;
 
 - (void)defineConstraints;
@@ -58,7 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TVCMemberListRowCell ()
 @property (nonatomic, weak) TVCMemberList *memberList;
-@property (nonatomic, weak) TVCMemberListCell *childCell;
 @property (readonly) TVCMemberListAppearance *userInterfaceObjects;
 @end
 

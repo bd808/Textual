@@ -297,7 +297,7 @@ cmd_vm-bundle() {
 	local bundle="${staging}/TextualTest"
 	mkdir -p "${bundle}/Development" "${bundle}/data"
 
-	cp "${ROOT}/Development/dev" "${ROOT}/Development/scripted-irc-server.py" "${ROOT}/Development/test-proxy.py" "${ROOT}/Development/ergo-config.py" "${bundle}/Development/"
+	cp "${ROOT}/Development/dev" "${ROOT}/Development/scripted-irc-server.py" "${ROOT}/Development/test-proxy.py" "${ROOT}/Development/ergo-config.py" "${ROOT}/Development/window-id.swift" "${bundle}/Development/"
 	# Without the database and lock of the Ergo running here; vm-dev creates its own
 	rsync -a --exclude ircd.db --exclude ircd.lock "${ERGO_DIR}/" "${bundle}/data/ergo/"
 	tar -xzf "${python_archive}" -C "${bundle}"

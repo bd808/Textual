@@ -35,11 +35,13 @@
  *
  *********************************************************************** */
 
+#import "TVCListViewsPrivate.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class TDCChannelSpotlightController;
 
-@interface TDCChannelSpotlightSearchResultRowView : NSTableRowView
+@interface TDCChannelSpotlightSearchResultRowView : TVCListRowView
 - (instancetype)initWithController:(TDCChannelSpotlightController *)controller;
 @end
 

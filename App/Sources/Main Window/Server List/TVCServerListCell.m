@@ -494,14 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
 	BOOL isSelected = drawingContext.isSelected;
 	BOOL isWindowActive = drawingContext.isWindowActive;
 
-	/* Create image that we will draw into. */
-	NSRect badgeFrame = NSMakeRect(0.0, 0.0, NSWidth(rectToDraw), NSHeight(rectToDraw));
-
-	NSImage *badgeImage = [NSImage newImageWithSize:NSMakeSize(NSWidth(rectToDraw),  NSHeight(rectToDraw))];
-
-	[badgeImage lockFocus];
-
-	/* Draw the background color. */
+	/* Decide the background color */
 	NSColor *backgroundColor = nil;
 
 	if (isSelected) {
@@ -526,28 +519,16 @@ NS_ASSUME_NONNULL_BEGIN
 		if (isWindowActive) {
 			backgroundColor = appearance.unreadBadgeBackgroundColorActiveWindow;
 		} else {
-			backgroundColor = appearance.unreadBadgeBackgroundColorActiveWindow;
+			backgroundColor = appearance.unreadBadgeBackgroundColorInactiveWindow;
 		} // isWindowActive
 	}
 
-	/* Draw the background of the badge */
-	NSBezierPath *badgePath = [NSBezierPath bezierPathWithRoundedRect:badgeFrame xRadius:7.0 yRadius:7.0];
-
-	[backgroundColor set];
-
-	[badgePath fill];
-
-	/* Center the text relative to the badge itself */
-	NSPoint badgeTextPoint =
-	NSMakePoint((NSMidX(badgeFrame) - (stringToDraw.size.width  / 2.0)),
-				(NSMidY(badgeFrame) - (stringToDraw.size.height / 2.0)));
-
-	/* Perform draw and set image */
-	[stringToDraw drawAtPoint:badgeTextPoint];
-
-	[badgeImage unlockFocus];
-
-	self.messageCountBadgeImageView.image = badgeImage;
+	self.messageCountBadgeImageView.image =
+	[TVCListBadge imageWithSize:rectToDraw.size
+				   cornerRadius:7.0
+				backgroundColor:backgroundColor
+						 string:stringToDraw
+						 offset:NSZeroPoint];
 }
 
 #pragma mark -

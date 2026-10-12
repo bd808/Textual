@@ -68,49 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
 	return nil;
 }
 
-- (void)setSelected:(BOOL)selected
+- (nullable NSColor *)selectionColorForActiveWindow:(BOOL)activeWindow
 {
-	super.selected = selected;
-
-	if (selected == NO && self.invalidatingBackgroundForSelection) {
-		return;
-	}
-
-	[self setNeedsDisplayOnChild];
-}
-
-- (void)setNeedsDisplayOnChild
-{
-	self.childCell.needsDisplay = YES;
-}
-
-- (void)drawSelectionInRect:(NSRect)dirtyRect
-{
-	if ([self needsToDrawRect:dirtyRect] == NO) {
-		return;
-	}
-
-	BOOL isWindowActive = self.mainWindow.isActiveForDrawing;
-
 	TVCMemberListAppearance *appearance = self.userInterfaceObjects;
 
-	NSColor *selectionColor = nil;
-
-	if (isWindowActive) {
-		selectionColor = appearance.rowSelectionColorActiveWindow;
+	if (activeWindow) {
+		return appearance.rowSelectionColorActiveWindow;
 	} else {
-		selectionColor = appearance.rowSelectionColorInactiveWindow;
-	} // isWindowActive
-
-	if (selectionColor) {
-		[selectionColor set];
-
-		NSRect selectionRect = self.bounds;
-
-		NSRectFill(selectionRect);
-	} else {
-		[super drawSelectionInRect:dirtyRect];
-	} // selectionColor
+		return appearance.rowSelectionColorInactiveWindow;
+	}
 }
 
 - (void)didAddSubview:(NSView *)subview
@@ -125,27 +91,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Cell Information
 
-- (BOOL)isEmphasized
+- (BOOL)wantsEmphasis
 {
-	TVCMemberListAppearance *appearance = self.userInterfaceObjects;
-
-	NSWindow *window = self.window;
-
-	return (appearance.cellRowEmphasized &&
-			(window == nil || window.isKeyWindow));
-}
-
-- (TVCMemberListCell * _Nullable)childCell
-{
-	if (self->_childCell == nil) {
-		if (self.numberOfColumns == 0) {
-			return nil;
-		}
-
-		self->_childCell = [self viewAtColumn:0];
-	}
-
-	return self->_childCell;
+	return self.userInterfaceObjects.cellRowEmphasized;
 }
 
 - (TVCMemberListAppearance *)userInterfaceObjects

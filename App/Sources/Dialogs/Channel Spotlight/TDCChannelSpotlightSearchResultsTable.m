@@ -49,7 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TDCChannelSpotlightSearchResultRowView ()
 @property (nonatomic, weak) TDCChannelSpotlightController *controller;
-@property (nonatomic, weak) TDCChannelSpotlightSearchResultCellView *childCell;
 @property (readonly) TDCChannelSpotlightAppearance *userInterfaceObjects;
 @end
 
@@ -316,72 +315,20 @@ NS_ASSUME_NONNULL_BEGIN
 	return nil;
 }
 
-- (void)setSelected:(BOOL)selected
-{
-	super.selected = selected;
-
-	if (selected == NO && self.invalidatingBackgroundForSelection) {
-		return;
-	}
-
-	[self setNeedsDisplayOnChild];
-}
-
-- (void)setNeedsDisplayOnChild
-{
-	self.childCell.needsDisplay = YES;
-}
-
-- (void)drawSelectionInRect:(NSRect)dirtyRect
-{
-	if ([self needsToDrawRect:dirtyRect] == NO) {
-		return;
-	}
-
-	BOOL isWindowActive = self.window.isActiveForDrawing;
-
-	TDCChannelSpotlightAppearance *appearance = self.userInterfaceObjects;
-
-	NSColor *selectionColor = nil;
-
-	if (isWindowActive) {
-		selectionColor = appearance.searchResultRowSelectionColorActiveWindow;
-	} else {
-		selectionColor = appearance.searchResultRowSelectionColorInactiveWindow;
-	} // isWindowActive
-
-	if (selectionColor) {
-		[selectionColor set];
-
-		NSRect selectionRect = self.bounds;
-
-		NSRectFill(selectionRect);
-	} else {
-		[super drawSelectionInRect:dirtyRect];
-	} // selectionColor
-}
-
-- (BOOL)isEmphasized
+- (nullable NSColor *)selectionColorForActiveWindow:(BOOL)activeWindow
 {
 	TDCChannelSpotlightAppearance *appearance = self.userInterfaceObjects;
 
-	NSWindow *window = self.window;
-
-	return (appearance.searchResultRowEmphasized &&
-			(window == nil || window.isKeyWindow));
+	if (activeWindow) {
+		return appearance.searchResultRowSelectionColorActiveWindow;
+	} else {
+		return appearance.searchResultRowSelectionColorInactiveWindow;
+	}
 }
 
-- (nullable TDCChannelSpotlightSearchResultCellView *)childCell
+- (BOOL)wantsEmphasis
 {
-	if (self->_childCell == nil) {
-		if (self.numberOfColumns == 0) {
-			return nil;
-		}
-
-		self->_childCell = [self viewAtColumn:0];
-	}
-
-	return self->_childCell;
+	return self.userInterfaceObjects.searchResultRowEmphasized;
 }
 
 - (TDCChannelSpotlightAppearance *)userInterfaceObjects

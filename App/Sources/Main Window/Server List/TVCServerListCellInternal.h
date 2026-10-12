@@ -68,7 +68,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TVCServerListRowCell ()
 @property (nonatomic, weak) TVCServerList *serverList;
-@property (nonatomic, weak) __kindof TVCServerListCell *childCell;
 @property (readonly) TVCServerListAppearance *userInterfaceObjects;
 @property (readonly) BOOL isGroupItem;
 @end

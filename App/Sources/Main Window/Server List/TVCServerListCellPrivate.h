@@ -35,11 +35,13 @@
  *
  *********************************************************************** */
 
+#import "TVCListViewsPrivate.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class TVCServerList;
 
-@interface TVCServerListRowCell : NSTableRowView
+@interface TVCServerListRowCell : TVCListRowView
 - (instancetype)initWithServerList:(TVCServerList *)serverList;
 @end
 

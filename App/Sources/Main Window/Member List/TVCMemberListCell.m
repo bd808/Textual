@@ -368,15 +368,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 	BOOL isWindowActive = drawingContext.isWindowActive;
 
-	/* Create image that we will draw into. */
-	NSRect imageViewFrame = self.imageView.frame;
-
-	NSRect badgeFrame = NSMakeRect(0.0, 0.0, imageViewFrame.size.width, imageViewFrame.size.height);
-
-	NSImage *badgeImage = [NSImage newImageWithSize:NSMakeSize(NSWidth(badgeFrame),  NSHeight(badgeFrame))];
-
-	[badgeImage lockFocus];
-
 	/* Decide the background color */
 	NSColor *backgroundColor = nil;
 
@@ -421,21 +412,13 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 	}
 
-	/* Draw the background of the badge */
-	NSBezierPath *badgePath = [NSBezierPath bezierPathWithRoundedRect:badgeFrame xRadius:4.0 yRadius:4.0];
+	/* The mode string, centred, then nudged so each symbol looks centred */
+	NSAttributedString *badgeText = nil;
 
-	[backgroundColor set];
+	NSPoint badgeTextOffset = NSZeroPoint;
 
-	[badgePath fill];
-
-	/* Begin building the actual mode string */
 	if (stringToDraw.length > 0) {
-		NSAttributedString *badgeText = [self markBadgeTextForModeSymbol:stringToDraw isSelected:isSelected withAppearance:appearance inContext:drawingContext];
-
-		NSSize badgeTextSize = badgeText.size;
-
-		NSPoint badgeTextPoint = NSMakePoint((NSMidX(badgeFrame) - (badgeTextSize.width / 2.0)),
-											 (NSMidY(badgeFrame) - (badgeTextSize.height / 2.0)));
+		badgeText = [self markBadgeTextForModeSymbol:stringToDraw isSelected:isSelected withAppearance:appearance inContext:drawingContext];
 
 		if (appearance.isHighResolutionAppearance)
 		{
@@ -443,15 +426,15 @@ NS_ASSUME_NONNULL_BEGIN
 				[stringToDraw isEqualToString:@"~"] ||
 				[stringToDraw isEqualToString:@"×"])
 			{
-				badgeTextPoint.y += 1.0;
+				badgeTextOffset.y += 1.0;
 			}
 			else if ([stringToDraw isEqualToString:@"^"])
 			{
-				badgeTextPoint.y -= 2.0;
+				badgeTextOffset.y -= 2.0;
 			}
 			else if ([stringToDraw isEqualToString:@"*"])
 			{
-				badgeTextPoint.y -= 2.5;
+				badgeTextOffset.y -= 2.5;
 			}
 /*			else if ([stringToDraw isEqualToString:@"@"] ||
 					 [stringToDraw isEqualToString:@"!"] ||
@@ -461,7 +444,7 @@ NS_ASSUME_NONNULL_BEGIN
 					 [stringToDraw isEqualToString:@"?"] ||
 					 [stringToDraw isEqualToString:@"$"])
 			{
-				badgeTextPoint.y -= 0.0;
+				badgeTextOffset.y -= 0.0;
 			} */
 		}
 		else // isDrawingForRetina
@@ -470,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
 				[stringToDraw isEqualToString:@"~"] ||
 				[stringToDraw isEqualToString:@"×"])
 			{
-				badgeTextPoint.y += 2.0;
+				badgeTextOffset.y += 2.0;
 			}
 			else if ([stringToDraw isEqualToString:@"@"] ||
 					 [stringToDraw isEqualToString:@"!"] ||
@@ -479,28 +462,28 @@ NS_ASSUME_NONNULL_BEGIN
 					 [stringToDraw isEqualToString:@"#"] ||
 					 [stringToDraw isEqualToString:@"?"])
 			{
-				badgeTextPoint.y += 1.0;
+				badgeTextOffset.y += 1.0;
 			}
 /*			else if ([stringToDraw isEqualToString:@"^"])
 			{
-				badgeTextPoint.y -= 0.0;
+				badgeTextOffset.y -= 0.0;
 			} */
 			else if ([stringToDraw isEqualToString:@"*"])
 			{
-				badgeTextPoint.y -= 1.0;
+				badgeTextOffset.y -= 1.0;
 			}
 			else if ([stringToDraw isEqualToString:@"$"])
 			{
-				badgeTextPoint.y += 1.0;
+				badgeTextOffset.y += 1.0;
 			}
 		}
-
-		[badgeText drawAtPoint:badgeTextPoint];
 	}
 
-	[badgeImage unlockFocus];
-
-	return badgeImage;
+	return [TVCListBadge imageWithSize:self.imageView.frame.size
+						  cornerRadius:4.0
+					   backgroundColor:backgroundColor
+								string:badgeText
+								offset:badgeTextOffset];
 }
 
 #pragma mark -

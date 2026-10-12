@@ -35,11 +35,13 @@
  *
  *********************************************************************** */
 
+#import "TVCListViewsPrivate.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class TVCMemberList;
 
-@interface TVCMemberListRowCell : NSTableRowView
+@interface TVCMemberListRowCell : TVCListRowView
 - (instancetype)initWithMemberList:(TVCMemberList *)memberList;
 @end
 

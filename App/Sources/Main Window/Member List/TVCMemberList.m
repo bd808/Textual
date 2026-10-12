@@ -629,6 +629,9 @@ NSString * const TVCMemberListDragType = @"TVCMemberListDragType";
 
 - (void)respondToRequiresRedraw
 {
+	/* Remembered badges are drawn for one window state (active or not) */
+	[self.userInterfaceObjects invalidateUserMarkBadgeCaches];
+
 	[self refreshAllDrawings:YES];
 }
 
