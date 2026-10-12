@@ -990,6 +990,10 @@ typedef NS_ENUM(NSUInteger, TDCLegacyImportAssistantStep) {
 		[notes addObject:[self _rowWithSymbol:@"photo" color:grey text:TXTLS(@"Prompts[pjp-bp]", [result.inlineMediaModules componentsJoinedByString:@", "])]];
 	}
 
+	if (result.keptItems.count > 0) {
+		[notes addObject:[self _rowWithSymbol:@"square.on.square" color:orange text:TXTLS(@"Prompts[k7t-r3]", name, [result.keptItems componentsJoinedByString:@", "])]];
+	}
+
 	if (result.failureCount > 0) {
 		[notes addObject:[self _rowWithSymbol:@"exclamationmark.triangle" color:orange text:TXTLS(@"Prompts[to7-nt]", result.failureCount)]];
 	}
@@ -1009,8 +1013,8 @@ typedef NS_ENUM(NSUInteger, TDCLegacyImportAssistantStep) {
 
 	[self _setBody:body];
 
-	/* Not when something couldn't be copied: it would be deleted with the rest */
-	NSString *deleteCheckbox = ((result.failureCount > 0) ? nil : TXTLS(@"Prompts[ixe-oc]", name));
+	/* Not when something couldn't be copied or was kept: it would be deleted with the rest */
+	NSString *deleteCheckbox = ((result.failureCount > 0 || result.keptItems.count > 0) ? nil : TXTLS(@"Prompts[ixe-oc]", name));
 
 	[self _setPrimary:(self.fromMenu ? TXTLS(@"Prompts[33s-fi]") : TXTLS(@"Prompts[weu-cf]"))
 			secondary:nil

@@ -558,7 +558,10 @@ NSString * const TXNotificationActionIdentifierLicenseManagerMoreInfo = @"TXNoti
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification
 {
-	[menuController() showNotificationPreferences:nil];
+	/* Called on the notification centre's queue: Preferences is AppKit */
+	XRPerformBlockAsynchronouslyOnMainQueue(^{
+		[menuController() showNotificationPreferences:nil];
+	});
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler

@@ -161,6 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readwrite, copy) NSArray<NSString *> *extensions;
 @property (readwrite, copy) NSArray<NSString *> *inlineMediaModules;
 @property (readwrite) NSUInteger failureCount;
+@property (readwrite, copy) NSArray<NSString *> *keptItems;
 @property (readwrite) BOOL importedScrollback;
 @property (readwrite) BOOL triedLicense;
 @property (readwrite) BOOL importedLicense;
@@ -178,6 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 		self.styles = @[];
 		self.extensions = @[];
 		self.inlineMediaModules = @[];
+		self.keptItems = @[];
 	}
 
 	return self;
@@ -610,9 +612,9 @@ NS_ASSUME_NONNULL_BEGIN
 											   error:NULL] ?: @[];
 }
 
-/* Copies (never moves) each item, replacing an item of the same name. Links
- are followed, so the copy has the files and not a link back into the
- earlier version's folder. */
+/* Copies (never moves) each item; one of the same name already in Textual 8
+ is kept and the earlier version's is listed in keptItems. Links are followed,
+ so the copy has the files and not a link back into the earlier version's folder. */
 - (NSArray<NSString *> *)_copyContentsOfFolder:(NSURL *)sourceURL toFolder:(nullable NSURL *)destinationURL
 {
 	if (destinationURL == nil) {
@@ -628,6 +630,9 @@ NS_ASSUME_NONNULL_BEGIN
 		 extension of the same name was deleted (not even to the Trash) */
 		if ([destinationItem checkResourceIsReachableAndReturnError:NULL]) {
 			LogToConsoleInfo("Legacy import: kept the existing %{public}@", destinationItem.path);
+
+			/* Shown in the summary, and the earlier version's data isn't offered for deletion */
+			self.result.keptItems = [self.result.keptItems arrayByAddingObject:item.lastPathComponent.stringByDeletingPathExtension];
 
 			continue;
 		}
