@@ -298,6 +298,30 @@ async def scenario_review_irc(client):
 			await client.send(f":{nick}!user@client.textual.test {line}")
 
 
+async def scenario_review_view(client):
+	"""Review fixes, group 4 (import the two review filters first). The console
+	must not show the 004 line ("scripted io bklov"): a filter saved with the
+	numeric "4". In #v: alice's line with "&local" shows it once (not "&amp;local");
+	the stranger's "spam" line (not in the member list) and alice's line of a's
+	ending in b (the filter's slow pattern) are hidden; the copy line copies as
+	"&lt;b&gt;"; the last line shows."""
+	nick = client.nickname
+	await client.send(f":{SERVER} 005 {nick} CHANTYPES=#& :are supported by this server")
+	await client.send(f":{nick}!user@client.textual.test JOIN #v")
+	await client.send(f":{SERVER} 353 {nick} = #v :@{nick} alice")
+	await client.send(f":{SERVER} 366 {nick} #v :End of /NAMES list.")
+	await client.collect(2)
+
+	await client.send(":alice!a@friend.test PRIVMSG #v :hello, see &local and #v")
+	await client.send(":stranger!s@elsewhere.test PRIVMSG #v :spam from someone outside the member list")
+	await client.send(":alice!a@friend.test PRIVMSG #v :" + "a" * 40 + "b")
+	await client.send(":alice!a@friend.test PRIVMSG #v :copy me: &lt;b&gt;")
+	await client.send(":alice!a@friend.test PRIVMSG #v :the last line, after the hidden ones")
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_ctcp_flood(client):
 	"""20 CTCP VERSION queries from one host and one to a channel: at most 2 replies
 	to that host, none to the channel, and another host still gets an answer."""
@@ -1514,6 +1538,7 @@ SCENARIOS = {
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
+	"review-view": scenario_review_view,
 	"links": scenario_links,
 	"nickserv-spoof": scenario_nickserv_spoof,
 	"long-line": scenario_long_line,

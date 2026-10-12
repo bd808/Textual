@@ -139,7 +139,10 @@ NS_ASSUME_NONNULL_BEGIN
 			comparisonHostmask = textAuthor.hostmask;
 		}
 
-		if ([XRRegularExpression string:comparisonHostmask isMatchedByRegex:filterSenderMatch withoutCase:YES] == NO) {
+		/* A search that took too long counts as a match: text built to be slow must not get past a filter */
+		BOOL timedOut = NO;
+
+		if ([XRRegularExpression string:comparisonHostmask isMatchedByRegex:filterSenderMatch withoutCase:YES timedOut:&timedOut] == NO && timedOut == NO) {
 			/* If a filter specifies a sender match and the match for
 			 this particular filter fails, then skip this filter. */
 
@@ -158,14 +161,13 @@ NS_ASSUME_NONNULL_BEGIN
 	NSInteger filterAgeLimit = filter.filterAgeLimit;
 
 	if (filterAgeLimit > 0) {
-		/* The value of senderUser is checked here and not where it is
-		 declared so that filters that do not rely on the value of this
-		 object are passed over. */
-		if (senderUser == nil) {
-			return NO;
-		}
+		/* A sender who isn't in the member list (a channel without +n)
+		 counts as someone who just arrived */
+		NSInteger ageLimitDelta = 0;
 
-		NSInteger ageLimitDelta = [NSDate timeIntervalSinceNow:senderUser.creationTime];
+		if (senderUser) {
+			ageLimitDelta = [NSDate timeIntervalSinceNow:senderUser.creationTime];
+		}
 
 		switch (filter.filterAgeComparator) {
 			case TPI_ChatFilterAgeComparatorLessThan:
@@ -192,11 +194,8 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	/* Is sender an operator? */
-	if (filter.filterIgnoreOperators) {
-		if (senderUser == nil) {
-			return NO;
-		}
-
+	/* A sender who isn't in the member list is no operator */
+	if (filter.filterIgnoreOperators && senderUser) {
 		if (senderUser.halfOp) {
 			/* User is at least a Half-op, ignore this filter. */
 
@@ -225,7 +224,10 @@ NS_ASSUME_NONNULL_BEGIN
 			text = text.stripIRCEffects;
 		}
 
-		if ([XRRegularExpression string:text isMatchedByRegex:filterMatch withoutCase:YES] == NO) {
+		/* A search that took too long counts as a match (see the sender match) */
+		BOOL timedOut = NO;
+
+		if ([XRRegularExpression string:text isMatchedByRegex:filterMatch withoutCase:YES timedOut:&timedOut] == NO && timedOut == NO) {
 			/* The input text is not matched by the filter match.
 			 Continue to the next filter to try again. */
 

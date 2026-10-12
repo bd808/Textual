@@ -38,7 +38,6 @@
 
 #include <objc/message.h>
 
-#import "GTMEncodeHTML.h"
 #import "NSObjectHelperPrivate.h"
 #import "TXMasterController.h"
 #import "TPCPreferencesLocal.h"
@@ -211,10 +210,8 @@ NS_ASSUME_NONNULL_BEGIN
 		return nil;
 	}
 
-	if ([object isKindOfClass:[NSString class]]) {
-		return [object gtm_stringByUnescapingFromHTML];
-	}
-
+	/* Strings arrive as plain text (textContent, getAttribute(), the selection):
+	 decoding HTML again turned a copied "&lt;b&gt;" into "<b>" */
 	return object;
 }
 

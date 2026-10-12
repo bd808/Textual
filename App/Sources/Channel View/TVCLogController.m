@@ -94,7 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable, readwrite) NSString *newestLineNumberFromPreviousSession;
 @property (nonatomic, copy, nullable, readwrite) NSString *oldestLineNumber;
 @property (nonatomic, copy, nullable, readwrite) NSString *newestLineNumber;
-@property (nonatomic, strong, nullable) TVCLogLine *lastLine;
+@property (atomic, strong, nullable) TVCLogLine *lastLine; // atomic: history results set it off the main thread
+@property (nonatomic, strong) NSMutableArray<TVCLogLine *> *unsavedLogLines; // printed but not yet in the historic log; guarded by itself
+@property (atomic, assign) NSUInteger historyGeneration; // raised by every clear; history fetches from before it are dropped
 @property (nonatomic, strong) NSMutableArray<NSString *> *highlightedLineNumbers;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSMutableArray *> *jumpToLineCallbacks; // line number → handlers waiting for it
 @property (nonatomic, strong, readwrite, nullable) TVCLogView *backingView; // nil once torn down
@@ -180,6 +182,8 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	self.highlightedLineNumbers	= [NSMutableArray new];
 
 	self.jumpToLineCallbacks = [NSMutableDictionary dictionary];
+
+	self.unsavedLogLines = [NSMutableArray array];
 }
 
 - (void)prepareForTermination:(BOOL)isTerminatingApplication
@@ -193,7 +197,12 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	[self.backingView stopLoading]; // allow view to teardown
 	self.backingView = nil;
 
+	self.historyGeneration += 1;
+
 	[self.printingQueue cancelOperationsForViewController:self];
+
+	/* Quitting: lines not drawn yet still belong in the saved scrollback */
+	[self saveUnsavedLogLines:isTerminatingApplication];
 
 	[self discardPendingAppend];
 
@@ -820,6 +829,10 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 		[self notifyViewFinishedLoadingHistory];
 	};
 
+	/* The operation finishes when the fetch starts, so cancelling it doesn't
+	 reach the fetch: a clear raises historyGeneration instead */
+	NSUInteger historyGeneration = self.historyGeneration;
+
 	TVCLogControllerPrintingBlock operationBlock = ^(id operation) {
 		NSDate *limitToDate = [NSDate dateWithTimeIntervalSince1970:self.viewLoadedTimestamp];
 
@@ -829,7 +842,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 				  fetchLimit:100
 				 limitToDate:limitToDate
 		 withCompletionBlock:^(NSArray<TVCLogLine *> *objects) {
-				if ([operation isCancelled]) {
+				if ([operation isCancelled] || self.historyGeneration != historyGeneration) {
 					return;
 				}
 
@@ -1226,7 +1239,13 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 		return;
 	}
 
+	self.historyGeneration += 1;
+
 	[self.printingQueue cancelOperationsForViewController:self];
+
+	/* Lines still waiting to be drawn would be lost with their operations:
+	 a theme reload saves them, so the reloaded history shows them */
+	[self saveUnsavedLogLines:(clearWithReset == NO)];
 
 	[self discardPendingAppend];
 
@@ -1286,9 +1305,11 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	NSParameterAssert(maximumNumberOfLines > 0);
 	NSParameterAssert(completionBlock != nil);
 
+	NSUInteger historyGeneration = self.historyGeneration;
+
 	TVCLogControllerPrintingBlock operationBlock = ^(id operation) {
 		void (^historicLogCompletionBlock)(NSArray *) = ^(NSArray<TVCLogLine *> *entries) {
-			if ([operation isCancelled]) {
+			if ([operation isCancelled] || self.historyGeneration != historyGeneration) {
 				return;
 			}
 
@@ -1320,9 +1341,11 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	NSParameterAssert(lineNumber != nil);
 	NSParameterAssert(completionBlock != nil);
 
+	NSUInteger historyGeneration = self.historyGeneration;
+
 	TVCLogControllerPrintingBlock operationBlock = ^(id operation) {
 		void (^historicLogCompletionBlock)(NSArray *) = ^(NSArray<TVCLogLine *> *entries) {
-			if ([operation isCancelled]) {
+			if ([operation isCancelled] || self.historyGeneration != historyGeneration) {
 				return;
 			}
 
@@ -1416,6 +1439,10 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 	self.lastLine = logLine;
 
+	@synchronized (self.unsavedLogLines) {
+		[self.unsavedLogLines addObject:logLine];
+	}
+
 	/* Unread counts, highlights and notifications don't wait for the document:
 	 views in the background load a few at a time, which held them back for
 	 tens of seconds. The line itself still waits, so it is shown once. */
@@ -1460,6 +1487,11 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 				return;
 			}
 
+			/* A clear since rendering began saved or dropped this line already */
+			if ([self takeUnsavedLogLine:logLine] == NO) {
+				return;
+			}
+
 			if (self.oldestLineNumber == nil) {
 				self.oldestLineNumber = lineNumber;
 			}
@@ -1499,6 +1531,41 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	};
 
 	_enqueueBlock(printBlock)
+}
+
+/* YES when the line was still waiting to be saved (and now isn't) */
+- (BOOL)takeUnsavedLogLine:(TVCLogLine *)logLine
+{
+	@synchronized (self.unsavedLogLines) {
+		NSUInteger index = [self.unsavedLogLines indexOfObjectIdenticalTo:logLine];
+
+		if (index == NSNotFound) {
+			return NO;
+		}
+
+		[self.unsavedLogLines removeObjectAtIndex:index];
+	}
+
+	return YES;
+}
+
+- (void)saveUnsavedLogLines:(BOOL)save
+{
+	NSArray<TVCLogLine *> *logLines = nil;
+
+	@synchronized (self.unsavedLogLines) {
+		logLines = [self.unsavedLogLines copy];
+
+		[self.unsavedLogLines removeAllObjects];
+	}
+
+	if (save == NO) {
+		return;
+	}
+
+	for (TVCLogLine *logLine in logLines) {
+		[sharedHistoricLog() writeNewEntryWithLogLine:logLine forItem:self.associatedItem];
+	}
 }
 
 /* Renders only the message body (for its highlight and nicknames) on a serial

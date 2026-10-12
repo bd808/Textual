@@ -407,8 +407,9 @@ static NSCharacterSet *s_startCharacterSet = nil;
 			}
 		}
 
+		/* Nothing left of this word (")" or "()"): the next word, not the end of the message */
 		if (scanRange.length == 0) {
-			break;
+			continue;
 		}
 
 		// Find balanced enclosure characters
@@ -585,9 +586,10 @@ static NSCharacterSet *s_startCharacterSet = nil;
 			{
 				NSUInteger encTagIndex = [encDict[ENC_INDEX_KEY] unsignedIntegerValue];
 
-				NSUInteger encStartIndex = [s_enclosureStartArray indexOfObjectIdenticalTo:encDict[ENC_CHAR_KEY]];
+				/* Equal, not identical: substrings are new objects, and NSNotFound == NSNotFound made any pair "balanced" */
+				NSUInteger encStartIndex = [s_enclosureStartArray indexOfObject:encDict[ENC_CHAR_KEY]];
 				
-				if ([s_enclosureStopArray indexOfObjectIdenticalTo:matchCharacter] == encStartIndex)
+				if (encStartIndex != NSNotFound && [s_enclosureStopArray indexOfObject:matchCharacter] == encStartIndex)
 				{
 					NSRange encRange = NSMakeRange(encTagIndex, (encScanLocation - encTagIndex + 1));
 

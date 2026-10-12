@@ -271,7 +271,16 @@ NS_ASSUME_NONNULL_BEGIN
 		else _commandMatchesEvent(@"324", TPI_ChatFilterEventTypeChannelModeReceived)
 		else
 		{
-			cachedResponse = @([self.filterEventsNumerics containsObject:command]);
+			NSArray *filterEventsNumerics = self.filterEventsNumerics;
+
+			/* Filters saved before numerics kept their leading zeros have "1" for "001" */
+			BOOL commandEnabled = [filterEventsNumerics containsObject:command];
+
+			if (commandEnabled == NO && command.numericOnly) {
+				commandEnabled = [filterEventsNumerics containsObject:[NSString stringWithFormat:@"%ld", command.integerValue]];
+			}
+
+			cachedResponse = @(commandEnabled);
 		}
 
 		[self->_cachedIsCommandEnabledResponses setObject:cachedResponse forKey:command];

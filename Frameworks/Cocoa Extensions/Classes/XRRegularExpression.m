@@ -88,8 +88,17 @@ NS_ASSUME_NONNULL_BEGIN
  empty for an invalid pattern or a search that exceeds the time limit. */
 + (NSArray<NSTextCheckingResult *> *)resultsInString:(NSString *)haystack withRegex:(NSString *)needle withoutCase:(BOOL)caseless firstOnly:(BOOL)firstOnly
 {
+	return [self resultsInString:haystack withRegex:needle withoutCase:caseless firstOnly:firstOnly timedOut:NULL];
+}
+
++ (NSArray<NSTextCheckingResult *> *)resultsInString:(NSString *)haystack withRegex:(NSString *)needle withoutCase:(BOOL)caseless firstOnly:(BOOL)firstOnly timedOut:(nullable BOOL *)timedOutOut
+{
 	NSParameterAssert(haystack != nil);
 	NSParameterAssert(needle != nil);
+
+	if (timedOutOut) {
+		*timedOutOut = NO;
+	}
 
 	NSRegularExpression *regex = [self regularExpressionWithPattern:needle caseless:caseless];
 
@@ -125,6 +134,10 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 	}];
 
+	if (timedOutOut) {
+		*timedOutOut = timedOut;
+	}
+
 	if (timedOut) {
 		NSLog(@"Regular expression took too long and was treated as no match: %@", needle);
 
@@ -142,6 +155,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)string:(NSString *)haystack isMatchedByRegex:(NSString *)needle withoutCase:(BOOL)caseless
 {
 	return ([self resultsInString:haystack withRegex:needle withoutCase:caseless firstOnly:YES].count > 0);
+}
+
++ (BOOL)string:(NSString *)haystack isMatchedByRegex:(NSString *)needle withoutCase:(BOOL)caseless timedOut:(nullable BOOL *)timedOut
+{
+	return ([self resultsInString:haystack withRegex:needle withoutCase:caseless firstOnly:YES timedOut:timedOut].count > 0);
 }
 
 + (NSRange)string:(NSString *)haystack rangeOfRegex:(NSString *)needle

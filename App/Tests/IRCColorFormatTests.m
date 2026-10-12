@@ -113,13 +113,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSMutableAttributedString *line = [NSMutableAttributedString new];
 
-	for (NSUInteger i = 0; i < 300; i++) {
+	/* Two words per colour, so that a message fills up inside a colour */
+	for (NSUInteger i = 0; i < 150; i++) {
 		NSDictionary *attributes = @{IRCTextFormatterForegroundColorAttributeName : @((i % 2 == 0) ? 4 : 12)};
 
-		[line appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"w%03lu ", (unsigned long)i] attributes:attributes]];
+		NSString *words = [NSString stringWithFormat:@"w%03lu w%03lu ", (unsigned long)(i * 2), (unsigned long)(i * 2 + 1)];
+
+		[line appendAttributedString:[[NSAttributedString alloc] initWithString:words attributes:attributes]];
 	}
 
-	NSString *expected = line.string;
+	/* A copy: -string is the live backing store, which the split empties */
+	NSString *expected = [line.string copy];
 
 	NSMutableString *joined = [NSMutableString string];
 

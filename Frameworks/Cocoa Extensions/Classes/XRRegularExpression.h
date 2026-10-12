@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)string:(NSString *)haystack isMatchedByRegex:(NSString *)needle; // caseless = NO
 + (BOOL)string:(NSString *)haystack isMatchedByRegex:(NSString *)needle withoutCase:(BOOL)caseless;
++ (BOOL)string:(NSString *)haystack isMatchedByRegex:(NSString *)needle withoutCase:(BOOL)caseless timedOut:(nullable BOOL *)timedOut; // timedOut: YES when the search was abandoned (NO is returned)
 
 + (NSRange)string:(NSString *)haystack rangeOfRegex:(NSString *)needle; // caseless = NO
 + (NSRange)string:(NSString *)haystack rangeOfRegex:(NSString *)needle withoutCase:(BOOL)caseless;

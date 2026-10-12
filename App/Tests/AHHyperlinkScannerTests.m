@@ -80,6 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 	XCTAssertEqualObjects([self linksInString:@"(see https://example.com)"],
 						  (@[@"https://example.com"]));
+
+	/* A word left empty by its closing bracket ended the whole scan */
+	XCTAssertEqualObjects([self linksInString:@"(look )here https://example.com"],
+						  (@[@"https://example.com"]));
 }
 
 - (void)testSchemesIgnoreCase

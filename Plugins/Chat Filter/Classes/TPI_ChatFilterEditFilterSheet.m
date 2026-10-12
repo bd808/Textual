@@ -324,8 +324,8 @@ typedef NS_ENUM(NSUInteger, TPI_ChatFilterEditFilterSheetSelection)
 				return nil; // Bad value, fail completely
 			}
 
-			// Convert to integer and back to remove leading zeros
-			numeric = [NSString stringWithFormat:@"%ld", numeric.integerValue];
+			// Three digits, as numerics arrive ("1" and "001" both become "001")
+			numeric = [NSString stringWithFormat:@"%03ld", numeric.integerValue];
 		} else if (numeric.alphabeticNumericOnly) {
 			if (numeric.length > 20) {
 				return nil; // Bad value, fail completely
