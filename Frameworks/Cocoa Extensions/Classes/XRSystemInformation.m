@@ -185,14 +185,8 @@ NS_ASSUME_NONNULL_BEGIN
 			cachedValue = NSLocalizedStringFromTableInBundle(@"macOS Tahoe", @"XRSystemInformation", bundle, nil);
 		} else if (XRRunningOnOSXSequoiaOrLater()) {
 			cachedValue = NSLocalizedStringFromTableInBundle(@"macOS Sequoia", @"XRSystemInformation", bundle, nil);
-		} else if (XRRunningOnOSXSonomaOrLater()) {
+		} else {
 			cachedValue = NSLocalizedStringFromTableInBundle(@"macOS Sonoma", @"XRSystemInformation", bundle, nil);
- 		} else if (XRRunningOnOSXVenturaOrLater()) {
-			cachedValue = NSLocalizedStringFromTableInBundle(@"macOS Ventura", @"XRSystemInformation", bundle, nil);
-		} else if (XRRunningOnOSXMontereyOrLater()) {
-			cachedValue = NSLocalizedStringFromTableInBundle(@"macOS Monterey", @"XRSystemInformation", bundle, nil);
-		} else if (XRRunningOnOSXBigSurOrLater()) {
-			cachedValue = NSLocalizedStringFromTableInBundle(@"macOS Big Sur", @"XRSystemInformation", bundle, nil);
 		}
 	}
 
@@ -362,59 +356,17 @@ BOOL XRRunningOnOSXBigSurOrLater(void)
 
 BOOL XRRunningOnOSXMontereyOrLater(void)
 {
-	static BOOL cachedValue = NO;
-
-	static dispatch_once_t onceToken;
-
-	dispatch_once(&onceToken, ^{
-		NSOperatingSystemVersion compareVersion;
-
-		compareVersion.majorVersion = 12;
-		compareVersion.minorVersion = 0;
-		compareVersion.patchVersion = 0;
-
-		cachedValue = [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:compareVersion];
-	});
-
-	return cachedValue;
+	return YES; // SDK targets greater OS version
 }
 
 BOOL XRRunningOnOSXVenturaOrLater(void)
 {
-	static BOOL cachedValue = NO;
-
-	static dispatch_once_t onceToken;
-
-	dispatch_once(&onceToken, ^{
-		NSOperatingSystemVersion compareVersion;
-
-		compareVersion.majorVersion = 13;
-		compareVersion.minorVersion = 0;
-		compareVersion.patchVersion = 0;
-
-		cachedValue = [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:compareVersion];
-	});
-
-	return cachedValue;
+	return YES; // SDK targets greater OS version
 }
 
 BOOL XRRunningOnOSXSonomaOrLater(void)
 {
-	static BOOL cachedValue = NO;
-
-	static dispatch_once_t onceToken;
-
-	dispatch_once(&onceToken, ^{
-		NSOperatingSystemVersion compareVersion;
-
-		compareVersion.majorVersion = 14;
-		compareVersion.minorVersion = 0;
-		compareVersion.patchVersion = 0;
-
-		cachedValue = [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:compareVersion];
-	});
-
-	return cachedValue;
+	return YES; // SDK targets greater OS version
 }
 
 BOOL XRRunningOnOSXSequoiaOrLater(void)

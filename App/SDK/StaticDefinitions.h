@@ -35,7 +35,7 @@
  *
  *********************************************************************** */
 
-/* Defines for operating system detection. */
+/* Obsolete (Textual runs on macOS 14 and later); kept for plugins */
 #define TXLoadMacOSVersionSpecificFeatures		1
 
 /* Shortcut defines. */
@@ -73,6 +73,8 @@
 
 #define TEXTUAL_SYMBOL_USED						__attribute__((used))
 
+/* Deprecated: Textual runs on macOS 14 and later, so these are always YES
+ (each uses a deprecated XRRunningOnOSX…OrLater() function, which warns) */
 #define TEXTUAL_RUNNING_ON(version, name)		COCOA_EXTENSIONS_RUNNING_ON(version, name)
 #define TEXTUAL_RUNNING_ON_BIGSUR 				TEXTUAL_RUNNING_ON(11.0, BigSur)
 #define TEXTUAL_RUNNING_ON_MOJAVE 				TEXTUAL_RUNNING_ON(10.14, Mojave)

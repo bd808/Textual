@@ -1320,11 +1320,6 @@ static NSArray<NSString *> *_matchKeywords = nil;
 
 	[dynamicDefaults setBool:[TPCApplicationInfo sandboxEnabled]						forKey:@"Security -> Sandbox Enabled"];
 
-	/* Nothing reads these any more (13.2 removes them); always true on macOS 14 */
-	for (NSString *systemName in @[@"Mountain Lion", @"Mavericks", @"Yosemite", @"El Capitan", @"Sierra", @"High Sierra", @"Mojave"]) {
-		[dynamicDefaults setBool:YES forKey:[NSString stringWithFormat:@"System -> Running Mac OS %@ Or Newer", systemName]];
-	}
-
 #if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
 	[dynamicDefaults setBool:YES forKey:@"System -> 3rd-party Services -> Built with Sparkle Framework"];
 #else

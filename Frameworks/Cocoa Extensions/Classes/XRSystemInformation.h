@@ -49,10 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, class, readonly) BOOL systemIsAppleSilicon;
 @end
 
-BOOL XRRunningOnOSXBigSurOrLater(void); // 11.0
-BOOL XRRunningOnOSXMontereyOrLater(void); // 12.0
-BOOL XRRunningOnOSXVenturaOrLater(void); // 13.0
-BOOL XRRunningOnOSXSonomaOrLater(void); // 14.0
 BOOL XRRunningOnOSXSequoiaOrLater(void); // 15.0
 BOOL XRRunningOnOSXTahoeOrLater(void); // 26.0
 
@@ -67,5 +63,9 @@ BOOL XRRunningOnOSXSierraOrLater(void) 			COCOA_EXTENSIONS_DEPRECATED("SDK targe
 BOOL XRRunningOnOSXHighSierraOrLater(void) 		COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 10.13
 BOOL XRRunningOnOSXMojaveOrLater(void) 			COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 10.14
 BOOL XRRunningOnOSXCatalinaOrLater(void) 		COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 10.15
+BOOL XRRunningOnOSXBigSurOrLater(void) 			COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 11.0
+BOOL XRRunningOnOSXMontereyOrLater(void) 		COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 12.0
+BOOL XRRunningOnOSXVenturaOrLater(void) 		COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 13.0
+BOOL XRRunningOnOSXSonomaOrLater(void) 			COCOA_EXTENSIONS_DEPRECATED("SDK targets greater OS version. YES always returned."); // 14.0
 
 NS_ASSUME_NONNULL_END

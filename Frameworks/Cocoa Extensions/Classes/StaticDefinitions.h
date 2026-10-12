@@ -90,9 +90,8 @@
 	#endif
 #endif
 
-/* If we are not compiling on a version of macOS in which @available is
- available, then fallback to using XRSystemInformation to determine which
- operating system version we are on. */
+/* XRRunningOnOSX<name>OrLater(), usable in any expression (@available
+ only works in an if or guard condition) */
 #if defined(COCOA_EXTENSIONS_ENABLE_AVAILABLE_EXTENSION)
 	#define COCOA_EXTENSIONS_RUNNING_ON(_version_, _name_)		\
 		@available(macos _version_, *)
