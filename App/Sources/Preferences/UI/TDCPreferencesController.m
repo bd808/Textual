@@ -73,8 +73,6 @@ typedef NS_ENUM(NSInteger, TDCPreferencesPaneTag) {
 	TDCPreferencesPaneTagFirstPlugin = 995 // plus the plugin's index
 };
 
-#define _unsignedIntegerString(_value_)			[NSString stringWithUnsignedInteger:_value_]
-
 @interface TDCPreferencesController ()
 @property (nonatomic, strong) IBOutlet NSToolbar *navigationToolbar;
 @property (nonatomic, strong) IBOutlet NSMenu *installedAddonsMenu;
@@ -313,7 +311,7 @@ typedef NS_ENUM(NSInteger, TDCPreferencesPaneTag) {
 	[self.window replaceContentView:view];
 
 	if (selectedItem >= 0) {
-		self.navigationToolbar.selectedItemIdentifier = _unsignedIntegerString(selectedItem);
+		self.navigationToolbar.selectedItemIdentifier = [NSString stringWithInteger:selectedItem];
 	} else {
 		self.navigationToolbar.selectedItemIdentifier = nil;
 	}
@@ -339,17 +337,6 @@ typedef NS_ENUM(NSInteger, TDCPreferencesPaneTag) {
 	[window saveWindowStateForClass:self.class];
 }
 
-
-#pragma mark -
-#pragma mark Actions
-
-/* Opens Network → (current service) Details → Proxies */
-+ (void)openProxySettingsInSystemPreferences
-{
-	NSURL *settingsURL = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.Network-Settings.extension?Proxies"];
-
-	[RZWorkspace() openURL:settingsURL];
-}
 
 #pragma mark -
 #pragma mark NSWindow Delegate

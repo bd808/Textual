@@ -43,7 +43,6 @@
 #import "TPCPreferencesUserDefaults.h"
 #import "TVCValidatedTextField.h"
 #import "TDCAlert.h"
-#import "TDCPreferencesControllerPrivate.h"
 #import "TDCServerPropertiesPanePrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -571,9 +570,12 @@ TEXTUAL_IGNORE_DEPRECATION_END
 	[self.proxyPortTextField performValidation];
 }
 
+/* Opens Network → (current service) Details → Proxies */
 - (void)openProxySettingsInSystemPreferences:(nullable id)sender
 {
-	[TDCPreferencesController openProxySettingsInSystemPreferences];
+	NSURL *settingsURL = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.Network-Settings.extension?Proxies"];
+
+	[RZWorkspace() openURL:settingsURL];
 }
 
 @end

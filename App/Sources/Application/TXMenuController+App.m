@@ -71,7 +71,6 @@
 #import "TDCLegacyImportAssistantPrivate.h"
 #import "TDCLicenseManagerDialogPrivate.h"
 #import "TDCNicknameColorSheetPrivate.h"
-#import "TDCPreferencesControllerPrivate.h"
 #import "TDCServerChangeNicknameSheetPrivate.h"
 #import "TDCServerHighlightListSheetPrivate.h"
 #import "TDCServerPropertiesSheetPrivate.h"
