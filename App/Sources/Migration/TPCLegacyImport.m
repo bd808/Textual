@@ -41,7 +41,11 @@
 #import "TPCPathInfo.h"
 #import "TPCPreferencesUserDefaults.h"
 #import "TPCPreferencesUserDefaultsLocal.h"
-#import "IRCWorld.h"
+#import "IRCWorldPrivate.h"
+#import "IRCClientConfigPrivate.h"
+#import "IRCChannelConfigPrivate.h"
+#import "IRCServerPrivate.h"
+#import "TXMasterController.h"
 #import "HLSHistoricLogManagerPrivate.h"
 #import "TLOLicenseManagerPrivate.h"
 #import "TPCLegacyImportPrivate.h"
@@ -126,8 +130,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)licenseFolderURL
 {
 #if TEXTUAL_BUILT_WITH_LICENSE_MANAGER == 1
-	/* Never over a licence this copy already has */
-	if (self.licenseContainerIdentifier == nil || TLOLicenseManagerTextualIsRegistered()) {
+	/* Never over a licence this copy already has (by its file: at first launch
+	 the licence manager isn't set up yet, so "registered" was always NO) */
+	if (self.licenseContainerIdentifier == nil || TLOLicenseManagerLicenseFileExists()) {
 		return nil;
 	}
 
@@ -445,6 +450,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 			self.result.failureCount += 1;
 
+			/* The next launch adopts whatever is staged: a database without
+			 its WAL file has lost the newest history, and replaced the current one */
+			for (NSString *suffixCopied in @[@"", @"-wal", @"-shm"]) {
+				[RZFileManager() removeItemAtPath:[stagedURL.path stringByAppendingString:suffixCopied] error:NULL];
+			}
+
 			return;
 		}
 	}
@@ -487,6 +498,45 @@ NS_ASSUME_NONNULL_BEGIN
 	self.result.hadDownloadFolder = (self.preferences[_downloadFolderBookmarkKey] != nil);
 }
 
+/* The servers this copy had and the import doesn't bring back: their
+ passwords, login keys and channel keys stayed in the Keychain */
+- (void)destroyKeychainItemsOfReplacedServers
+{
+	NSMutableSet<NSString *> *importedIdentifiers = [NSMutableSet set];
+
+	for (NSDictionary *server in self.servers) {
+		NSString *identifier = server[@"uniqueIdentifier"];
+
+		if ([identifier isKindOfClass:[NSString class]]) {
+			[importedIdentifiers addObject:identifier];
+		}
+	}
+
+	for (id server in [RZUserDefaults() arrayForKey:IRCWorldClientListDefaultsKey]) {
+		if ([server isKindOfClass:[NSDictionary class]] == NO) {
+			continue;
+		}
+
+		IRCClientConfig *config = [[IRCClientConfig alloc] initWithDictionary:server];
+
+		if ([importedIdentifiers containsObject:config.uniqueIdentifier]) {
+			continue;
+		}
+
+		[config destroyNicknamePasswordKeychainItem];
+		[config destroyProxyPasswordKeychainItem];
+		[config destroySASLECDSAKeyKeychainItem];
+
+		for (IRCServer *endpoint in config.serverList) {
+			[endpoint destroyServerPasswordKeychainItem];
+		}
+
+		for (IRCChannelConfig *channel in config.channelList) {
+			[channel destroySecretKeyKeychainItem];
+		}
+	}
+}
+
 /* Replace: first remove this copy's own settings, keeping what is never
  imported (KeysExcludedFromMigrate.plist and keys outside the master list,
  such as the import's own bookkeeping and the licence) */
@@ -497,6 +547,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if (preferences == nil) {
 		return;
 	}
+
+	[self destroyKeychainItemsOfReplacedServers];
 
 	NSDictionary *current = [RZUserDefaults() persistentDomainForName:[TPCApplicationInfo applicationBundleIdentifier]];
 
@@ -515,6 +567,10 @@ NS_ASSUME_NONNULL_BEGIN
 	}];
 
 	[RZUserDefaults() _migrateObject:self.servers forKey:IRCWorldClientListDefaultsKey];
+
+	/* From the menu, the running app keeps going until the restart: its
+	 periodic and on-join saves wrote the old servers over these */
+	worldController().savingSuspended = YES;
 
 	self.result.serverCount = self.servers.count;
 
@@ -568,7 +624,13 @@ NS_ASSUME_NONNULL_BEGIN
 	for (NSURL *item in [self _contentsOfFolder:sourceURL]) {
 		NSURL *destinationItem = [destinationURL URLByAppendingPathComponent:item.lastPathComponent];
 
-		[RZFileManager() removeItemAtURL:destinationItem error:NULL];
+		/* Added to the user's, as the import says: a Textual 8 style or
+		 extension of the same name was deleted (not even to the Trash) */
+		if ([destinationItem checkResourceIsReachableAndReturnError:NULL]) {
+			LogToConsoleInfo("Legacy import: kept the existing %{public}@", destinationItem.path);
+
+			continue;
+		}
 
 		NSError *copyError = nil;
 

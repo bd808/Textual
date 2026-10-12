@@ -156,6 +156,10 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 
 - (void)save
 {
+	if (self.savingSuspended) {
+		return;
+	}
+
 	NSArray *clientList = [self clientConfigurations];
 
 	[TPCPreferences setClientList:clientList];

@@ -73,6 +73,7 @@ typedef NS_ENUM(NSUInteger, TDCLegacyImportAssistantStep) {
 @property (nonatomic, assign) BOOL grantingPreferencesFile;
 @property (nonatomic, copy, nullable) NSURL *panelItemURL;
 @property (nonatomic, assign) BOOL deleteEarlierData;
+@property (nonatomic, assign) BOOL savedEncryptionComponents;
 @property (nonatomic, strong, nullable) NSTimer *runningTimer;
 
 @property (nonatomic, strong) NSStackView *headerStack;
@@ -1008,9 +1009,12 @@ typedef NS_ENUM(NSUInteger, TDCLegacyImportAssistantStep) {
 
 	[self _setBody:body];
 
+	/* Not when something couldn't be copied: it would be deleted with the rest */
+	NSString *deleteCheckbox = ((result.failureCount > 0) ? nil : TXTLS(@"Prompts[ixe-oc]", name));
+
 	[self _setPrimary:(self.fromMenu ? TXTLS(@"Prompts[33s-fi]") : TXTLS(@"Prompts[weu-cf]"))
 			secondary:nil
-			 checkbox:TXTLS(@"Prompts[ixe-oc]", name)];
+			 checkbox:deleteCheckbox];
 }
 
 /* A note with a button on the right */
@@ -1049,7 +1053,13 @@ typedef NS_ENUM(NSUInteger, TDCLegacyImportAssistantStep) {
 			return;
 		}
 
-		if ([self.import saveEncryptionComponentsToFolderURL:panel.URL groupURL:self.groupURL] && [sender isKindOfClass:[NSButton class]]) {
+		BOOL saved = [self.import saveEncryptionComponentsToFolderURL:panel.URL groupURL:self.groupURL];
+
+		if (saved) {
+			self.savedEncryptionComponents = YES;
+		}
+
+		if (saved && [sender isKindOfClass:[NSButton class]]) {
 			NSButton *button = sender;
 
 			button.title = TXTLS(@"Prompts[uos-wu]");
@@ -1217,6 +1227,11 @@ typedef NS_ENUM(NSUInteger, TDCLegacyImportAssistantStep) {
 	alert.alertStyle = NSAlertStyleWarning;
 	alert.messageText = TXTLS(@"Prompts[e7h-w1]", name);
 	alert.informativeText = TXTLS(@"Prompts[19s-28]", name);
+
+	/* The OTR keys are in the folder that is deleted */
+	if (self.import.result.encryptionComponentsURL != nil && self.savedEncryptionComponents == NO) {
+		alert.informativeText = [alert.informativeText stringByAppendingFormat:@"\n\n%@", TXTLS(@"Prompts[k7t-r2]")];
+	}
 
 	[alert addButtonWithTitle:TXTLS(@"Prompts[hqr-xy]")];
 	[alert addButtonWithTitle:TXTLS(@"Prompts[fbm-cu]")];

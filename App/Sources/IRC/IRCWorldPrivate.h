@@ -46,6 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) uint64_t bandwidthIn;
 @property (nonatomic, assign, readwrite) uint64_t bandwidthOut;
 @property (nonatomic, assign) BOOL isImportingConfiguration;
+/* Set by the Textual 7 import once it wrote its servers: the app restarts
+ and must not save the old list over them meanwhile */
+@property (nonatomic, assign) BOOL savingSuspended;
 @property (nonatomic, copy, readwrite) NSArray<IRCClient *> *clientList;
 
 - (void)setupConfiguration;

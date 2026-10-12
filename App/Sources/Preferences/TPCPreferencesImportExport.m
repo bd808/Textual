@@ -326,11 +326,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[keysToStrip addObjectsFromArray:argumentsDomain.allKeys];
 
-	if (filterDefaults) {
-		NSDictionary *defaultsDomain = [TPCPreferences defaultPreferences];
-
-		[keysToStrip addObjectsFromArray:defaultsDomain.allKeys];
-	}
 
 	if (filterJunk) {
 		NSDictionary *globalsDomain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:NSGlobalDomain];
@@ -344,6 +339,21 @@ NS_ASSUME_NONNULL_BEGIN
 	NSMutableDictionary<NSString *, id> *finalDictionary = [exportedPreferences mutableCopy];
 
 	[finalDictionary removeObjectsForKeys:keysToStrip];
+
+	/* Only values still at their default: every preference with a default
+	 was left out, changed or not, so an export carried almost nothing over */
+	if (filterDefaults) {
+		NSDictionary *defaultsDomain = [TPCPreferences defaultPreferences];
+
+		NSSet *defaultValueKeys =
+		[finalDictionary keysOfEntriesPassingTest:^BOOL(NSString *key, id object, BOOL *stop) {
+			id defaultValue = defaultsDomain[key];
+
+			return (defaultValue != nil && [object isEqual:defaultValue]);
+		}];
+
+		[finalDictionary removeObjectsForKeys:defaultValueKeys.allObjects];
+	}
 
 	/* Strip keys that must be checked dynamically */
 	if (filterJunk) {
