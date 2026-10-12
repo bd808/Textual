@@ -147,6 +147,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) BOOL hasCertificate;
 @end
 
+@interface TDCServerPropertiesConnectCommandsPane : TDCServerPropertiesPane
+@end
+
+@interface TDCServerPropertiesEncodingPane : TDCServerPropertiesPane
+@end
+
+/* Quit messages */
+@interface TDCServerPropertiesMessagesPane : TDCServerPropertiesPane
+@end
+
+@interface TDCServerPropertiesZncBouncerPane : TDCServerPropertiesPane
+@end
+
+@interface TDCServerPropertiesFloodControlPane : TDCServerPropertiesPane
+@end
+
+/* Address type, ping timeouts, certificate checks and cipher suites */
+@interface TDCServerPropertiesNetworkSocketPane : TDCServerPropertiesPane
+@end
+
+@interface TDCServerPropertiesProxyServerPane : TDCServerPropertiesPane
+@end
+
 /* What panes need from the sheet */
 @interface TDCServerPropertiesSheet (Panes)
 /* The channels of the Autojoin pane, as shown */

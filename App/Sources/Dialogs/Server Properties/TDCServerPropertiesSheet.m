@@ -36,17 +36,14 @@
  *
  *********************************************************************** */
 
-#import "NSStringHelper.h"
 #import "IRCClientConfigPrivate.h"
 #import "IRCClientPrivate.h"
 #import "IRCAddressBook.h"
 #import "IRCChannel.h"
 #import "TLOLocalization.h"
-#import "TPCPreferencesUserDefaults.h"
 #import "TVCContentNavigationOutlineViewPrivate.h"
 #import "TVCValidatedTextField.h"
 #import "TDCAlert.h"
-#import "TDCPreferencesControllerPrivate.h"
 #import "TDCServerPropertiesSheetPrivate.h"
 #import "TDCServerPropertiesPanePrivate.h"
 
@@ -56,68 +53,24 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite, nullable) IRCClient *client;
 @property (nonatomic, copy, readwrite, nullable) NSString *clientId;
 @property (nonatomic, strong) IRCClientConfigMutable *config;
-@property (nonatomic, copy) NSArray *navigationTreeMatrix;
-@property (nonatomic, copy) NSDictionary *encodingList;
-@property (nonatomic, strong) IBOutlet NSView *contentViewConnectCommands;
-@property (nonatomic, strong) IBOutlet NSView *contentViewDisconnectMessages;
-@property (nonatomic, strong) IBOutlet NSView *contentViewEncoding;
-@property (nonatomic, strong) IBOutlet NSView *contentViewFloodControl;
-@property (nonatomic, strong) IBOutlet NSView *contentViewNetworkSocket;
-@property (nonatomic, strong) IBOutlet NSView *contentViewProxyServer;
-@property (nonatomic, strong) IBOutlet NSView *contentViewProxyServerInputView;
-@property (nonatomic, strong) IBOutlet NSView *contentViewProxyServerSystemSocksView;
-@property (nonatomic, strong) IBOutlet NSView *contentViewProxyServerTorBrowserView;
-@property (nonatomic, strong) IBOutlet NSView *contentViewRedundancy;
-@property (nonatomic, strong) IBOutlet NSView *contentViewZncBouncer;
-@property (nonatomic, weak) IBOutlet NSButton *connectionIPv4AddressTypeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *connectionIPv6AddressTypeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *connectionDefaultAddressTypeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *disconnectOnReachabilityChangeCheck;
-@property (nonatomic, weak) IBOutlet NSButton *performDisconnectOnPongTimerCheck;
-@property (nonatomic, weak) IBOutlet NSButton *pongTimerCheck;
-@property (nonatomic, weak) IBOutlet NSButton *setInvisibleModeOnConnectCheck;
-@property (nonatomic, weak) IBOutlet NSButton *validateServerCertificateChainCheck;
-@property (nonatomic, weak) IBOutlet NSButton *viewListOfPreferredCipherSuitesButton;
-@property (nonatomic, weak) IBOutlet NSButton *zncIgnoreConfiguredAutojoinCheck;
-@property (nonatomic, weak) IBOutlet NSButton *zncIgnorePlaybackNotificationsCheck;
-@property (nonatomic, weak) IBOutlet NSButton *zncOnlyPlaybackLatestCheck;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *fallbackEncodingButton;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *primaryEncodingButton;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *preferredCipherSuitesButton;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *proxyTypeButton;
-@property (nonatomic, weak) IBOutlet NSSlider *floodControlDelayTimerSlider;
-@property (nonatomic, weak) IBOutlet NSSlider *floodControlMessageCountSlider;
-@property (nonatomic, weak) IBOutlet NSTextField *proxyPasswordTextField;
-@property (nonatomic, weak) IBOutlet NSTextField *proxyUsernameTextField;
 @property (nonatomic, weak) IBOutlet TVCContentNavigationOutlineView *navigationOutlineView;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *normalLeavingCommentTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *proxyAddressTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *proxyPortTextField;
-@property (nonatomic, weak) IBOutlet TVCValidatedTextField *sleepModeQuitMessageTextField;
-@property (nonatomic, unsafe_unretained) IBOutlet NSTextView *connectCommandsField;
-@property (nonatomic, assign) NSUInteger floodControlDelayTimerSliderTempValue;
-@property (nonatomic, assign) NSUInteger floodControlMessageCountSliderTempValue;
-@property (nonatomic, strong) IBOutlet TDCServerPropertiesChannelsPane *channelsPane;
-@property (nonatomic, strong) IBOutlet TDCServerPropertiesHighlightsPane *highlightsPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesAddressBookPane *addressBookPane;
-@property (nonatomic, strong) IBOutlet TDCServerPropertiesGeneralPane *generalPane;
-@property (nonatomic, strong) IBOutlet TDCServerPropertiesIdentityPane *identityPane;
-@property (nonatomic, strong) IBOutlet TDCServerPropertiesClientCertificatePane *clientCertificatePane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesChannelsPane *channelsPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *connectCommandsPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *encodingPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *generalPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *identityPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *highlightsPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *messagesPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *zncBouncerPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *clientCertificatePane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *floodControlPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *networkSocketPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *proxyServerPane;
+@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *redundancyPane;
 @property (nonatomic, copy) NSArray<TDCServerPropertiesPane *> *panes;
-
-- (IBAction)proxyTypeChanged:(nullable id)sender;
-- (IBAction)toggleAdvancedEncodings:(nullable id)sender;
-
-- (IBAction)openProxySettingsInSystemPreferences:(nullable id)sender;
-
-- (IBAction)preferredCipherSuitesChanged:(nullable id)sender;
-- (IBAction)preferredCipherSuitesViewList:(nullable id)sender;
-
-- (IBAction)preferredInternetProtocolChanged:(nullable id)sender;
 @end
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wincomplete-implementation"
 @implementation TDCServerPropertiesSheet
 
 - (instancetype)initWithClient:(nullable IRCClient *)client
@@ -148,150 +101,48 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[self loadNib];
 
-	/* Connect commands text box better font */
-	self.connectCommandsField.font = [NSFont systemFontOfSize:13.0];
-
-	self.connectCommandsField.textContainerInset = NSMakeSize(1, 3);
-
-	/* Normal leaving comment */
-	self.normalLeavingCommentTextField.textDidChangeCallback = self;
-
-	self.normalLeavingCommentTextField.stringValueIsInvalidOnEmpty = NO;
-	self.normalLeavingCommentTextField.stringValueIsTrimmed = YES;
-	self.normalLeavingCommentTextField.stringValueUsesOnlyFirstToken = NO;
-
-	self.normalLeavingCommentTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if ([currentValue containsCharactersFromCharacterSet:[NSCharacterSet newlineCharacterSet]]) {
-			return TXTLS(@"CommonErrors[gas-v8]");
-		}
-
-		if (currentValue.length > 390) {
-			return TXTLS(@"CommonErrors[2cb-af]", 390);
-		}
-
-		return nil;
-	};
-
-	/* Sleep mode leaving comment */
-	self.sleepModeQuitMessageTextField.textDidChangeCallback = self;
-
-	self.sleepModeQuitMessageTextField.stringValueIsInvalidOnEmpty = NO;
-	self.sleepModeQuitMessageTextField.stringValueIsTrimmed = YES;
-	self.sleepModeQuitMessageTextField.stringValueUsesOnlyFirstToken = NO;
-
-	self.sleepModeQuitMessageTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		if ([currentValue containsCharactersFromCharacterSet:[NSCharacterSet newlineCharacterSet]]) {
-			return TXTLS(@"CommonErrors[gas-v8]");
-		}
-
-		if (currentValue.length > 390) {
-			return TXTLS(@"CommonErrors[2cb-af]", 390);
-		}
-
-		return nil;
-	};
-
-	/* Proxy address */
-	self.proxyAddressTextField.textDidChangeCallback = self;
-
-	self.proxyAddressTextField.stringValueIsInvalidOnEmpty = NO;
-	self.proxyAddressTextField.stringValueIsTrimmed = YES;
-	self.proxyAddressTextField.stringValueUsesOnlyFirstToken = YES;
-
-	self.proxyAddressTextField.performValidationWhenEmpty = YES;
-
-	/* Weak: the sheet owns the fields that keep these blocks, so the sheet
-	 (and its client) leaked */
-	__weak typeof(self) weakSelf = self;
-
-	self.proxyAddressTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		NSInteger proxyType = weakSelf.proxyTypeButton.selectedTag;
-
-		if (proxyType == IRCConnectionProxyTypeSocks5 ||
-			proxyType == IRCConnectionProxyTypeHTTP ||
-			proxyType == IRCConnectionProxyTypeHTTPS)
-		{
-			if (currentValue.isValidInternetAddress == NO) {
-				return TXTLS(@"TDCServerPropertiesSheet[tlo-b6]");
-			}
-		}
-
-		return nil;
-	};
-
-	/* Proxy port */
-	self.proxyPortTextField.textDidChangeCallback = self;
-
-	self.proxyPortTextField.stringValueIsInvalidOnEmpty = NO;
-	self.proxyPortTextField.stringValueIsTrimmed = YES;
-	self.proxyPortTextField.stringValueUsesOnlyFirstToken = NO;
-
-	self.proxyPortTextField.performValidationWhenEmpty = YES;
-
-	self.proxyPortTextField.defaultValue = [NSString stringWithUnsignedInteger:IRCConnectionDefaultProxyPort];
-
-	self.proxyPortTextField.validationBlock = ^NSString *(NSString *currentValue) {
-		NSInteger proxyType = weakSelf.proxyTypeButton.selectedTag;
-
-		if (proxyType == IRCConnectionProxyTypeSocks5 ||
-			proxyType == IRCConnectionProxyTypeHTTP ||
-			proxyType == IRCConnectionProxyTypeHTTPS)
-		{
-			if (currentValue.isValidInternetPort == NO) {
-				return TXTLS(@"CommonErrors[l0c-nb]");
-			}
-		}
-
-		return nil;
-	};
-
-	/* Setup others */
 	[self addConfigurationDidChangeObserver];
 
-	self.panes = @[self.generalPane, self.identityPane, self.clientCertificatePane,
-				   self.channelsPane, self.highlightsPane, self.addressBookPane];
+	[self populateNavigationTree];
 
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane prepareInitialState];
 	}
-
-	[self populateEncodings];
-
-	[self populateTabViewList];
 }
 
-- (void)populateTabViewList
+/* Also lists the panes, in the order of the navigation tree: Save checks
+ them for an invalid field in this order (after the visible one) */
+- (void)populateNavigationTree
 {
+	NSMutableArray<TDCServerPropertiesPane *> *panes = [NSMutableArray array];
+
 #define _groupItem(_label_, _children_) 	\
 	[[TVCContentNavigationOutlineViewItem alloc] initWithLabel:TXTLS(_label_) identifier:0 view:nil firstResponder:nil children:(_children_)]
 
-#define _childItem(_label_, _identifier_) 	\
-	[[TVCContentNavigationOutlineViewItem alloc] initWithLabel:TXTLS(_label_) identifier:TDCServerPropertiesSheetSelection ##_identifier_ view:self.contentView ##_identifier_ firstResponder:nil]
-
 #define _paneItem(_label_, _identifier_, _pane_) 	\
-	[self navigationItemWithLabel:TXTLS(_label_) selection:TDCServerPropertiesSheetSelection ##_identifier_ pane:(_pane_)]
+	[self navigationItemWithLabel:TXTLS(_label_) selection:TDCServerPropertiesSheetSelection ##_identifier_ pane:(_pane_) addTo:panes]
 
 	NSArray *generalSectionChildren = @[
 		_paneItem(@"TDCServerPropertiesSheet[8zc-6y]", AddressBook, self.addressBookPane),
 		_paneItem(@"TDCServerPropertiesSheet[5oz-07]", Autojoin, self.channelsPane),
-		_childItem(@"TDCServerPropertiesSheet[hip-13]", ConnectCommands),
-		_childItem(@"TDCServerPropertiesSheet[8ug-ka]", Encoding),
+		_paneItem(@"TDCServerPropertiesSheet[hip-13]", ConnectCommands, self.connectCommandsPane),
+		_paneItem(@"TDCServerPropertiesSheet[8ug-ka]", Encoding, self.encodingPane),
 		_paneItem(@"TDCServerPropertiesSheet[ehx-4d]", General, self.generalPane),
 		_paneItem(@"TDCServerPropertiesSheet[8ik-qo]", Identity, self.identityPane),
 		_paneItem(@"TDCServerPropertiesSheet[jtx-hn]", Highlights, self.highlightsPane),
-		_childItem(@"TDCServerPropertiesSheet[j34-yr]", DisconnectMessages),
+		_paneItem(@"TDCServerPropertiesSheet[j34-yr]", DisconnectMessages, self.messagesPane),
 	];
 
 	NSArray *vendorSectionChildren = @[
-		_childItem(@"TDCServerPropertiesSheet[fsj-7f]", ZncBouncer)
+		_paneItem(@"TDCServerPropertiesSheet[fsj-7f]", ZncBouncer, self.zncBouncerPane)
 	];
 
 	NSArray *advancedSectionChildren = @[
 		_paneItem(@"TDCServerPropertiesSheet[ce7-kc]", ClientCertificate, self.clientCertificatePane),
-		_childItem(@"TDCServerPropertiesSheet[fcr-w8]", FloodControl),
-		_childItem(@"TDCServerPropertiesSheet[ffy-xt]", NetworkSocket),
-		_childItem(@"TDCServerPropertiesSheet[t52-7a]", ProxyServer),
-		_childItem(@"TDCServerPropertiesSheet[36n-u9]", Redundancy)
+		_paneItem(@"TDCServerPropertiesSheet[fcr-w8]", FloodControl, self.floodControlPane),
+		_paneItem(@"TDCServerPropertiesSheet[ffy-xt]", NetworkSocket, self.networkSocketPane),
+		_paneItem(@"TDCServerPropertiesSheet[t52-7a]", ProxyServer, self.proxyServerPane),
+		_paneItem(@"TDCServerPropertiesSheet[36n-u9]", Redundancy, self.redundancyPane)
 	];
 
 	NSArray *navigationTreeMatrix = @[
@@ -301,8 +152,9 @@ NS_ASSUME_NONNULL_BEGIN
 	];
 
 #undef _groupItem
-#undef _childItem
 #undef _paneItem
+
+	self.panes = panes;
 
 	self.navigationOutlineView.navigationTreeMatrix = navigationTreeMatrix;
 
@@ -316,82 +168,13 @@ NS_ASSUME_NONNULL_BEGIN
 	[self.navigationOutlineView expandItem:navigationTreeMatrix[0]];
 }
 
-- (TVCContentNavigationOutlineViewItem *)navigationItemWithLabel:(NSString *)label selection:(TDCServerPropertiesSheetSelection)selection pane:(TDCServerPropertiesPane *)pane
+- (TVCContentNavigationOutlineViewItem *)navigationItemWithLabel:(NSString *)label selection:(TDCServerPropertiesSheetSelection)selection pane:(TDCServerPropertiesPane *)pane addTo:(NSMutableArray<TDCServerPropertiesPane *> *)panes
 {
 	pane.selection = selection;
 
+	[panes addObject:pane];
+
 	return [[TVCContentNavigationOutlineViewItem alloc] initWithLabel:label identifier:selection view:pane.view firstResponder:nil];
-}
-
-- (void)populateEncodings
-{
-	[self.primaryEncodingButton removeAllItems];
-
-	[self.fallbackEncodingButton removeAllItems];
-
-	/* Build list of encodings */
-	self.encodingList = [NSString supportedStringEncodingsWithTitle:NO];
-
-	NSArray *encodingNames = self.encodingList.sortedDictionaryKeys;
-
-	/* What we are basically doing now is sorting all the encodings, then removing
-	 UTF-8 from the sorted list and inserting it at the top of the list. */
-	NSString *utf8title = [NSString localizedNameOfStringEncoding:NSUTF8StringEncoding];
-
-	NSMutableArray *encodingsToAdd = [encodingNames mutableCopy];
-
-	[encodingsToAdd removeObject:utf8title];
-
-	[self.primaryEncodingButton addItemWithTitle:utf8title];
-
-	[self.fallbackEncodingButton addItemWithTitle:utf8title];
-
-	/* Add the encodings to the popup list. This for loop will find the first
-	 parentheses opening and compare everything before it to the one found for
-	 the previous encoding. If the prefix has changed, then a separator is
-	 inserted. This groups the encodings.*/
-	/* We do this two times. The first time setups up preferred encodings at
-	 the top of the list. The next handles everything else. */
-	NSArray *favoredEncodings = @[@"Unicode", @"Western", @"Central European"];
-
-	[self populateEncodingPopup:encodingsToAdd preferredEncodings:favoredEncodings ignoreFavored:NO];
-
-	if ([RZUserDefaults() boolForKey:@"Server Properties Window Sheet -> Include Advanced Encodings"]) {
-		[self populateEncodingPopup:encodingsToAdd preferredEncodings:favoredEncodings ignoreFavored:YES];
-	}
-}
-
-- (void)populateEncodingPopup:(NSArray<NSString *> *)encodingsToAdd preferredEncodings:(NSArray<NSString *> *)favoredEncodings ignoreFavored:(BOOL)ignoreFavored
-{
-	NSString *encodingPrefixPrevious = nil;
-
-	for (NSString *encoding in encodingsToAdd) {
-		NSInteger parenthesisPosition = [encoding stringPosition:@" ("];
-
-		if (parenthesisPosition <= 0) {
-			continue;
-		}
-
-		NSString *encodingPrefix = [encoding substringToIndex:parenthesisPosition];
-
-		if (ignoreFavored && [favoredEncodings containsObject:encodingPrefix]) {
-			continue;
-		} else if (ignoreFavored == NO && [favoredEncodings containsObject:encodingPrefix] == NO) {
-			continue;
-		}
-
-		if (encodingPrefixPrevious == nil || [encodingPrefix isEqualToString:encodingPrefixPrevious] == NO) {
-			encodingPrefixPrevious = encodingPrefix;
-
-			[self.primaryEncodingButton.menu addItem:[NSMenuItem separatorItem]];
-
-			[self.fallbackEncodingButton.menu addItem:[NSMenuItem separatorItem]];
-		}
-
-		[self.primaryEncodingButton addItemWithTitle:encoding];
-
-		[self.fallbackEncodingButton addItemWithTitle:encoding];
-	}
 }
 
 #pragma mark -
@@ -471,12 +254,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	TDCServerPropertiesSheetSelection selection = self.navigationOutlineView.selectedItem.identifier;
 
-	/* We want to show the error for the visible view first so that
+	/* We want to show the error for the visible pane first so that
 	 the user isn't jerked around. */
-	if ([self okOrErrorForSelection:selection] == NO) {
-		return NO;
-	}
-
 	NSMutableArray<TDCServerPropertiesPane *> *panes = [self.panes mutableCopy];
 
 	NSUInteger visiblePaneIndex =
@@ -495,85 +274,21 @@ NS_ASSUME_NONNULL_BEGIN
 	for (TDCServerPropertiesPane *pane in panes) {
 		id field = pane.firstInvalidField;
 
-		if (field) {
-			[self showValidationErrorForField:field inSelection:pane.selection];
-
-			return NO;
-		}
-	}
-
-	NSArray *remainingSelections =
-	@[
-	  @(TDCServerPropertiesSheetSelectionDisconnectMessages),
-	  @(TDCServerPropertiesSheetSelectionProxyServer),
-	  ];
-
-	for (NSNumber *selectionRemaining in remainingSelections) {
-		if (selectionRemaining.integerValue == selection) {
+		if (field == nil) {
 			continue;
 		}
 
-		if ([self okOrErrorForSelection:selectionRemaining.integerValue] == NO) {
-			return NO;
-		}
+		[self navigateToSelection:pane.selection];
+
+		/* Give navigation time to settle before trying to attach popover */
+		XRPerformBlockAsynchronouslyOnMainQueue(^{
+			[field showValidationErrorPopover];
+		});
+
+		return NO;
 	}
 
 	return YES;
-}
-
-- (BOOL)okOrErrorForSelection:(TDCServerPropertiesSheetSelection)selection
-{
-	switch (selection) {
-		case TDCServerPropertiesSheetSelectionDisconnectMessages:
-		{
-			if ([self okOrErrorForTextField:self.normalLeavingCommentTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.sleepModeQuitMessageTextField inSelection:selection] == NO) {
-				return NO;
-			}
-
-			break;
-		}
-
-		case TDCServerPropertiesSheetSelectionProxyServer:
-		{
-			if ([self okOrErrorForTextField:self.proxyAddressTextField inSelection:selection] == NO) {
-				return NO;
-			} else if ([self okOrErrorForTextField:self.proxyPortTextField inSelection:selection] == NO) {
-				return NO;
-			}
-
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	} // switch()
-
-	return YES;
-}
-
-- (BOOL)okOrErrorForTextField:(TVCValidatedTextField *)textField inSelection:(TDCServerPropertiesSheetSelection)selection
-{
-	if (textField.valueIsValid) {
-		return YES;
-	}
-
-	[self showValidationErrorForField:textField inSelection:selection];
-
-	return NO;
-}
-
-/* A validated text field or combo box */
-- (void)showValidationErrorForField:(id)field inSelection:(TDCServerPropertiesSheetSelection)selection
-{
-	[self navigateToSelection:selection];
-
-	/* Give navigation time to settle before trying to attach popover */
-	XRPerformBlockAsynchronouslyOnMainQueue(^{
-		[field showValidationErrorPopover];
-	});
 }
 
 - (void)cancel:(nullable id)sender
@@ -629,125 +344,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadConfig
 {
-	/* ZNC Bouncer */
-	self.zncIgnoreConfiguredAutojoinCheck.state = self.config.zncIgnoreConfiguredAutojoin;
-	self.zncIgnorePlaybackNotificationsCheck.state = self.config.zncIgnorePlaybackNotifications;
-	self.zncOnlyPlaybackLatestCheck.state = self.config.zncOnlyPlaybackLatest;
-
-	/* Network Socket */
-	IRCConnectionAddressType addressType = self.config.addressType;
-
-	self.connectionIPv4AddressTypeCheck.state = (addressType == IRCConnectionAddressTypeIPv4);
-	self.connectionIPv6AddressTypeCheck.state = (addressType == IRCConnectionAddressTypeIPv6);
-	self.connectionDefaultAddressTypeCheck.state = (addressType == IRCConnectionAddressTypeDefault);
-
-	self.pongTimerCheck.state = self.config.performPongTimer;
-	self.performDisconnectOnPongTimerCheck.state = self.config.performDisconnectOnPongTimer;
-
-	self.disconnectOnReachabilityChangeCheck.state = self.config.performDisconnectOnReachabilityChange;
-
-	self.validateServerCertificateChainCheck.state = self.config.validateServerCertificateChain;
-
-	[self.preferredCipherSuitesButton selectItemWithTag:self.config.cipherSuites];
-
-	/* Messages */
-	self.normalLeavingCommentTextField.stringValue = self.config.normalLeavingComment;
-
-	self.sleepModeQuitMessageTextField.stringValue = self.config.sleepModeLeavingComment;
-
-	/* Encoding */
-	NSString *primaryEncodingTitle = [self.encodingList firstKeyForObject:@(self.config.primaryEncoding)];
-
-	[self.primaryEncodingButton selectItemWithTitle:primaryEncodingTitle];
-
-	NSString *fallbackEncodingTitle = [self.encodingList firstKeyForObject:@(self.config.fallbackEncoding)];
-
-	[self.fallbackEncodingButton selectItemWithTitle:fallbackEncodingTitle];
-
-	/* Proxy Server */
-	[self.proxyTypeButton selectItemWithTag:self.config.proxyType];
-
-	self.proxyAddressTextField.stringValue = (self.config.proxyAddress ?: @"");
-	self.proxyPortTextField.integerValue = self.config.proxyPort;
-	self.proxyUsernameTextField.stringValue = (self.config.proxyUsername ?: @"");
-	self.proxyPasswordTextField.stringValue = (self.config.proxyPassword ?: @"");
-
-	/* Connect Commands */
-	NSString *loginCommandsString = [self.config.loginCommands componentsJoinedByString:@"\n"];
-
-	self.connectCommandsField.string = loginCommandsString;
-
-	self.setInvisibleModeOnConnectCheck.state = self.config.setInvisibleModeOnConnect;
-
-	/* Flood Control */
-	self.floodControlDelayTimerSliderTempValue = self.config.floodControlDelayTimerInterval;
-	self.floodControlMessageCountSliderTempValue = self.config.floodControlMaximumMessages;
-
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane loadFromConfig:self.config];
 	}
-
-	[self loadConfigPostflight];
-}
-
-- (void)loadConfigPostflight
-{
-	[self preferredCipherSuitesChanged:nil];
-
-	[self proxyTypeChanged:nil];
 }
 
 - (void)saveConfig
 {
-	/* ZNC Bouncer */
-	self.config.zncIgnoreConfiguredAutojoin = (self.zncIgnoreConfiguredAutojoinCheck.state == NSControlStateValueOn);
-	self.config.zncIgnorePlaybackNotifications = (self.zncIgnorePlaybackNotificationsCheck.state == NSControlStateValueOn);
-	self.config.zncOnlyPlaybackLatest = (self.zncOnlyPlaybackLatestCheck.state == NSControlStateValueOn);
-
-	/* Network Socket */
-	self.config.performPongTimer = (self.pongTimerCheck.state == NSControlStateValueOn);
-	self.config.performDisconnectOnPongTimer = (self.performDisconnectOnPongTimerCheck.state == NSControlStateValueOn);
-
-	self.config.performDisconnectOnReachabilityChange = (self.disconnectOnReachabilityChangeCheck.state == NSControlStateValueOn);
-
-	self.config.validateServerCertificateChain = (self.validateServerCertificateChainCheck.state == NSControlStateValueOn);
-
-	self.config.cipherSuites = self.preferredCipherSuitesButton.selectedTag;
-
-	/* Messages */
-	self.config.sleepModeLeavingComment	= self.sleepModeQuitMessageTextField.value;
-	self.config.normalLeavingComment = self.normalLeavingCommentTextField.value;
-
-	/* Encoding */
-	NSStringEncoding primaryEncoding = [self.encodingList unsignedIntegerForKey:self.primaryEncodingButton.title];
-
-	self.config.primaryEncoding	= primaryEncoding;
-
-	NSStringEncoding fallbackEncoding = [self.encodingList unsignedIntegerForKey:self.fallbackEncodingButton.title];
-
-	self.config.fallbackEncoding = fallbackEncoding;
-
-	/* Proxy Server */
-	self.config.proxyType = self.proxyTypeButton.selectedTag;
-
-	self.config.proxyAddress = self.proxyAddressTextField.lowercaseValue;
-	self.config.proxyPort = self.proxyPortTextField.integerValue;
-	self.config.proxyUsername = self.proxyUsernameTextField.trimmedFirstTokenStringValue;
-	self.config.proxyPassword = self.proxyPasswordTextField.trimmedStringValue;
-
-	/* Connect Commands */
-	NSString *connectCommandsString = self.connectCommandsField.string;
-
-	NSArray *connectCommands = [connectCommandsString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-
-	self.config.loginCommands = [connectCommands arrayByRemovingEmptyValues:YES trimming:YES uniquing:NO];
-
-	self.config.setInvisibleModeOnConnect = (self.setInvisibleModeOnConnectCheck.state == NSControlStateValueOn);
-
-	/* Flood Control */
-	self.config.floodControlMaximumMessages = self.floodControlMessageCountSlider.integerValue;
-	self.config.floodControlDelayTimerInterval = self.floodControlDelayTimerSlider.integerValue;
-
 	for (TDCServerPropertiesPane *pane in self.panes) {
 		[pane saveToConfig:self.config];
 	}
@@ -759,113 +362,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<IRCChannelConfig *> *)channelList
 {
 	return self.channelsPane.items;
-}
-
-#pragma mark -
-#pragma mark Actions
-
-- (void)preferredCipherSuitesChanged:(nullable id)sender
-{
-	NSInteger cipherSuites = self.preferredCipherSuitesButton.selectedTag;
-
-	self.viewListOfPreferredCipherSuitesButton.enabled =
-	(cipherSuites != RCMCipherSuiteCollectionNone);
-}
-
-- (void)preferredCipherSuitesViewList:(nullable id)sender
-{
-	NSInteger cipherSuites = self.preferredCipherSuitesButton.selectedTag;
-
-	NSArray *cipherSuitesDescriptions = [RCMSecureTransport descriptionsForCipherListCollection:cipherSuites withProtocol:YES];
-
-	NSString *cipherSuitesDescription = [cipherSuitesDescriptions componentsJoinedByString:@"\n"];
-
-	NSString *cipherSuitesTitle = self.preferredCipherSuitesButton.titleOfSelectedItem;
-
-	[TDCAlert alertSheetWithWindow:self.sheet
-							  body:TXTLS(@"TDCServerPropertiesSheet[k50-8n]", cipherSuitesDescription)
-							 title:TXTLS(@"TDCServerPropertiesSheet[yko-5g]", cipherSuitesTitle)
-					 defaultButton:TXTLS(@"Prompts[c7s-dq]")
-				   alternateButton:nil
-					   otherButton:nil];
-}
-
-- (void)proxyTypeChanged:(nullable id)sender
-{
-	NSInteger proxyType = self.proxyTypeButton.selectedTag;
-
-	BOOL isSystemSocksProxyEnabled = (proxyType == IRCConnectionProxyTypeAutomatic);
-	BOOL isTorBrowserProxyEnabled = (proxyType == IRCConnectionProxyTypeTor);
-
-	BOOL httpsEnabled = (proxyType == IRCConnectionProxyTypeHTTP || proxyType == IRCConnectionProxyTypeHTTPS);
-	BOOL socksEnabled = (proxyType == IRCConnectionProxyTypeSocks5);
-
-	BOOL enabled = (httpsEnabled || socksEnabled);
-
-	self.contentViewProxyServerInputView.hidden = (httpsEnabled == NO && socksEnabled == NO);
-	self.contentViewProxyServerTorBrowserView.hidden = (isTorBrowserProxyEnabled == NO);
-	self.contentViewProxyServerSystemSocksView.hidden = (isSystemSocksProxyEnabled == NO);
-
-	self.proxyAddressTextField.enabled = enabled;
-	self.proxyPortTextField.enabled = enabled;
-
-	/* SOCKS5 and HTTP(S) CONNECT proxies can both ask for a username and password */
-	self.proxyUsernameTextField.enabled = enabled;
-	self.proxyPasswordTextField.enabled = enabled;
-
-	[self.proxyAddressTextField performValidation];
-	[self.proxyPortTextField performValidation];
-}
-
-- (void)openProxySettingsInSystemPreferences:(nullable id)sender
-{
-	[TDCPreferencesController openProxySettingsInSystemPreferences];
-}
-
-- (void)toggleAdvancedEncodings:(nullable id)sender
-{
-	NSString *primaryEncoding = self.primaryEncodingButton.titleOfSelectedItem;
-
-	NSString *fallbackEncoding = self.fallbackEncodingButton.titleOfSelectedItem;
-
-	[self populateEncodings];
-
-	NSMenuItem *primaryEncodingItem = nil;
-
-	if (primaryEncoding) {
-		primaryEncodingItem = [self.primaryEncodingButton itemWithTitle:primaryEncoding];
-	}
-
-	if (primaryEncodingItem == nil) {
-		primaryEncoding = [NSString localizedNameOfStringEncoding:TXDefaultPrimaryStringEncoding];
-	}
-
-	NSMenuItem *fallbackEncodingItem = nil;
-
-	if (fallbackEncoding) {
-		fallbackEncodingItem = [self.fallbackEncodingButton itemWithTitle:fallbackEncoding];
-	}
-
-	if (fallbackEncodingItem == nil) {
-		fallbackEncoding = [NSString localizedNameOfStringEncoding:TXDefaultFallbackStringEncoding];
-	}
-
-	[self.primaryEncodingButton selectItemWithTitle:primaryEncoding];
-
-	[self.fallbackEncodingButton selectItemWithTitle:fallbackEncoding];
-}
-
-- (void)preferredInternetProtocolChanged:(nullable id)sender
-{
-TEXTUAL_IGNORE_DEPRECATION_BEGIN
-	/* Changing the property triggers a deprecation log to console
-	 which is just unnecessary output when each time we change it. */
-	if (self.config.connectionPrefersIPv4) {
-		self.config.connectionPrefersIPv4 = NO;
-	}
-TEXTUAL_IGNORE_DEPRECATION_END
-
-	self.config.addressType = [sender tag];
 }
 
 #pragma mark -

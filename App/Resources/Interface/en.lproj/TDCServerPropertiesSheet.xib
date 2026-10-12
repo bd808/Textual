@@ -9,50 +9,22 @@
         <customObject id="-2" userLabel="File's Owner" customClass="TDCServerPropertiesSheet">
             <connections>
                 <outlet property="cancelButton" destination="1456" id="1463"/>
-                <outlet property="connectCommandsField" destination="2310" id="2Ht-9D-ef5"/>
-                <outlet property="connectionDefaultAddressTypeCheck" destination="zOI-7i-HTQ" id="atT-V9-DBS"/>
-                <outlet property="connectionIPv4AddressTypeCheck" destination="Doi-rA-9aF" id="wyV-Fd-Ii1"/>
-                <outlet property="connectionIPv6AddressTypeCheck" destination="dd4-fZ-E2b" id="6Eh-9M-sx5"/>
-                <outlet property="contentViewConnectCommands" destination="1860" id="dva-TR-IFP"/>
-                <outlet property="contentViewDisconnectMessages" destination="1627" id="gWi-wY-SNi"/>
-                <outlet property="contentViewEncoding" destination="1675" id="m4X-ZN-3GX"/>
-                <outlet property="contentViewFloodControl" destination="2078" id="FYp-t2-8yg"/>
-                <outlet property="contentViewNetworkSocket" destination="2488" id="x1c-Rp-XjX"/>
-                <outlet property="contentViewProxyServer" destination="1887" id="Y6r-hB-Lvd"/>
-                <outlet property="contentViewProxyServerInputView" destination="KJ6-gu-xq3" id="KFA-jY-wHm"/>
-                <outlet property="contentViewProxyServerSystemSocksView" destination="GFp-Qd-4ck" id="i2R-4V-oBi"/>
-                <outlet property="contentViewProxyServerTorBrowserView" destination="yql-kd-PP5" id="uIe-fo-kbw"/>
-                <outlet property="contentViewRedundancy" destination="O3J-xl-nwg" id="cB8-PX-TAQ"/>
-                <outlet property="contentViewZncBouncer" destination="2542" id="qzo-1Y-6rw"/>
-                <outlet property="disconnectOnReachabilityChangeCheck" destination="w5K-aH-URS" id="8N7-xY-lax"/>
-                <outlet property="fallbackEncodingButton" destination="1685" id="2275"/>
-                <outlet property="floodControlDelayTimerSlider" destination="O6l-eN-3Uc" id="l2j-Kb-PsN"/>
-                <outlet property="floodControlMessageCountSlider" destination="RXW-HB-aEa" id="whf-jb-XgS"/>
                 <outlet property="navigationOutlineView" destination="Uj0-Wm-eox" id="9jc-dy-sjg"/>
-                <outlet property="normalLeavingCommentTextField" destination="2290" id="Fhf-Py-Njw"/>
                 <outlet property="okButton" destination="1455" id="1464"/>
-                <outlet property="performDisconnectOnPongTimerCheck" destination="2536" id="rFn-Dj-NOb"/>
-                <outlet property="pongTimerCheck" destination="2531" id="2541"/>
-                <outlet property="preferredCipherSuitesButton" destination="xo6-bb-4qn" id="nt3-Ps-mHp"/>
-                <outlet property="primaryEncodingButton" destination="1684" id="2276"/>
-                <outlet property="proxyAddressTextField" destination="1901" id="RIc-hP-gu6"/>
-                <outlet property="proxyPasswordTextField" destination="1902" id="yHw-1g-b0t"/>
-                <outlet property="proxyPortTextField" destination="84A-gQ-HPC" id="6IV-ig-nxs"/>
-                <outlet property="proxyTypeButton" destination="1905" id="2279"/>
-                <outlet property="proxyUsernameTextField" destination="1904" id="2Og-K9-Fm0"/>
-                <outlet property="setInvisibleModeOnConnectCheck" destination="1879" id="avU-NB-X0a"/>
                 <outlet property="sheet" destination="5" id="1059"/>
-                <outlet property="sleepModeQuitMessageTextField" destination="2294" id="2t1-Uk-WKU"/>
-                <outlet property="validateServerCertificateChainCheck" destination="7Re-Oa-iNx" id="8ll-Xe-9Sy"/>
-                <outlet property="viewListOfPreferredCipherSuitesButton" destination="BoR-WW-sT2" id="iUd-E9-N2y"/>
-                <outlet property="zncIgnoreConfiguredAutojoinCheck" destination="75N-79-v1S" id="thL-o4-SqJ"/>
-                <outlet property="zncIgnorePlaybackNotificationsCheck" destination="2580" id="2583"/>
-                <outlet property="zncOnlyPlaybackLatestCheck" destination="mgv-QS-XMc" id="Scd-8o-aKm"/>
                 <outlet property="channelsPane" destination="db5-T1-d1T" id="af2-bd-5a6"/>
                 <outlet property="highlightsPane" destination="4Tf-76-487" id="T42-7f-b12"/>
                 <outlet property="addressBookPane" destination="473-1d-e92" id="5ca-66-e42"/>
                 <outlet property="generalPane" destination="1IM-En-yWX" id="HkH-K5-tq2"/>
                 <outlet property="identityPane" destination="JRG-6L-tpz" id="DNn-0S-uff"/>
+                <outlet property="connectCommandsPane" destination="FxL-rm-skV" id="v8l-Im-hnc"/>
+                <outlet property="encodingPane" destination="RSc-c0-tPp" id="hju-wq-cBt"/>
+                <outlet property="messagesPane" destination="NqC-GY-Pjb" id="wpo-6J-Yn5"/>
+                <outlet property="zncBouncerPane" destination="ZZ0-Fe-tP1" id="xyt-Ta-KMe"/>
+                <outlet property="floodControlPane" destination="oRq-rK-yjS" id="0ew-E2-7ik"/>
+                <outlet property="networkSocketPane" destination="iRj-AM-Yw5" id="qb1-67-UBN"/>
+                <outlet property="proxyServerPane" destination="JQF-4s-sit" id="RA1-af-I3c"/>
+                <outlet property="redundancyPane" destination="oEZ-NI-NiU" id="d9H-yP-Zb1"/>
                 <outlet property="clientCertificatePane" destination="bnI-1W-geR" id="plG-XM-Srp"/>
             </connections>
         </customObject>
@@ -138,6 +110,82 @@
                 <outlet property="generalPane" destination="1IM-En-yWX" id="eQX-EW-0Lf"/>
                 <outlet property="propertiesSheet" destination="-2" id="L7e-3t-IWs"/>
                 <outlet property="view" destination="Ti4-Q4-cYX" id="dRg-gZ-hNm"/>
+            </connections>
+        </customObject>
+        <customObject id="FxL-rm-skV" customClass="TDCServerPropertiesConnectCommandsPane">
+            <connections>
+                <outlet property="connectCommandsField" destination="2310" id="2Ht-9D-ef5"/>
+                <outlet property="propertiesSheet" destination="-2" id="iSB-2x-I8n"/>
+                <outlet property="setInvisibleModeOnConnectCheck" destination="1879" id="avU-NB-X0a"/>
+                <outlet property="view" destination="1860" id="dva-TR-IFP"/>
+            </connections>
+        </customObject>
+        <customObject id="RSc-c0-tPp" customClass="TDCServerPropertiesEncodingPane">
+            <connections>
+                <outlet property="fallbackEncodingButton" destination="1685" id="2275"/>
+                <outlet property="primaryEncodingButton" destination="1684" id="2276"/>
+                <outlet property="propertiesSheet" destination="-2" id="5X1-bd-yjk"/>
+                <outlet property="view" destination="1675" id="m4X-ZN-3GX"/>
+            </connections>
+        </customObject>
+        <customObject id="NqC-GY-Pjb" customClass="TDCServerPropertiesMessagesPane">
+            <connections>
+                <outlet property="normalLeavingCommentTextField" destination="2290" id="Fhf-Py-Njw"/>
+                <outlet property="propertiesSheet" destination="-2" id="N4w-K5-P46"/>
+                <outlet property="sleepModeQuitMessageTextField" destination="2294" id="2t1-Uk-WKU"/>
+                <outlet property="view" destination="1627" id="gWi-wY-SNi"/>
+            </connections>
+        </customObject>
+        <customObject id="ZZ0-Fe-tP1" customClass="TDCServerPropertiesZncBouncerPane">
+            <connections>
+                <outlet property="propertiesSheet" destination="-2" id="ZcN-nK-J7I"/>
+                <outlet property="view" destination="2542" id="qzo-1Y-6rw"/>
+                <outlet property="zncIgnoreConfiguredAutojoinCheck" destination="75N-79-v1S" id="thL-o4-SqJ"/>
+                <outlet property="zncIgnorePlaybackNotificationsCheck" destination="2580" id="2583"/>
+                <outlet property="zncOnlyPlaybackLatestCheck" destination="mgv-QS-XMc" id="Scd-8o-aKm"/>
+            </connections>
+        </customObject>
+        <customObject id="oRq-rK-yjS" customClass="TDCServerPropertiesFloodControlPane">
+            <connections>
+                <outlet property="floodControlDelayTimerSlider" destination="O6l-eN-3Uc" id="l2j-Kb-PsN"/>
+                <outlet property="floodControlMessageCountSlider" destination="RXW-HB-aEa" id="whf-jb-XgS"/>
+                <outlet property="propertiesSheet" destination="-2" id="DD9-2J-x3o"/>
+                <outlet property="view" destination="2078" id="FYp-t2-8yg"/>
+            </connections>
+        </customObject>
+        <customObject id="iRj-AM-Yw5" customClass="TDCServerPropertiesNetworkSocketPane">
+            <connections>
+                <outlet property="connectionDefaultAddressTypeCheck" destination="zOI-7i-HTQ" id="atT-V9-DBS"/>
+                <outlet property="connectionIPv4AddressTypeCheck" destination="Doi-rA-9aF" id="wyV-Fd-Ii1"/>
+                <outlet property="connectionIPv6AddressTypeCheck" destination="dd4-fZ-E2b" id="6Eh-9M-sx5"/>
+                <outlet property="disconnectOnReachabilityChangeCheck" destination="w5K-aH-URS" id="8N7-xY-lax"/>
+                <outlet property="performDisconnectOnPongTimerCheck" destination="2536" id="rFn-Dj-NOb"/>
+                <outlet property="pongTimerCheck" destination="2531" id="2541"/>
+                <outlet property="preferredCipherSuitesButton" destination="xo6-bb-4qn" id="nt3-Ps-mHp"/>
+                <outlet property="propertiesSheet" destination="-2" id="cAf-n9-ZnR"/>
+                <outlet property="validateServerCertificateChainCheck" destination="7Re-Oa-iNx" id="8ll-Xe-9Sy"/>
+                <outlet property="view" destination="2488" id="x1c-Rp-XjX"/>
+                <outlet property="viewListOfPreferredCipherSuitesButton" destination="BoR-WW-sT2" id="iUd-E9-N2y"/>
+            </connections>
+        </customObject>
+        <customObject id="JQF-4s-sit" customClass="TDCServerPropertiesProxyServerPane">
+            <connections>
+                <outlet property="propertiesSheet" destination="-2" id="VTW-Og-UrR"/>
+                <outlet property="proxyAddressTextField" destination="1901" id="RIc-hP-gu6"/>
+                <outlet property="proxyPasswordTextField" destination="1902" id="yHw-1g-b0t"/>
+                <outlet property="proxyPortTextField" destination="84A-gQ-HPC" id="6IV-ig-nxs"/>
+                <outlet property="proxyServerInputView" destination="KJ6-gu-xq3" id="KFA-jY-wHm"/>
+                <outlet property="proxyServerSystemSocksView" destination="GFp-Qd-4ck" id="i2R-4V-oBi"/>
+                <outlet property="proxyServerTorBrowserView" destination="yql-kd-PP5" id="uIe-fo-kbw"/>
+                <outlet property="proxyTypeButton" destination="1905" id="2279"/>
+                <outlet property="proxyUsernameTextField" destination="1904" id="2Og-K9-Fm0"/>
+                <outlet property="view" destination="1887" id="Y6r-hB-Lvd"/>
+            </connections>
+        </customObject>
+        <customObject id="oEZ-NI-NiU" customClass="TDCServerPropertiesPane">
+            <connections>
+                <outlet property="propertiesSheet" destination="-2" id="BMy-Gm-YQY"/>
+                <outlet property="view" destination="O3J-xl-nwg" id="cB8-PX-TAQ"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -936,7 +984,7 @@ Gw
                             </textField>
                         </gridCell>
                         <gridCell row="HQO-PZ-kkO" column="VoC-9t-4Jn" id="Vbl-SS-VS0">
-                            <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1684">
+                            <popUpButton key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="1684">
                                 <rect key="frame" x="66" y="28" width="258" height="25"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="1714">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -959,7 +1007,7 @@ Gw
                             </textField>
                         </gridCell>
                         <gridCell row="ZX4-Aw-6qI" column="VoC-9t-4Jn" id="wEs-0H-zdj">
-                            <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1685">
+                            <popUpButton key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="1685">
                                 <rect key="frame" x="66" y="-4" width="258" height="25"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="1692">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -980,7 +1028,7 @@ Gw
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="toggleAdvancedEncodings:" target="-2" id="2319"/>
+                        <action selector="toggleAdvancedEncodings:" target="RSc-c0-tPp" id="2319"/>
                         <binding destination="iuc-Sg-eeB" name="value" keyPath="values.Server Properties Window Sheet -&gt; Include Advanced Encodings" id="lpH-1O-kyB"/>
                     </connections>
                 </button>
@@ -1808,7 +1856,7 @@ Gw
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <action selector="openProxySettingsInSystemPreferences:" target="-2" id="Pfm-LV-j2c"/>
+                                <action selector="openProxySettingsInSystemPreferences:" target="JQF-4s-sit" id="Pfm-LV-j2c"/>
                             </connections>
                         </button>
                     </subviews>
@@ -1851,7 +1899,7 @@ Gw
                             </popUpButtonCell>
                             <connections>
                                 <accessibilityConnection property="title" destination="1896" id="1gR-pC-1ht"/>
-                                <action selector="proxyTypeChanged:" target="-2" id="2289"/>
+                                <action selector="proxyTypeChanged:" target="JQF-4s-sit" id="2289"/>
                             </connections>
                         </popUpButton>
                     </subviews>
@@ -1963,7 +2011,7 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="displayPatternValue1" keyPath="self.floodControlDelayTimerSliderTempValue" id="fUV-xU-dw1">
+                        <binding destination="oRq-rK-yjS" name="displayPatternValue1" keyPath="self.floodControlDelayTimerSliderTempValue" id="fUV-xU-dw1">
                             <dictionary key="options">
                                 <string key="NSDisplayPattern">Current Value: %{value1}@</string>
                             </dictionary>
@@ -1978,7 +2026,7 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="displayPatternValue1" keyPath="self.floodControlMessageCountSliderTempValue" id="Iip-VB-iS5">
+                        <binding destination="oRq-rK-yjS" name="displayPatternValue1" keyPath="self.floodControlMessageCountSliderTempValue" id="Iip-VB-iS5">
                             <dictionary key="options">
                                 <string key="NSDisplayPattern">Current Value: %{value1}@</string>
                             </dictionary>
@@ -2012,7 +2060,7 @@ Gw
                             <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="60" doubleValue="2" tickMarkPosition="below" numberOfTickMarks="60" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Suc-bU-9RU"/>
                             <connections>
                                 <accessibilityConnection property="title" destination="Itb-Ee-5gX" id="1qV-pR-HOf"/>
-                                <binding destination="-2" name="value" keyPath="self.floodControlDelayTimerSliderTempValue" id="ICJ-8T-e2n"/>
+                                <binding destination="oRq-rK-yjS" name="value" keyPath="self.floodControlDelayTimerSliderTempValue" id="ICJ-8T-e2n"/>
                             </connections>
                         </slider>
                         <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pDB-qm-dyE">
@@ -2054,7 +2102,7 @@ Gw
                             <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="60" doubleValue="10" tickMarkPosition="below" numberOfTickMarks="60" allowsTickMarkValuesOnly="YES" sliderType="linear" id="nbd-xl-Ad6"/>
                             <connections>
                                 <accessibilityConnection property="title" destination="0Af-cs-B5g" id="9rF-h2-yOy"/>
-                                <binding destination="-2" name="value" keyPath="self.floodControlMessageCountSliderTempValue" id="5Wa-WZ-Qhz"/>
+                                <binding destination="oRq-rK-yjS" name="value" keyPath="self.floodControlMessageCountSliderTempValue" id="5Wa-WZ-Qhz"/>
                             </connections>
                         </slider>
                         <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sAt-Ob-XHX">
@@ -2178,7 +2226,7 @@ Gw
                         </menu>
                     </popUpButtonCell>
                     <connections>
-                        <action selector="preferredCipherSuitesChanged:" target="-2" id="9Dg-uU-k8K"/>
+                        <action selector="preferredCipherSuitesChanged:" target="iRj-AM-Yw5" id="9Dg-uU-k8K"/>
                     </connections>
                 </popUpButton>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BoR-WW-sT2">
@@ -2188,7 +2236,7 @@ Gw
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="preferredCipherSuitesViewList:" target="-2" id="UQs-lq-m95"/>
+                        <action selector="preferredCipherSuitesViewList:" target="iRj-AM-Yw5" id="UQs-lq-m95"/>
                     </connections>
                 </button>
                 <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T3E-ox-F6h">
@@ -2209,7 +2257,7 @@ Gw
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <action selector="preferredInternetProtocolChanged:" target="-2" id="IdA-5M-B2J"/>
+                                <action selector="preferredInternetProtocolChanged:" target="iRj-AM-Yw5" id="IdA-5M-B2J"/>
                             </connections>
                         </button>
                         <button tag="2" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dd4-fZ-E2b">
@@ -2219,7 +2267,7 @@ Gw
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <action selector="preferredInternetProtocolChanged:" target="-2" id="xAK-Lf-84J"/>
+                                <action selector="preferredInternetProtocolChanged:" target="iRj-AM-Yw5" id="xAK-Lf-84J"/>
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zOI-7i-HTQ">
@@ -2229,7 +2277,7 @@ Gw
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <action selector="preferredInternetProtocolChanged:" target="-2" id="1Fm-cM-XZY"/>
+                                <action selector="preferredInternetProtocolChanged:" target="iRj-AM-Yw5" id="1Fm-cM-XZY"/>
                             </connections>
                         </button>
                     </subviews>
