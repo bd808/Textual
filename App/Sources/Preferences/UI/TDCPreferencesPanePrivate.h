@@ -57,6 +57,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* Shared by several sections: redraws the chat views */
 - (IBAction)onChangedTheme:(nullable id)sender;
+
+/* A style is reloading (bound in nibs to disable controls meanwhile) */
+@property (readonly) BOOL reloadingTheme;
+
+/* For subclasses (call super) */
+- (void)themeWillReload:(NSNotification *)notification;
+- (void)themeDidReload:(NSNotification *)notification;
+
+/* The colour panel keeps sending changes to an active colour well */
+- (void)deactivateColorWells;
 @end
 
 @interface TDCPreferencesGeneralPane : TDCPreferencesPane
@@ -66,6 +76,18 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface TDCPreferencesCommandScopePane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesHighlightsPane : TDCPreferencesPane <NSTableViewDelegate>
+@end
+
+@interface TDCPreferencesNotificationsPane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesInterfacePane : TDCPreferencesPane
+@end
+
+@interface TDCPreferencesStylePane : TDCPreferencesPane
 @end
 
 NS_ASSUME_NONNULL_END

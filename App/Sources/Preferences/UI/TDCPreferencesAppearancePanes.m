@@ -1,0 +1,756 @@
+/* *********************************************************************
+ *                  _____         _               _
+ *                 |_   _|____  _| |_ _   _  __ _| |
+ *                   | |/ _ \ \/ / __| | | |/ _` | |
+ *                   | |  __/>  <| |_| |_| | (_| | |
+ *                   |_|\___/_/\_\\__|\__,_|\__,_|_|
+ *
+ * Copyright (c) 2008 - 2010 Satoshi Nakagawa <psychs AT limechat DOT net>
+ * Copyright (c) 2010 - 2018 Codeux Software, LLC & respective contributors.
+ * Copyright (c) 2026 Blendbyte GmbH & respective contributors.
+ *       Please see Acknowledgements.pdf for additional information.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of Textual, "Codeux Software, LLC", nor the
+ *    names of its contributors may be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ *********************************************************************** */
+
+#import "NSViewHelper.h"
+#import "TXMasterController.h"
+#import "TPCPathInfoPrivate.h"
+#import "TPCPreferencesLocalPrivate.h"
+#import "TPCPreferencesReload.h"
+#import "TPCPreferencesUserDefaults.h"
+#import "TPCThemeControllerPrivate.h"
+#import "TLOLocalization.h"
+#import "TVCMainWindowPrivate.h"
+#import "TVCNotificationConfigurationViewControllerPrivate.h"
+#import "TDCAlert.h"
+#import "TDCPreferencesNotificationConfigurationPrivate.h"
+#import "TDCPreferencesUserStyleSheetPrivate.h"
+#import "TDCPreferencesPanePrivate.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+#define _scrollbackSaveLinesMin		100
+#define _scrollbackSaveLinesMax		50000
+
+#pragma mark Highlights
+
+@interface TDCPreferencesHighlightsPane ()
+@property (nonatomic, strong) IBOutlet NSArrayController *highlightKeywordsArrayController;
+@property (nonatomic, strong) IBOutlet NSArrayController *excludeKeywordsArrayController;
+@property (nonatomic, weak) IBOutlet NSTableView *highlightKeywordsTable;
+@property (nonatomic, weak) IBOutlet NSTableView *excludeKeywordsTable;
+@property (nonatomic, weak) IBOutlet NSButton *highlightNicknameButton;
+
+/* Bound in the nib; off while keywords are regular expressions */
+@property (nonatomic, assign) BOOL highlightCurrentNickname;
+
+- (IBAction)onAddHighlightKeyword:(nullable id)sender;
+- (IBAction)onAddExcludeKeyword:(nullable id)sender;
+- (IBAction)onChangedHighlightType:(nullable id)sender;
+- (IBAction)onChangedHighlightLogging:(nullable id)sender;
+@end
+
+@implementation TDCPreferencesHighlightsPane
+
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+
+	[self updateHighlightNicknameButton];
+}
+
+- (BOOL)highlightCurrentNickname
+{
+	if ([TPCPreferences highlightMatchingMethod] == TXNicknameHighlightMatchTypeRegularExpression) {
+		return NO;
+	}
+
+	return [TPCPreferences highlightCurrentNickname];
+}
+
+- (void)setHighlightCurrentNickname:(BOOL)value
+{
+	[TPCPreferences setHighlightCurrentNickname:value];
+}
+
+- (void)updateHighlightNicknameButton
+{
+	[self willChangeValueForKey:@"highlightCurrentNickname"];
+	[self didChangeValueForKey:@"highlightCurrentNickname"];
+
+	self.highlightNicknameButton.enabled =
+	([TPCPreferences highlightMatchingMethod] != TXNicknameHighlightMatchTypeRegularExpression);
+}
+
+- (void)onChangedHighlightType:(nullable id)sender
+{
+	[self updateHighlightNicknameButton];
+
+	if ([TPCPreferences highlightMatchingMethod] == TXNicknameHighlightMatchTypeRegularExpression) {
+		[self warnAboutInvalidRegularExpressionKeywords];
+	}
+}
+
+- (void)onChangedHighlightLogging:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionHighlightLogging];
+}
+
+/* Keywords saved before switching to regular expressions may not compile:
+ they would never match, so say which */
+- (void)warnAboutInvalidRegularExpressionKeywords
+{
+	NSMutableArray<NSString *> *invalidKeywords = [NSMutableArray array];
+
+	for (NSString *keyword in [TPCPreferences highlightMatchKeywords]) {
+		if ([XRRegularExpression isValidRegex:keyword] == NO) {
+			[invalidKeywords addObject:keyword];
+		}
+	}
+
+	if (invalidKeywords.count == 0) {
+		return;
+	}
+
+	[TDCAlert alertWithMessage:TXTLS(@"TDCPreferencesController[r7x-q3]", [invalidKeywords componentsJoinedByString:@"\n"])
+						 title:TXTLS(@"TDCPreferencesController[r7x-q1]")
+				 defaultButton:TXTLS(@"Prompts[c7s-dq]")
+			   alternateButton:nil];
+}
+
+/* add: only takes effect on a later pass of the run loop, so editing started
+ before the row existed and the new empty row looked like nothing happened */
+- (void)addKeywordToArrayController:(NSArrayController *)arrayController inTableView:(NSTableView *)tableView
+{
+	[arrayController addObject:[arrayController newObject]];
+
+	XRPerformBlockAsynchronouslyOnMainQueue(^{
+		NSInteger row = arrayController.selectionIndex;
+
+		if (row == NSNotFound || row >= tableView.numberOfRows) {
+			row = (tableView.numberOfRows - 1);
+		}
+
+		if (row < 0) {
+			return;
+		}
+
+		[tableView scrollRowToVisible:row];
+
+		[tableView editColumn:0 row:row withEvent:nil select:YES];
+	});
+}
+
+/* With regular expression matching, a keyword that doesn't compile would never match */
+- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
+{
+	if (control != self.highlightKeywordsTable ||
+		[TPCPreferences highlightMatchingMethod] != TXNicknameHighlightMatchTypeRegularExpression)
+	{
+		return YES;
+	}
+
+	NSString *pattern = fieldEditor.string;
+
+	if (pattern.length == 0 || [XRRegularExpression isValidRegex:pattern]) {
+		return YES;
+	}
+
+	[TDCAlert alertWithMessage:TXTLS(@"TDCPreferencesController[r7x-q2]", pattern)
+						 title:TXTLS(@"TDCPreferencesController[r7x-q1]")
+				 defaultButton:TXTLS(@"Prompts[c7s-dq]")
+			   alternateButton:nil];
+
+	return NO;
+}
+
+- (void)onAddHighlightKeyword:(nullable id)sender
+{
+	[self addKeywordToArrayController:self.highlightKeywordsArrayController inTableView:self.highlightKeywordsTable];
+}
+
+- (void)onAddExcludeKeyword:(nullable id)sender
+{
+	[self addKeywordToArrayController:self.excludeKeywordsArrayController inTableView:self.excludeKeywordsTable];
+}
+
+@end
+
+#pragma mark -
+#pragma mark Notifications
+
+@interface TDCPreferencesNotificationsPane ()
+@property (nonatomic, weak) IBOutlet NSView *notificationControllerHostView;
+@property (nonatomic, strong) IBOutlet TVCNotificationConfigurationViewController *notificationController;
+
+/* Bound in the nib */
+@property (nonatomic, assign) BOOL onlySpeakEventsForSelection;
+@property (nonatomic, assign) BOOL channelMessageSpeakChannelName;
+@property (nonatomic, assign) BOOL channelMessageSpeakNickname;
+
+- (IBAction)onChangedDockIconBadges:(nullable id)sender;
+@end
+
+@implementation TDCPreferencesNotificationsPane
+
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+
+	NSMutableArray *notifications = [NSMutableArray array];
+
+#define _event(_type_)	[notifications addObject:[TDCPreferencesNotificationConfiguration objectWithEventType:TXNotificationType ##_type_]]
+#define _spacer			[notifications addObject:@" "]
+
+	_event(AddressBookMatch);
+	_spacer;
+	_event(Connect);
+	_event(Disconnect);
+	_spacer;
+	_event(Highlight);
+	_spacer;
+	_event(Invite);
+	_event(Kick);
+	_spacer;
+	_event(ChannelMessage);
+	_event(ChannelNotice);
+	_spacer;
+	_event(NewPrivateMessage);
+	_event(PrivateMessage);
+	_event(PrivateNotice);
+	_spacer;
+	_event(UserJoined);
+	_event(UserParted);
+	_event(UserDisconnected);
+	_spacer;
+	_event(FileTransferReceiveRequested);
+	_spacer;
+	_event(FileTransferSendSuccessful);
+	_event(FileTransferReceiveSuccessful);
+	_spacer;
+	_event(FileTransferSendFailed);
+	_event(FileTransferReceiveFailed);
+
+#undef _event
+#undef _spacer
+
+	self.notificationController.notifications = notifications;
+
+	[self.notificationController attachToView:self.notificationControllerHostView];
+}
+
+- (BOOL)onlySpeakEventsForSelection
+{
+	return [TPCPreferences onlySpeakEventsForSelection];
+}
+
+- (void)setOnlySpeakEventsForSelection:(BOOL)onlySpeakEventsForSelection
+{
+	[TPCPreferences setOnlySpeakEventsForSelection:onlySpeakEventsForSelection];
+
+	[self willChangeValueForKey:@"channelMessageSpeakChannelName"];
+	[self didChangeValueForKey:@"channelMessageSpeakChannelName"];
+}
+
+- (BOOL)channelMessageSpeakChannelName
+{
+	if ([TPCPreferences onlySpeakEventsForSelection]) {
+		return NO;
+	}
+
+	return [TPCPreferences channelMessageSpeakChannelName];
+}
+
+- (void)setChannelMessageSpeakChannelName:(BOOL)channelMessageSpeakChannelName
+{
+	[TPCPreferences setChannelMessageSpeakChannelName:channelMessageSpeakChannelName];
+}
+
+- (BOOL)channelMessageSpeakNickname
+{
+	return [TPCPreferences channelMessageSpeakNickname];
+}
+
+- (void)setChannelMessageSpeakNickname:(BOOL)channelMessageSpeakNickname
+{
+	[TPCPreferences setChannelMessageSpeakNickname:channelMessageSpeakNickname];
+}
+
+- (void)onChangedDockIconBadges:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionDockIconBadges];
+}
+
+@end
+
+#pragma mark -
+#pragma mark Interface
+
+@interface TDCPreferencesInterfacePane ()
+/* Bound in the nib (clear: the appearance's own colour) */
+@property (nonatomic, copy) NSColor *serverListUnreadCountBadgeHighlightColor;
+
+- (IBAction)onChangedAppearance:(nullable id)sender;
+- (IBAction)onChangedTransparency:(nullable id)sender;
+- (IBAction)onChangedChannelViewArrangement:(nullable id)sender;
+- (IBAction)onChangedServerListUnreadBadgeColor:(nullable id)sender;
+- (IBAction)onResetServerListUnreadBadgeColorsToDefault:(nullable id)sender;
+- (IBAction)onChangedUserListModeColor:(nullable id)sender;
+- (IBAction)onChangedUserListModeSortOrder:(nullable id)sender;
+- (IBAction)onResetUserListModeColorsToDefaults:(nullable id)sender;
+@end
+
+@implementation TDCPreferencesInterfacePane
+
+- (NSColor *)serverListUnreadCountBadgeHighlightColor
+{
+	NSColor *value = [RZUserDefaults() colorForKey:@"Server List Unread Message Count Badge Colors -> Highlight"];
+
+	if (value == nil) {
+		value = [NSColor clearColor];
+	}
+
+	return value;
+}
+
+- (void)setServerListUnreadCountBadgeHighlightColor:(NSColor *)serverListUnreadCountBadgeHighlightColor
+{
+	NSColor *newValue = serverListUnreadCountBadgeHighlightColor;
+
+	if ([newValue isEqual:[NSColor clearColor]]) {
+		newValue = nil;
+	}
+
+	[RZUserDefaults() setColor:newValue
+						forKey:@"Server List Unread Message Count Badge Colors -> Highlight"];
+}
+
+- (void)onChangedAppearance:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionAppearance];
+}
+
+- (void)onChangedTransparency:(nullable id)sender
+{
+	[mainWindow() updateAlphaValueToReflectPreferences];
+}
+
+- (void)onChangedChannelViewArrangement:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionChannelViewArrangement];
+}
+
+- (void)onChangedServerListUnreadBadgeColor:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionServerListUnreadBadges];
+}
+
+- (void)onResetServerListUnreadBadgeColorsToDefault:(nullable id)sender
+{
+	[self deactivateColorWells];
+
+	[self willChangeValueForKey:@"serverListUnreadCountBadgeHighlightColor"];
+
+	[RZUserDefaults() setObject:nil forKey:@"Server List Unread Message Count Badge Colors -> Highlight"];
+
+	[self didChangeValueForKey:@"serverListUnreadCountBadgeHighlightColor"];
+
+	[self onChangedServerListUnreadBadgeColor:sender];
+}
+
+- (void)onChangedUserListModeColor:(nullable id)sender
+{
+	static NSDictionary<NSNumber *, NSString *> *preferenceMap = nil;
+
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		preferenceMap = @{
+			@(10) 	: @"User List Mode Badge Colors -> +y",
+			@(9) 	: @"User List Mode Badge Colors -> +q",
+			@(8) 	: @"User List Mode Badge Colors -> +a",
+			@(7) 	: @"User List Mode Badge Colors -> +o",
+			@(6) 	: @"User List Mode Badge Colors -> +h",
+			@(5) 	: @"User List Mode Badge Colors -> +v"
+		};
+	});
+
+	NSString *preferenceKey = preferenceMap[@([sender tag])];
+
+	/* The no-mode checkbox, and resets */
+	if (preferenceKey == nil) {
+		[TPCPreferences performReloadAction:(TPCPreferencesReloadActionMemberListUserBadges | TPCPreferencesReloadActionMemberList)];
+	} else {
+		[TPCPreferences performReloadAction:TPCPreferencesReloadActionMemberListUserBadges forKey:preferenceKey];
+	}
+}
+
+- (void)onChangedUserListModeSortOrder:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionMemberListSortOrder];
+}
+
+/* Also resets the no-mode colour (in Hidden Preferences, which follows the default) */
+- (void)onResetUserListModeColorsToDefaults:(nullable id)sender
+{
+	[self deactivateColorWells];
+
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +y"];
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +q"];
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +a"];
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +o"];
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +h"];
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> +v"];
+	[RZUserDefaults() setObject:nil forKey:@"User List Mode Badge Colors -> no mode"];
+
+	[self onChangedUserListModeColor:nil];
+}
+
+@end
+
+#pragma mark -
+#pragma mark Style
+
+@interface TDCPreferencesStylePane () <TDCPreferencesUserStyleSheetDelegate>
+@property (nonatomic, weak) IBOutlet NSPopUpButton *themeSelectionButton;
+@property (nonatomic, assign) BOOL reloadingThemeBySelection;
+@property (nonatomic, strong, nullable) TDCPreferencesUserStyleSheet *userStyleSheet;
+
+/* Bound in the nib */
+@property (nonatomic, copy) NSString *themeChannelViewFontName;
+@property (nonatomic, assign) CGFloat themeChannelViewFontSize;
+@property (nonatomic, copy) NSString *scrollbackSaveLimit;
+
+- (IBAction)onChangedThemeSelection:(nullable id)sender;
+- (IBAction)onOpenPathToTheme:(nullable id)sender;
+- (IBAction)onSelectNewFont:(nullable id)sender;
+- (IBAction)onModifyUserStyleSheetRules:(nullable id)sender;
+- (IBAction)onChangedScrollbackSaveLimit:(nullable id)sender;
+- (IBAction)onChangedDisableNicknameColorHashing:(nullable id)sender;
+@end
+
+@implementation TDCPreferencesStylePane
+
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+
+	[self updateThemeSelection];
+
+	[RZNotificationCenter() addObserver:self
+							   selector:@selector(themeListDidChange:)
+								   name:TPCThemeControllerThemeListDidChangeNotification
+								 object:nil];
+}
+
+- (void)paneWillClose
+{
+	[self.userStyleSheet close];
+
+	/* The font panel is shared: give it back its normal target and action */
+	if (RZFontManager().target == self) {
+		RZFontManager().target = nil;
+		RZFontManager().action = @selector(changeFont:);
+	}
+}
+
+- (void)themeListDidChange:(NSNotification *)notification
+{
+	[self updateThemeSelection];
+}
+
+- (void)themeDidReload:(NSNotification *)notification
+{
+	[super themeDidReload:notification];
+
+	/* A style can force its own font */
+	[self willChangeValueForKey:@"themeChannelViewFontName"];
+	[self willChangeValueForKey:@"themeChannelViewFontSize"];
+	[self didChangeValueForKey:@"themeChannelViewFontName"];
+	[self didChangeValueForKey:@"themeChannelViewFontSize"];
+
+	if (self.reloadingThemeBySelection) {
+		self.reloadingThemeBySelection = NO;
+
+		[self showForcedStyleValues];
+	}
+}
+
+#pragma mark -
+#pragma mark Bound Values
+
+- (NSString *)themeChannelViewFontName
+{
+	return [TPCPreferences themeChannelViewFont].displayName;
+}
+
+- (void)setThemeChannelViewFontName:(NSString *)value
+{
+	; // Display only (the font panel sets the font)
+}
+
+- (CGFloat)themeChannelViewFontSize
+{
+	return [TPCPreferences themeChannelViewFontSize];
+}
+
+- (void)setThemeChannelViewFontSize:(CGFloat)value
+{
+	; // Display only (the font panel sets the font)
+}
+
+- (NSString *)scrollbackSaveLimit
+{
+	return [NSString stringWithUnsignedInteger:[TPCPreferences scrollbackSaveLimit]];
+}
+
+- (void)setScrollbackSaveLimit:(NSString *)value
+{
+	[TPCPreferences setScrollbackSaveLimit:value.integerValue];
+}
+
+- (BOOL)validateValue:(inout id *)value forKey:(NSString *)key error:(out NSError **)outError
+{
+	if ([key isEqualToString:@"scrollbackSaveLimit"]) {
+		NSInteger valueInteger = [*value integerValue];
+
+		if (valueInteger < _scrollbackSaveLinesMin) {
+			*value = [NSString stringWithUnsignedInteger:_scrollbackSaveLinesMin];
+		} else if (valueInteger > _scrollbackSaveLinesMax) {
+			*value = [NSString stringWithUnsignedInteger:_scrollbackSaveLinesMax];
+		}
+	}
+
+	return YES;
+}
+
+- (void)onChangedScrollbackSaveLimit:(nullable id)sender
+{
+	[TPCPreferences performReloadAction:TPCPreferencesReloadActionScrollbackSaveLimit];
+}
+
+- (void)onChangedDisableNicknameColorHashing:(nullable id)sender
+{
+	[self onChangedTheme:nil];
+}
+
+#pragma mark -
+#pragma mark Style Selection
+
+- (void)updateThemeSelection
+{
+	[self.themeSelectionButton removeAllItems];
+
+	NSString *currentThemeName = themeController().name;
+
+	TPCThemeStorageLocation currentStorageLocation = themeController().storageLocation;
+
+	[themeController() enumerateAvailableThemesWithBlock:^(NSString *themeName, TPCThemeStorageLocation storageLocation, BOOL multipleVariants, BOOL *stop) {
+		NSString *displayName = themeName;
+
+		if (multipleVariants) {
+			displayName = [NSString stringWithFormat:@"%@ (%@)",
+				themeName, [TPCThemeController descriptionForStorageLocation:storageLocation]];
+		}
+
+		NSMenuItem *item = [NSMenuItem menuItemWithTitle:displayName target:nil action:nil];
+
+		item.representedObject =
+		@{
+		  @"themeName" : themeName,
+		  @"storageLocation" : @(storageLocation)
+		};
+
+		if ([currentThemeName isEqualToString:themeName] &&
+			currentStorageLocation == storageLocation)
+		{
+			item.tag = 100; // Tag for item to select
+		}
+
+		[self.themeSelectionButton.menu addItem:item];
+	}];
+
+	[self.themeSelectionButton selectItemWithTag:100];
+}
+
+- (void)onChangedThemeSelection:(nullable id)sender
+{
+	NSMenuItem *selectedItem = self.themeSelectionButton.selectedItem;
+
+	NSDictionary *context = selectedItem.representedObject;
+
+	NSString *newThemeName = context[@"themeName"];
+
+	TPCThemeStorageLocation newStorageLocation = [context unsignedIntegerForKey:@"storageLocation"];
+
+	NSString *newTheme = [TPCThemeController buildFilename:newThemeName forStorageLocation:newStorageLocation];
+
+	NSString *currentTheme = [TPCPreferences themeName];
+
+	if ([currentTheme isEqualToString:newTheme]) {
+		return;
+	}
+
+	[TPCPreferences setThemeName:newTheme];
+
+	self.reloadingThemeBySelection = YES;
+
+	[self onChangedTheme:nil];
+}
+
+/* After a style chosen here loaded: say which preferences it overrides */
+- (void)showForcedStyleValues
+{
+	NSMutableString *forcedValuesMutable = [NSMutableString string];
+
+	if ([TPCPreferences themeNicknameFormatPreferenceUserConfigurable] == NO) {
+		[forcedValuesMutable appendString:TXTLS(@"TDCPreferencesController[77t-de]")];
+
+		[forcedValuesMutable appendString:@"\n"];
+	}
+
+	if ([TPCPreferences themeTimestampFormatPreferenceUserConfigurable] == NO) {
+		[forcedValuesMutable appendString:TXTLS(@"TDCPreferencesController[ddh-hr]")];
+
+		[forcedValuesMutable appendString:@"\n"];
+	}
+
+	if ([TPCPreferences themeChannelViewFontPreferenceUserConfigurable] == NO) {
+		[forcedValuesMutable appendString:TXTLS(@"TDCPreferencesController[we8-i8]")];
+
+		[forcedValuesMutable appendString:@"\n"];
+	}
+
+	NSString *forcedValues = forcedValuesMutable.trim;
+
+	if (forcedValues.length == 0) {
+		return;
+	}
+
+	NSString *currentTheme = [TPCPreferences themeName];
+
+	NSString *themeName = [TPCThemeController extractThemeName:currentTheme];
+
+	[TDCAlert alertSheetWithWindow:self.view.window
+							  body:TXTLS(@"TDCPreferencesController[q4o-2f]", themeName, forcedValues)
+							 title:TXTLS(@"TDCPreferencesController[uc0-z7]")
+					 defaultButton:TXTLS(@"Prompts[c7s-dq]")
+				   alternateButton:nil
+					   otherButton:nil
+					suppressionKey:@"theme_override_info"
+				   suppressionText:nil
+				   completionBlock:nil];
+}
+
+- (void)onOpenPathToTheme:(nullable id)sender
+{
+	if (themeController().bundledTheme == NO) {
+		[RZWorkspace() openURL:themeController().originalURL];
+
+		return;
+	}
+
+	[TDCAlert alertSheetWithWindow:self.view.window
+							  body:TXTLS(@"TDCPreferencesController[ojj-ap]")
+							 title:TXTLS(@"TDCPreferencesController[5jv-aw]")
+					 defaultButton:TXTLS(@"TDCPreferencesController[6ws-av]")
+				   alternateButton:TXTLS(@"TDCPreferencesController[aib-iy]")
+					   otherButton:TXTLS(@"TDCPreferencesController[dj8-1t]")
+				   completionBlock:^(TDCAlertResponse buttonClicked, BOOL suppressed, id underlyingAlert) {
+		if (buttonClicked == TDCAlertResponseDefault) {
+			[RZWorkspace() openURL:themeController().originalURL];
+		} else if (buttonClicked == TDCAlertResponseAlternate) {
+			[self onModifyUserStyleSheetRules:nil];
+		} else if (buttonClicked == TDCAlertResponseOther) {
+			[[underlyingAlert window] orderOut:nil];
+
+			[themeController() copyActiveThemeToDestinationLocation:TPCThemeStorageLocationCustom reloadOnCopy:YES openOnCopy:YES];
+		}
+	}];
+}
+
+#pragma mark -
+#pragma mark Font
+
+- (void)onSelectNewFont:(nullable id)sender
+{
+	NSFont *currentFont = [TPCPreferences themeChannelViewFont];
+
+	[RZFontManager() setSelectedFont:currentFont isMultiple:NO];
+
+	[RZFontManager() orderFrontFontPanel:self];
+
+	RZFontManager().target = self;
+	RZFontManager().action = @selector(onChangedChannelViewFont:);
+}
+
+- (void)onChangedChannelViewFont:(NSFontManager *)sender
+{
+	NSFont *currentFont = [TPCPreferences themeChannelViewFont];
+
+	NSFont *newFont = [sender convertFont:currentFont];
+
+	[self willChangeValueForKey:@"themeChannelViewFontName"];
+	[self willChangeValueForKey:@"themeChannelViewFontSize"];
+
+	[TPCPreferences setThemeChannelViewFontName:newFont.fontName];
+	[TPCPreferences setThemeChannelViewFontSize:newFont.pointSize];
+
+	[self didChangeValueForKey:@"themeChannelViewFontName"];
+	[self didChangeValueForKey:@"themeChannelViewFontSize"];
+
+	[self onChangedTheme:nil];
+}
+
+#pragma mark -
+#pragma mark User Style Sheet Rules
+
+- (void)onModifyUserStyleSheetRules:(nullable id)sender
+{
+	TDCPreferencesUserStyleSheet *sheet = [[TDCPreferencesUserStyleSheet alloc] initWithWindow:self.view.window];
+
+	sheet.delegate = self;
+
+	[sheet start];
+
+	self.userStyleSheet = sheet;
+}
+
+- (void)userStyleSheetRulesChanged:(TDCPreferencesUserStyleSheet *)sender
+{
+	[self onChangedTheme:nil];
+}
+
+- (void)userStyleSheetWillClose:(TDCPreferencesUserStyleSheet *)sender
+{
+	self.userStyleSheet = nil;
+}
+
+@end
+
+NS_ASSUME_NONNULL_END

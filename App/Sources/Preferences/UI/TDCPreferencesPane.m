@@ -42,6 +42,7 @@
 #import "TXMenuController.h"
 #import "TPCPreferencesLocalPrivate.h"
 #import "TPCPreferencesReload.h"
+#import "TVCMainWindowPrivate.h"
 #import "TDCPreferencesPanePrivate.h"
 
 #if TEXTUAL_BUILT_WITH_SPARKLE_ENABLED == 1
@@ -50,13 +51,66 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface TDCPreferencesPane ()
+@property (nonatomic, assign, readwrite) BOOL reloadingTheme;
+@end
+
 @implementation TDCPreferencesPane
 
 - (instancetype)initWithNibName:(NSString *)nibName
 {
 	NSParameterAssert(nibName != nil);
 
-	return [super initWithNibName:nibName bundle:[NSBundle mainBundle]];
+	if ((self = [super initWithNibName:nibName bundle:[NSBundle mainBundle]])) {
+		[RZNotificationCenter() addObserver:self
+								   selector:@selector(themeWillReload:)
+									   name:TVCMainWindowWillReloadThemeNotification
+									 object:nil];
+
+		[RZNotificationCenter() addObserver:self
+								   selector:@selector(themeDidReload:)
+									   name:TVCMainWindowDidReloadThemeNotification
+									 object:nil];
+
+		return self;
+	}
+
+	return nil;
+}
+
+- (void)dealloc
+{
+	[RZNotificationCenter() removeObserver:self];
+}
+
+- (void)themeWillReload:(NSNotification *)notification
+{
+	self.reloadingTheme = YES;
+}
+
+- (void)themeDidReload:(NSNotification *)notification
+{
+	self.reloadingTheme = NO;
+}
+
+- (void)deactivateColorWells
+{
+	if (self.viewLoaded) {
+		[self deactivateColorWellsInView:self.view];
+	}
+}
+
+- (void)deactivateColorWellsInView:(NSView *)view
+{
+	if ([view isKindOfClass:[NSColorWell class]]) {
+		[(NSColorWell *)view deactivate];
+
+		return;
+	}
+
+	for (NSView *subview in view.subviews) {
+		[self deactivateColorWellsInView:subview];
+	}
 }
 
 /* TDCPreferencesGeneralPane → TDCPreferencesGeneral */
