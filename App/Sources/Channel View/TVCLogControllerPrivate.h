@@ -45,6 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* Typing notifications: "… is typing" as the last line of the view */
 - (void)setTypingIndicatorText:(NSString *)text;
+
+/* The topic bar of a private message: the channels you share (IRC formatting) */
++ (BOOL)channelShowsQueryInfoBar:(nullable IRCChannel *)channel;
+- (void)setQueryInfoBar:(NSString *)text;
 - (void)removeTypingIndicator;
 
 - (instancetype)initWithClient:(IRCClient *)client inWindow:(TVCMainWindow *)window NS_DESIGNATED_INITIALIZER;

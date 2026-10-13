@@ -80,3 +80,7 @@
 "e7g-n2" = "%1$@ is now %2$@";
 "e7g-a1" = "%1$@ and %2$@";
 "e7g-a2" = "%1$@, %2$@";
+
+/* At the top of a private message someone else started */
+"q3i-c1" = "Channels you share with %1$@: %2$@";
+"q3i-n1" = "You share no channels with %@";

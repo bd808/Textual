@@ -76,6 +76,11 @@
 				<div id="topicBar" ondblclick="Textual.topicBarDoubleClicked()">(No Topic)</div>
 			{{/isChannelView}}
 
+			{{! A private message: the channels you share with them }}
+			{{#showQueryInfoBar}}
+				<div id="topicBar" data-query-info="true"></div>
+			{{/showQueryInfoBar}}
+
 			<div id="body">
 				<div id="messageBuffer" role="log" aria-live="polite">
 				</div>

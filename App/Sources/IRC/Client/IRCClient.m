@@ -125,6 +125,7 @@
 #import "IRCAddressBookMatchCachePrivate.h"
 #import "IRCAddressBookUserTrackingPrivate.h"
 #import "IRCChannelConfig.h"
+#import "IRCChannelMemberList.h"
 #import "IRCChannelModePrivate.h"
 #import "IRCChannelUserPrivate.h"
 #import "IRCChannelPrivate.h"
@@ -1384,6 +1385,90 @@ NSString * const IRCClientUserNicknameChangedNotification = @"IRCClientUserNickn
 	if (isHighlight || channel.config.showTreeBadgeCount) {
 		[mainWindowServerList() refreshMessageCountForItem:channel];
 	}
+}
+
+- (NSArray<IRCChannel *> *)channelsSharedWithNickname:(NSString *)nickname
+{
+	NSParameterAssert(nickname != nil);
+
+	NSMutableArray<IRCChannel *> *sharedChannels = [NSMutableArray array];
+
+	for (IRCChannel *channel in self.channelList) {
+		if (channel.isChannel == NO || channel.isActive == NO) {
+			continue;
+		}
+
+		if ([channel.memberInfo memberExists:nickname]) {
+			[sharedChannels addObject:channel];
+		}
+	}
+
+	return [sharedChannels copy];
+}
+
+/* The topic bar of a private message lists the channels you share with them: every
+ one shared since it opened, struck through while they (or you) are not in it. nil
+ updates all of them, after your own joins and parts */
+- (void)updateQueryInfoBarsForNickname:(nullable NSString *)nickname
+{
+	for (IRCChannel *query in self.channelList) {
+		if ([TVCLogController channelShowsQueryInfoBar:query] == NO) {
+			continue;
+		}
+
+		if (nickname && [query.name isEqualToStringIgnoringCase:nickname] == NO) {
+			continue;
+		}
+
+		[query.viewController setQueryInfoBar:[self queryInfoBarTextForQuery:query]];
+	}
+}
+
+- (NSString *)queryInfoBarTextForQuery:(IRCChannel *)query
+{
+	NSParameterAssert(query != nil);
+
+	NSString *nickname = query.name;
+
+	NSArray<IRCChannel *> *sharedChannels = [self channelsSharedWithNickname:nickname];
+
+	NSMutableArray<NSString *> *sharedChannelNames = [NSMutableArray arrayWithCapacity:sharedChannels.count];
+
+	for (IRCChannel *sharedChannel in sharedChannels) {
+		[sharedChannelNames addObject:sharedChannel.name];
+	}
+
+	/* Channels once shared stay listed */
+	NSMutableArray<NSString *> *channelNames = [query.queryInfoBarChannelNames mutableCopy];
+
+	if (channelNames == nil) {
+		channelNames = [NSMutableArray array];
+	}
+
+	for (NSString *channelName in sharedChannelNames) {
+		if ([channelNames containsObjectIgnoringCase:channelName] == NO) {
+			[channelNames addObject:channelName];
+		}
+	}
+
+	query.queryInfoBarChannelNames = channelNames;
+
+	if (channelNames.count == 0) {
+		return TXTLS(@"TVCMainWindow[q3i-n1]", nickname);
+	}
+
+	NSMutableArray<NSString *> *listedNames = [NSMutableArray arrayWithCapacity:channelNames.count];
+
+	for (NSString *channelName in channelNames) {
+		if ([sharedChannelNames containsObjectIgnoringCase:channelName]) {
+			[listedNames addObject:channelName];
+		} else {
+			/* IRC strikethrough */
+			[listedNames addObject:[NSString stringWithFormat:@"\x1E%@\x1E", channelName]];
+		}
+	}
+
+	return TXTLS(@"TVCMainWindow[q3i-c1]", nickname, [listedNames componentsJoinedByString:@", "]);
 }
 
 #pragma mark -

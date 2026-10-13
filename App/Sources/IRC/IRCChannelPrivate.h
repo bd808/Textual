@@ -76,6 +76,10 @@ TEXTUAL_EXTERN NSNotificationName const IRCChannelMemberListWasCreatedNotificati
 @property (nonatomic, assign) BOOL channelNamesReceived;
 @property (nonatomic, assign, readwrite) BOOL errorOnLastJoinAttempt;
 
+/* A private message's topic bar lists the channels you share with them:
+ every one shared since the view opened (not saved) */
+@property (nonatomic, copy, nullable) NSArray<NSString *> *queryInfoBarChannelNames;
+
 - (instancetype)initWithConfig:(IRCChannelConfig *)config NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithConfigDictionary:(NSDictionary<NSString *, id> *)dic;
 

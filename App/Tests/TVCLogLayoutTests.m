@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 							"var TextualScroller = { isScrolledToBottom: function() { return true; }, scrollToBottom: function() {} };"
 							"var _TextualScroller = { bindToBestElement: function() {}, createMutationObserver: function() {} };"
 							"var appPrivate = { finishedLayingOutView: function() { layoutsFinished += 1; } };"
+							"var _EventGroups = { configure: function() {}, linesAdded: function() {}, linesRemoved: function() {} };"
 							"var document = { body: { dataset: {} }, addEventListener: function() {} };"
 							"var window = {"
 							"  requestAnimationFrame: function(f) { frames.push(f); return frames.length; },"

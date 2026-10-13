@@ -1255,6 +1255,11 @@ NS_ASSUME_NONNULL_BEGIN
 		IRCChannelUser *member = [[IRCChannelUser alloc] initWithUser:userAdded];
 
 		[channel addMember:member checkForDuplicates:YES];
+
+		/* Ours: the channel's member list (end of NAMES) updates the bars */
+		if (myself == NO) {
+			[self updateQueryInfoBarsForNickname:sender];
+		}
 	}
 
 	if (isPrintOnlyMessage == NO && myself == NO) {
@@ -1358,6 +1363,8 @@ NS_ASSUME_NONNULL_BEGIN
 			/* Notify user */
 			[self notifyEvent:TXNotificationTypeUserParted lineType:TVCLogLineTypePart target:channel nickname:sender text:comment];
 		}
+
+		[self updateQueryInfoBarsForNickname:((myself) ? nil : sender)];
 	}
 
 	BOOL printMessage = [self postReceivedMessage:m withText:comment destinedFor:channel];
@@ -1432,6 +1439,8 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			[channel removeMemberWithNickname:target];
 		}
+
+		[self updateQueryInfoBarsForNickname:((myself) ? nil : target)];
 	}
 
 	BOOL printMessage = [self postReceivedMessage:m withText:comment destinedFor:channel];
@@ -1595,6 +1604,8 @@ NS_ASSUME_NONNULL_BEGIN
 		[mainWindow() updateTitleFor:self];
 
 		[self notifyEvent:TXNotificationTypeUserDisconnected lineType:TVCLogLineTypeQuit target:nil nickname:sender text:comment];
+
+		[self updateQueryInfoBarsForNickname:sender];
 	}
 }
 
@@ -1799,6 +1810,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 	for (IRCChannel *c in self.channelList) {
 		printingBlock(c);
+	}
+
+	/* Their query has the new name by now */
+	if (isPrintOnlyMessage == NO && myself == NO) {
+		[self updateQueryInfoBarsForNickname:newNickname];
 	}
 }
 

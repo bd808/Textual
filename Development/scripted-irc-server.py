@@ -1604,6 +1604,45 @@ async def scenario_collapse(client):
 		pass
 
 
+async def scenario_query_info(client):
+	"""Private messages show the channels you share in their topic bar:
+	you are in #one and #two; alice (in both) and bob (in neither) message you.
+	Then, ten seconds apart: alice leaves #two (struck through), bob joins #one,
+	alice comes back to #two, changes nickname to alicia, and quits (all
+	struck through). A query you open yourself (/query dave) has the bar too.
+	Stays connected (Ctrl-C to stop)."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+
+	for channel, members in (("#one", f"{me} @alice dave"), ("#two", f"{me} alice carol")):
+		await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+		await client.send(f":{SERVER} 353 {me} = {channel} :{members}")
+		await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+
+	await client.collect(2)
+
+	await client.send(f":alice!a@alice.test PRIVMSG {me} :Hi, we share two channels")
+	await client.send(f":bob!b@bob.test PRIVMSG {me} :Hello from someone you share no channels with")
+
+	# Then, ten seconds apart, the bars follow along
+	changes = [
+		":alice!a@alice.test PART #two :brb",  # alice: #two struck through
+		":bob!b@bob.test JOIN #one",  # bob: #one
+		":alice!a@alice.test JOIN #two",  # alice: #two back
+		":alice!a@alice.test NICK :alicia",  # the query becomes alicia, the bar stays
+		":alicia!a@alice.test QUIT :Quit: bye",  # alicia: both struck through
+	]
+
+	for line in changes:
+		await asyncio.sleep(10)
+		await client.send(line)
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1613,6 +1652,7 @@ async def scenario_silent(client):
 SCENARIOS = {
 	"styles": scenario_styles,
 	"collapse": scenario_collapse,
+	"query-info": scenario_query_info,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -1654,7 +1694,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

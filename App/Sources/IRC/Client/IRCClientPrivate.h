@@ -86,6 +86,11 @@ enum {
 
 - (void)cacheHighlightInChannel:(IRCChannel *)channel withLogLine:(TVCLogLine *)logLine;
 
+/* Joined channels (not queries) the nickname is in too */
+- (NSArray<IRCChannel *> *)channelsSharedWithNickname:(NSString *)nickname;
+
+- (void)updateQueryInfoBarsForNickname:(nullable NSString *)nickname;
+
 - (void)noteReachabilityChanged:(BOOL)reachable;
 
 - (IRCAddressBookUserTrackingContainer *)trackedUsers;

@@ -44,6 +44,7 @@
 #import "IRCClientConfig.h"
 #import "IRCClientPrivate.h"
 #import "IRCChannel.h"
+#import "IRCChannelPrivate.h"
 #import "THOPluginDispatcherPrivate.h"
 #import "THOPluginManagerPrivate.h"
 #import "THOPluginProtocolPrivate.h"
@@ -600,9 +601,45 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 - (void)setInitialTopic
 {
-	NSString *topic = self.associatedChannel.topic;
+	IRCChannel *channel = self.associatedChannel;
 
-	[self setTopic:topic];
+	/* The topic bar of a private message lists the channels you share */
+	if ([self.class channelShowsQueryInfoBar:channel]) {
+		[self.associatedClient updateQueryInfoBarsForNickname:channel.name];
+
+		return;
+	}
+
+	[self setTopic:channel.topic];
+}
+
+/* Not for ZNC's own (*status and the like): no one to share channels with */
++ (BOOL)channelShowsQueryInfoBar:(nullable IRCChannel *)channel
+{
+	return (channel.isPrivateMessage && channel.isPrivateMessageForZNCUser == NO);
+}
+
+- (void)setQueryInfoBar:(NSString *)text
+{
+	NSParameterAssert(text != nil);
+
+	if (self.terminating) {
+		return;
+	}
+
+	TVCLogControllerPrintingBlock operationBlock = ^(id operation) {
+		NSString *template = [TVCLogRenderer renderBody:text
+									  forViewController:self
+										 withAttributes:@{
+											   TVCLogRendererConfigurationRenderLinksAttribute : @YES,
+											   TVCLogRendererConfigurationLineTypeAttribute : @(TVCLogLineTypeTopic)
+														 }
+											 resultInfo:NULL];
+
+		[self _evaluateFunction:@"_Textual.setQueryInfoBar" withArguments:@[template]];
+	};
+
+	_enqueueBlockStandalone(operationBlock)
 }
 
 - (void)setTopic:(nullable NSString *)topic
@@ -2032,6 +2069,9 @@ NS_INLINE BOOL _lineTypeIsGroupable(TVCLogLineType lineType)
 		templateTokens[@"channelName"] = channel.name;
 
 		templateTokens[@"viewTypeToken"] = channel.channelTypeString;
+
+		/* A private message's topic bar lists the channels you share */
+		templateTokens[@"showQueryInfoBar"] = @([self.class channelShowsQueryInfoBar:channel]);
 	} else {
 		templateTokens[@"viewTypeToken"] = @"server";
 	}

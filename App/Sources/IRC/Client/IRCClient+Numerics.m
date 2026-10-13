@@ -1105,6 +1105,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 			[channel.memberInfo endNamesBatch];
 
+			/* People in private messages they started may be here too */
+			[self updateQueryInfoBarsForNickname:nil];
+
 			/* We have to wait until names are processed before populating
 			 defaults for a channel so that we are certain there is actually
 			 only one user, which is us. */

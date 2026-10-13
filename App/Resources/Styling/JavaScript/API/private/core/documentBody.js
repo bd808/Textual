@@ -139,6 +139,44 @@ Textual.setTopicBarValue = function(topicValue, topicValueHTML) /* PUBLIC */
 	return false;
 };
 
+/* A private message shows the channels you share in its topic bar. Styles leave room for the topic bar in channels only, so the page leaves room
+ for it here: as tall as the bar is (none while the view isn't selected and it is hidden) */
+_Textual._queryInfoBarObserver = null; /* PRIVATE */
+
+_Textual.setQueryInfoBar = function(html) /* PRIVATE */
+{
+	var topicBar = Textual.topicBarElement();
+
+	if (topicBar === null) {
+		return;
+	}
+
+	topicBar.innerHTML = html;
+
+	if (_Textual._queryInfoBarObserver === null) {
+		_Textual._queryInfoBarObserver = new ResizeObserver(_Textual._queryInfoBarResized);
+
+		_Textual._queryInfoBarObserver.observe(topicBar);
+	}
+
+	_Textual._queryInfoBarResized();
+};
+
+_Textual._queryInfoBarResized = function() /* PRIVATE */
+{
+	var topicBar = Textual.topicBarElement();
+
+	var documentBody = Textual.documentBodyElement();
+
+	if (topicBar === null || documentBody === null) {
+		return;
+	}
+
+	var height = topicBar.offsetHeight;
+
+	documentBody.style.maxHeight = ((height > 0) ? ("calc(100% - " + height + "px)") : "");
+};
+
 Textual.setTopicBarVisible = function(isVisible) /* PUBLIC */
 {
 	var topicBar = Textual.topicBarElement();
