@@ -17,8 +17,7 @@
 	--link-hover-color: #40A0FF;
 	--topic-bar-color: #8E8E8E;
 	--topic-bar-border-color: #404040;
-	--topic-bar-text-shadow-color: rgba(10, 10, 10, 0.7);
-	--topic-bar-background: linear-gradient(to bottom, #0F0F0F 0%, #262626 100%);
+	--topic-bar-background: #1a1a1a;
 	--topic-bar-link-color: #8E8E8E;
 	--loading-indicator-color: #5a5a5a;
 	--divider-line-color: #606060;

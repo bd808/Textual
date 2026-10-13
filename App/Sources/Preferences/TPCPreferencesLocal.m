@@ -54,6 +54,8 @@ NSString * const TPCPreferencesThemeNameDefaultsKey	= @"Theme -> Name";
 NSString * const TPCPreferencesThemeFontNameDefaultsKey	= @"Theme -> Font Name";
 NSString * const TPCPreferencesThemeFontSizeDefaultsKey	= @"Theme -> Font Size";
 
+NSString * const TPCPreferencesThemeFontNameSystemFont = @"-apple-system";
+
 NSString * const TPCPreferencesThemeNameMissingLocallyDefaultsKey = @"Theme -> Name -> Did Not Exist During Last Sync";
 
 NSString * const TPCPreferencesThemeFontNameMissingLocallyDefaultsKey = @"Theme -> Font Name -> Did Not Exist During Last Sync";
@@ -582,9 +584,27 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 	return [RZUserDefaults() objectForKey:TPCPreferencesThemeFontNameDefaultsKey];
 }
 
++ (BOOL)themeChannelViewFontIsSystemFont
+{
+	return [[self themeChannelViewFontName] isEqualToString:TPCPreferencesThemeFontNameSystemFont];
+}
+
+/* The font panel names the system font ".AppleSystemUIFont" (or a weight of it):
+ not a name WebKit or a later launch can use, so it's stored as the marker */
++ (BOOL)_fontNameIsSystemFont:(NSString *)fontName
+{
+	return ([fontName isEqualToString:TPCPreferencesThemeFontNameSystemFont] ||
+			[fontName hasPrefix:@".AppleSystemUIFont"] ||
+			[fontName isEqualToString:[NSFont systemFontOfSize:0].fontName]);
+}
+
 + (void)setThemeChannelViewFontName:(NSString *)value
 {
 	NSParameterAssert(value != nil);
+
+	if ([self _fontNameIsSystemFont:value]) {
+		value = TPCPreferencesThemeFontNameSystemFont;
+	}
 
 	[RZUserDefaults() setObject:value forKey:TPCPreferencesThemeFontNameDefaultsKey];
 
@@ -595,7 +615,7 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 {
 	NSParameterAssert(value != nil);
 
-	if ([NSFont fontIsAvailable:value]) {
+	if ([self _fontNameIsSystemFont:value] || [NSFont fontIsAvailable:value]) {
 		[self setThemeChannelViewFontName:value];
 	} else {
 		[RZUserDefaults() setBool:YES forKey:TPCPreferencesThemeFontNameMissingLocallyDefaultsKey];
@@ -614,6 +634,10 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 
 + (nullable NSFont *)themeChannelViewFont
 {
+	if ([self themeChannelViewFontIsSystemFont]) {
+		return [NSFont systemFontOfSize:[self themeChannelViewFontSize]];
+	}
+
 	return [NSFont fontWithName:[self themeChannelViewFontName]
 						   size:[self themeChannelViewFontSize]];
 }

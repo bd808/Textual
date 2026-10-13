@@ -255,9 +255,9 @@
 	<key>TextualDeveloperEnvironment</key>
 	<false/>
 	<key>Theme -&gt; Font Name</key>
-	<string>Lucida Grande</string>
+	<string>-apple-system</string>
 	<key>Theme -&gt; Font Size</key>
-	<real>12.0</real>
+	<real>13</real>
 	<key>Theme -&gt; Name</key>
 	<string>resource:Simplified</string>
 	<key>Theme -&gt; Nickname Format</key>

@@ -1976,11 +1976,35 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 	NSFont *channelFont = themeSettings().themeChannelViewFont;
 
+	/* The system font is a CSS keyword, not a name in quotes */
+	BOOL usesSystemFont = NO;
+
 	if (channelFont == nil) {
 		channelFont = [TPCPreferences themeChannelViewFont];
+
+		usesSystemFont = [TPCPreferences themeChannelViewFontIsSystemFont];
 	}
 
-	templateTokens[@"userConfiguredFontName"] =   channelFont.fontName;
+	/* A missing font (removed since) falls back to the system font, as the page would */
+	if (channelFont == nil) {
+		channelFont = [NSFont systemFontOfSize:[TPCPreferences themeChannelViewFontSize]];
+
+		usesSystemFont = YES;
+	}
+
+	if (usesSystemFont) {
+		templateTokens[@"userConfiguredFontFamily"] = @"-apple-system, system-ui";
+	} else {
+		NSString *fontName = channelFont.fontName;
+
+		fontName = [fontName stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+
+		templateTokens[@"userConfiguredFontFamily"] = [NSString stringWithFormat:@"'%@'", fontName];
+	}
+
+	/* For templates of styles made before userConfiguredFontFamily */
+	templateTokens[@"userConfiguredFontName"] = ((usesSystemFont) ? TPCPreferencesThemeFontNameSystemFont : channelFont.fontName);
 	templateTokens[@"userConfiguredFontSize"] = @(channelFont.pointSize * (72.0 / 96.0));
 
 	// ---- //

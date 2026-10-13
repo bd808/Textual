@@ -83,13 +83,37 @@
                                                     <binding destination="G2Q-fc-ddg" name="enabled" keyPath="values.Theme -&gt; Channel Font Preference Enabled" id="BXQ-7H-Qn2"/>
                                                 </connections>
                                             </button>
+                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="s7F-uS-yF1">
+                                                <rect key="frame" x="292" y="0.0" width="108" height="19"/>
+                                                <buttonCell key="cell" type="roundRect" title="Use System Font" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s7F-uS-yC1">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="cellTitle"/>
+                                                </buttonCell>
+                                                <accessibility description="Use the System Font for Content"/>
+                                                <connections>
+                                                    <action selector="onUseSystemFont:" target="-2" id="s7F-uS-yA1"/>
+                                                    <binding destination="-2" name="hidden" keyPath="self.themeChannelViewFontIsSystemFont" id="s7F-uS-yH1"/>
+                                                    <binding destination="-2" name="enabled2" keyPath="self.reloadingTheme" previousBinding="s7F-uS-yE1" id="s7F-uS-yE2">
+                                                        <dictionary key="options">
+                                                            <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                            <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                            <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                            <integer key="NSNullPlaceholder" value="-1"/>
+                                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                        </dictionary>
+                                                    </binding>
+                                                    <binding destination="G2Q-fc-ddg" name="enabled" keyPath="values.Theme -&gt; Channel Font Preference Enabled" id="s7F-uS-yE1"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
+                                            <integer value="1000"/>
                                         </visibilityPriorities>
                                         <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>

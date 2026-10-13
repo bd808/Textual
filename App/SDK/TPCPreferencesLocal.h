@@ -45,6 +45,10 @@ TEXTUAL_EXTERN NSString * const TPCPreferencesThemeNameDefaultsKey;
 TEXTUAL_EXTERN NSString * const TPCPreferencesThemeFontNameDefaultsKey;
 TEXTUAL_EXTERN NSString * const TPCPreferencesThemeFontSizeDefaultsKey;
 
+/* Stored as the font name when the chat view uses the macOS system font
+ (the default for new installs); it is also the CSS keyword for that font */
+TEXTUAL_EXTERN NSString * const TPCPreferencesThemeFontNameSystemFont;
+
 TEXTUAL_EXTERN NSString * const TPCPreferencesThemeNameMissingLocallyDefaultsKey;
 TEXTUAL_EXTERN NSString * const TPCPreferencesThemeFontNameMissingLocallyDefaultsKey;
 
@@ -255,7 +259,8 @@ typedef NS_ENUM(NSUInteger, TXPreferredAppearance) {
 + (CGFloat)mainWindowTransparency;
 
 + (nullable NSFont *)themeChannelViewFont;
-+ (NSString *)themeChannelViewFontName;
++ (NSString *)themeChannelViewFontName; // TPCPreferencesThemeFontNameSystemFont for the system font
++ (BOOL)themeChannelViewFontIsSystemFont;
 + (NSString *)themeChannelViewFontNameDefault;
 + (CGFloat)themeChannelViewFontSize;
 

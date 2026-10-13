@@ -39,6 +39,7 @@
 #import "TLOLocalization.h"
 #import "TPCApplicationInfo.h"
 #import "TPCPathInfo.h"
+#import "TPCPreferencesLocal.h"
 #import "TPCPreferencesUserDefaults.h"
 #import "TPCPreferencesUserDefaultsLocal.h"
 #import "IRCWorldPrivate.h"
@@ -568,6 +569,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 		[RZUserDefaults() _migrateObject:object forKey:key];
 	}];
+
+	/* Textual 7's default font (Lucida Grande 12) was never stored: without these,
+	 the import would quietly switch to Textual 8's (the system font at 13). The
+	 new look is offered on purpose instead (10.6). */
+	if (preferences[TPCPreferencesThemeFontNameDefaultsKey] == nil) {
+		[RZUserDefaults() _migrateObject:@"Lucida Grande" forKey:TPCPreferencesThemeFontNameDefaultsKey];
+	}
+
+	if (preferences[TPCPreferencesThemeFontSizeDefaultsKey] == nil) {
+		[RZUserDefaults() _migrateObject:@(12.0) forKey:TPCPreferencesThemeFontSizeDefaultsKey];
+	}
 
 	[RZUserDefaults() _migrateObject:self.servers forKey:IRCWorldClientListDefaultsKey];
 

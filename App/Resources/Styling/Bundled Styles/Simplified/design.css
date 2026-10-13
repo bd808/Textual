@@ -131,9 +131,7 @@ a:hover {
 	color: var(--topic-bar-color);
 	position: fixed;
 	padding: 2px 0.5em 3px;
-	box-shadow: 0 1px 5px #777;
 	border-bottom: 1px solid var(--topic-bar-border-color);
-	text-shadow: 1px 1px var(--topic-bar-text-shadow-color);
 	background: var(--topic-bar-background);
 	-webkit-font-smoothing: antialiased;
 	overflow: hidden;
@@ -153,7 +151,6 @@ a:hover {
 #topicBar span.channel {
 	color: var(--topic-bar-link-color);
 	border-color: var(--topic-bar-link-color);
-	text-shadow: 1px 1px var(--topic-bar-text-shadow-color);
 }
 
 /* Remember Line */

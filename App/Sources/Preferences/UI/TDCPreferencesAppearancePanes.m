@@ -452,11 +452,13 @@ NS_ASSUME_NONNULL_BEGIN
 /* Bound in the nib */
 @property (nonatomic, copy) NSString *themeChannelViewFontName;
 @property (nonatomic, assign) CGFloat themeChannelViewFontSize;
+@property (readonly) BOOL themeChannelViewFontIsSystemFont; // hides "Use System Font"
 @property (nonatomic, copy) NSString *scrollbackSaveLimit;
 
 - (IBAction)onChangedThemeSelection:(nullable id)sender;
 - (IBAction)onOpenPathToTheme:(nullable id)sender;
 - (IBAction)onSelectNewFont:(nullable id)sender;
+- (IBAction)onUseSystemFont:(nullable id)sender;
 - (IBAction)onModifyUserStyleSheetRules:(nullable id)sender;
 - (IBAction)onChangedScrollbackSaveLimit:(nullable id)sender;
 - (IBAction)onChangedDisableNicknameColorHashing:(nullable id)sender;
@@ -497,10 +499,8 @@ NS_ASSUME_NONNULL_BEGIN
 	[super themeDidReload:notification];
 
 	/* A style can force its own font */
-	[self willChangeValueForKey:@"themeChannelViewFontName"];
-	[self willChangeValueForKey:@"themeChannelViewFontSize"];
-	[self didChangeValueForKey:@"themeChannelViewFontName"];
-	[self didChangeValueForKey:@"themeChannelViewFontSize"];
+	[self willChangeFontValues];
+	[self didChangeFontValues];
 
 	if (self.reloadingThemeBySelection) {
 		self.reloadingThemeBySelection = NO;
@@ -512,9 +512,33 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Bound Values
 
+- (void)willChangeFontValues
+{
+	[self willChangeValueForKey:@"themeChannelViewFontName"];
+	[self willChangeValueForKey:@"themeChannelViewFontSize"];
+	[self willChangeValueForKey:@"themeChannelViewFontIsSystemFont"];
+}
+
+- (void)didChangeFontValues
+{
+	[self didChangeValueForKey:@"themeChannelViewFontName"];
+	[self didChangeValueForKey:@"themeChannelViewFontSize"];
+	[self didChangeValueForKey:@"themeChannelViewFontIsSystemFont"];
+}
+
 - (NSString *)themeChannelViewFontName
 {
+	/* Its display name is a private one (".AppleSystemUIFont") */
+	if ([TPCPreferences themeChannelViewFontIsSystemFont]) {
+		return TXTLS(@"TDCPreferencesController[s7f-n1]");
+	}
+
 	return [TPCPreferences themeChannelViewFont].displayName;
+}
+
+- (BOOL)themeChannelViewFontIsSystemFont
+{
+	return [TPCPreferences themeChannelViewFontIsSystemFont];
 }
 
 - (void)setThemeChannelViewFontName:(NSString *)value
@@ -730,14 +754,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSFont *newFont = [sender convertFont:currentFont];
 
-	[self willChangeValueForKey:@"themeChannelViewFontName"];
-	[self willChangeValueForKey:@"themeChannelViewFontSize"];
+	[self willChangeFontValues];
 
 	[TPCPreferences setThemeChannelViewFontName:newFont.fontName];
 	[TPCPreferences setThemeChannelViewFontSize:newFont.pointSize];
 
-	[self didChangeValueForKey:@"themeChannelViewFontName"];
-	[self didChangeValueForKey:@"themeChannelViewFontSize"];
+	[self didChangeFontValues];
+
+	[self onChangedTheme:nil];
+}
+
+/* The font panel doesn't list the system font: the way back to it */
+- (void)onUseSystemFont:(nullable id)sender
+{
+	[self willChangeFontValues];
+
+	[TPCPreferences setThemeChannelViewFontName:TPCPreferencesThemeFontNameSystemFont];
+
+	[self didChangeFontValues];
 
 	[self onChangedTheme:nil];
 }
