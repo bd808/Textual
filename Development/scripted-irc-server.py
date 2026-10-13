@@ -1483,7 +1483,8 @@ async def scenario_styles(client):
 	lines (a date change, through server-time), then messages from several people, a
 	mention of you, formatting and colours, an action, notices, joins, parts, quits,
 	nickname, mode and topic changes, a kick, a long line, links and an image link
-	(turn on inline media to see it), and alice sends you a private message. Type a few
+	(turn on inline media to see it), and alice sends you a private message. In the Chat
+	display, alice's, dave_'s and eve's lines close together share one name. Type a few
 	lines of your own too. Stays connected (Ctrl-C to stop)."""
 	if not await client.register_with_capabilities("server-time"):
 		return
@@ -1527,6 +1528,7 @@ async def scenario_styles(client):
 		(11, ":robert!b@bob.test PRIVMSG #styles :Links: https://www.textualapp.com and #styles and ircs://irc.libera.chat/#textual"),
 		(10, ":eve!e@eve.test PRIVMSG #styles :An image link: https://www.textualapp.com/textual-light.jpg"),
 		(9, ":eve!e@eve.test PRIVMSG #styles :Emoji and other scripts: 🎉 ✓ 日本語 русский العربية"),
+		(3, ":eve!e@eve.test PRIVMSG #styles :Six minutes after my last line, so the Chat display shows my name again"),
 	]
 
 	for minutes_ago, line in lines:

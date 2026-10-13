@@ -1,0 +1,53 @@
+/* Lumen Light: the colours. The rules are in the style's own design.css. */
+
+:root {
+	color-scheme: light;
+
+	/* Surfaces. Not pure white: #ffffff at full display brightness is
+	needlessly harsh for a window someone stares at all day, and a hair
+	off it leaves room for an elevated surface to read as elevated. */
+	--bg: #fcfcfd;
+	--bg-elevated: #f2f2f5;
+	--rule: #e4e4e9;
+
+	/* Text. Four steps, in descending order of how much attention the
+	content deserves: message bodies, chrome, secondary metadata, and
+	status lines (joins/parts/modes). */
+	--text-strong: #131317;
+	--text: #26262b;
+	--text-muted: #6d6d78;
+	--text-faint: #8a8a94;
+
+	--link: #0a63e0;
+	/* Darker on hover, not lighter: lighter loses contrast on a light
+	background, so the link gets harder to read the moment you point at it. */
+	--link-hover: #094ead;
+
+	/* Accents */
+	--notice: #e08600;
+	--notice-sender: #a35a00;
+	--notice-fill: rgba(224, 134, 0, 0.08);
+
+	--mention: #e09400;
+	--mention-fill: rgba(224, 148, 0, 0.11);
+
+	--tracked: #5e5ce6;
+	--tracked-fill: rgba(94, 92, 230, 0.09);
+
+	--danger: #d70015;
+
+	/* Status-line glyphs. Deliberately desaturated: at full chroma the
+	arrows on a burst of joins pull the eye harder than the messages
+	between them. */
+	--join: #3f8055;
+	--leave: #9c5b56;
+
+	--hover-fill: rgba(0, 0, 0, 0.04);
+	--selection: rgba(10, 99, 224, 0.20);
+
+	/* Your own nickname and actions */
+	--nick-self: #d0246a;
+	--nick-self-action: #4f4dd4;
+
+	--font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}

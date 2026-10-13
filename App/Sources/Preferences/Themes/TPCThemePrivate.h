@@ -44,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly, copy) NSString *applicationTemplateRepositoryPath;
 
+/* NO when the style has its own message template made before the Chat
+ display: it is shown in the Classic display instead */
+@property (atomic, readonly) BOOL supportsGroupedDisplay; // read while lines render on other threads
+
 - (void)updateAppearance;
 @end
 

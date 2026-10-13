@@ -1,0 +1,53 @@
+/* Lumen Dark: the colours. The rules are in the style's own design.css. */
+
+:root {
+	color-scheme: dark;
+
+	/* Surfaces. The background carries a slight blue cast rather than
+	sitting on the neutral axis; a dead gray reads flat next to the
+	saturated accents used for mentions and notices. */
+	--bg: #1c1c1f;
+	--bg-elevated: #26262a;
+	--rule: #34343a;
+
+	/* Text. Four steps, in descending order of how much attention the
+	content deserves: message bodies, chrome, secondary metadata, and
+	status lines (joins/parts/modes). */
+	--text-strong: #f2f2f5;
+	--text: #e2e2e5;
+	--text-muted: #9a9aa3;
+	--text-faint: #78787f;
+
+	--link: #4c9dff;
+	--link-hover: #7ab8ff;
+
+	/* Accents */
+	--notice: #ff9f0a;
+	--notice-sender: #ffb340;
+	--notice-fill: rgba(255, 159, 10, 0.10);
+
+	/* Warmer than a pure amber: at this low an alpha over a near-neutral
+	dark background, #f2b400 mixes down to olive rather than to gold. */
+	--mention: #ffb224;
+	--mention-fill: rgba(255, 170, 36, 0.085);
+
+	--tracked: #8b88ff;
+	--tracked-fill: rgba(139, 136, 255, 0.11);
+
+	--danger: #ff453a;
+
+	/* Status-line glyphs. Deliberately desaturated: at full chroma the
+	arrows on a burst of joins pull the eye harder than the messages
+	between them. */
+	--join: #5f9c74;
+	--leave: #a3706c;
+
+	--hover-fill: rgba(255, 255, 255, 0.055);
+	--selection: rgba(76, 157, 255, 0.28);
+
+	/* Your own nickname and actions */
+	--nick-self: #ff7a95;
+	--nick-self-action: #8f8cff;
+
+	--font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}

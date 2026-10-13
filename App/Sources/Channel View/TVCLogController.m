@@ -71,6 +71,10 @@ NS_ASSUME_NONNULL_BEGIN
 #define _enqueueBlockStandalone(operationBlock)			\
 	[self.printingQueue enqueueMessageBlock:(operationBlock) for:self isStandalone:YES];
 
+/* In the Chat display, messages a sender posts within this long of each
+ other are shown under one name */
+static const NSTimeInterval TVCLogControllerMessageGroupingWindow = (5 * 60);
+
 @interface TVCLogControllerPrintOperationContext ()
 @property (nonatomic, weak, readwrite) IRCClient *client;
 @property (nonatomic, weak, readwrite) IRCChannel *channel;
@@ -715,17 +719,21 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 	NSMutableArray<THOPluginDidPostNewMessageConcreteObject *> *pluginObjects = nil;
 
+	TVCLogLine *previousLine = nil;
+
 	for (TVCLogLine *logLine in oldLines) {
 		/* Render result info HTML */
 		NSDictionary<NSString *, id> *resultInfo = nil;
 
-		NSString *html = [self renderLogLine:logLine resultInfo:&resultInfo];
+		NSString *html = [self renderLogLine:logLine previousLine:previousLine resultInfo:&resultInfo];
 
 		if (html == nil) {
 			LogToConsoleError("Failed to render log line %{public}@", logLine.description);
 
 			continue;
 		}
+
+		previousLine = logLine;
 
 		[patchedAppend appendString:html];
 
@@ -1386,17 +1394,22 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 	NSMutableArray<THOPluginDidPostNewMessageConcreteObject *> *pluginObjects = nil;
 
+	/* The first line has no neighbour on screen yet, so it shows its sender */
+	TVCLogLine *previousLine = nil;
+
 	for (TVCLogLine *logLine in logLines) {
 		/* Render result info HTML */
 		NSDictionary<NSString *, id> *resultInfo = nil;
 
-		NSString *html = [self renderLogLine:logLine resultInfo:&resultInfo];
+		NSString *html = [self renderLogLine:logLine previousLine:previousLine resultInfo:&resultInfo];
 
 		if (html == nil) {
 			LogToConsoleError("Failed to render log line %{public}@", logLine.description);
 
 			continue;
 		}
+
+		previousLine = logLine;
 
 		/* Record information about rendering */
 		NSString *lineNumber = logLine.uniqueIdentifier;
@@ -1450,6 +1463,9 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 		logLine = [logLine copy];
 	}
 
+	/* Lines render in the order they are printed: this is the one above it */
+	TVCLogLine *previousLine = self.lastLine;
+
 	self.lastLine = logLine;
 
 	@synchronized (self.unsavedLogLines) {
@@ -1477,7 +1493,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	TVCLogControllerPrintingBlock printBlock = ^(id operation) {
 		NSDictionary<NSString *, id> *resultInfo = nil;
 
-		NSString *html = [self renderLogLine:logLine resultInfo:&resultInfo];
+		NSString *html = [self renderLogLine:logLine previousLine:previousLine resultInfo:&resultInfo];
 
 		if (html == nil) {
 			LogToConsoleError("Failed to render log line %{public}@", logLine.description);
@@ -1699,7 +1715,53 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	return [rendererAttributes copy];
 }
 
-- (nullable NSString *)renderLogLine:(TVCLogLine *)logLine resultInfo:(NSDictionary<NSString *, id> ** _Nullable)resultInfo
+/* The Chat display, unless the style's own message template predates it */
+- (BOOL)groupedDisplayEnabled
+{
+	return ([TPCPreferences messageGroupingStyle] == TVCLogLineGroupingStyleGrouped &&
+			theme().supportsGroupedDisplay);
+}
+
+NS_INLINE BOOL _lineTypeIsGroupable(TVCLogLineType lineType)
+{
+	return (lineType == TVCLogLineTypePrivateMessage ||
+			lineType == TVCLogLineTypePrivateMessageNoHighlight ||
+			lineType == TVCLogLineTypeAction ||
+			lineType == TVCLogLineTypeActionNoHighlight);
+}
+
+/* Shown under the sender's name of the line above it */
+- (BOOL)logLine:(TVCLogLine *)logLine isGroupedWithPreviousLine:(nullable TVCLogLine *)previousLine highlighted:(BOOL)highlighted
+{
+	NSParameterAssert(logLine != nil);
+
+	if (previousLine == nil || highlighted || logLine.isFirstForDay) {
+		return NO;
+	}
+
+	if (_lineTypeIsGroupable(logLine.lineType) == NO || _lineTypeIsGroupable(previousLine.lineType) == NO) {
+		return NO;
+	}
+
+	NSString *nickname = logLine.nickname;
+
+	if (nickname.length == 0 || [nickname isEqualToString:previousLine.nickname] == NO) {
+		return NO;
+	}
+
+	/* The session indicator is drawn after that line */
+	NSString *previousLineNumber = previousLine.uniqueIdentifier;
+
+	if ([previousLineNumber isEqualToString:self.newestLineNumberFromPreviousSession]) {
+		return NO;
+	}
+
+	NSTimeInterval timeBetween = [logLine.receivedAt timeIntervalSinceDate:previousLine.receivedAt];
+
+	return (timeBetween >= 0 && timeBetween < TVCLogControllerMessageGroupingWindow);
+}
+
+- (nullable NSString *)renderLogLine:(TVCLogLine *)logLine previousLine:(nullable TVCLogLine *)previousLine resultInfo:(NSDictionary<NSString *, id> ** _Nullable)resultInfo
 {
 	NSParameterAssert(logLine != nil);
 
@@ -1831,6 +1893,14 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	templateAttributes[@"lineNumber"] = lineNumber;
 
 	templateAttributes[@"lineRenderTime"] = @([NSDate timeIntervalSince1970]);
+
+	// ---- //
+
+	if ([self groupedDisplayEnabled]) {
+		templateAttributes[@"groupedDisplayEnabled"] = @(YES);
+
+		templateAttributes[@"isGroupedWithPrevious"] = @([self logLine:logLine isGroupedWithPreviousLine:previousLine highlighted:highlighted]);
+	}
 
 	// ---- //
 
@@ -2011,7 +2081,12 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 	double indentOffset = themeSettings().indentationOffset;
 
-	if (round(indentOffset) < 0.0 || [TPCPreferences rightToLeftFormatting]) {
+	BOOL groupedDisplayEnabled = [self groupedDisplayEnabled];
+
+	templateTokens[@"groupedDisplayEnabled"] = @(groupedDisplayEnabled);
+
+	/* Chat puts names above messages: nothing to line up */
+	if (round(indentOffset) < 0.0 || [TPCPreferences rightToLeftFormatting] || groupedDisplayEnabled) {
 		templateTokens[@"nicknameIndentationAvailable"] = @(NO);
 	} else {
 		templateTokens[@"nicknameIndentationAvailable"] = @(YES);

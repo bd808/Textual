@@ -82,6 +82,8 @@
 	<integer>0</integer>
 	<key>DisplayEventInLogView -&gt; Join, Part, Quit</key>
 	<integer>0</integer>
+	<key>DisplayEventInLogView -&gt; Message Grouping Style</key>
+	<integer>0</integer>
 	<key>DisplayPublicMessageCountInDockBadge</key>
 	<integer>0</integer>
 	<key>DisplayServerMessageOfTheDayOnConnect</key>

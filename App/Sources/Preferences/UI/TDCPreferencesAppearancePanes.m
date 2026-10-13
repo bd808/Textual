@@ -44,7 +44,9 @@
 #import "TPCPreferencesReload.h"
 #import "TPCPreferencesUserDefaults.h"
 #import "TPCThemeControllerPrivate.h"
+#import "TPCThemePrivate.h"
 #import "TLOLocalization.h"
+#import "TXGlobalModels.h"
 #import "TVCMainWindowPrivate.h"
 #import "TVCNotificationConfigurationViewControllerPrivate.h"
 #import "TDCAlert.h"
@@ -454,6 +456,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat themeChannelViewFontSize;
 @property (readonly) BOOL themeChannelViewFontIsSystemFont; // hides "Use System Font"
 @property (nonatomic, copy) NSString *scrollbackSaveLimit;
+@property (nonatomic, assign) NSUInteger messageGroupingStyle; // the Display pop-up's selected tag
+@property (readonly) BOOL groupedDisplayUnsupported; // shows "This style shows Classic"
 
 - (IBAction)onChangedThemeSelection:(nullable id)sender;
 - (IBAction)onOpenPathToTheme:(nullable id)sender;
@@ -501,6 +505,9 @@ NS_ASSUME_NONNULL_BEGIN
 	/* A style can force its own font */
 	[self willChangeFontValues];
 	[self didChangeFontValues];
+
+	[self willChangeValueForKey:@"groupedDisplayUnsupported"];
+	[self didChangeValueForKey:@"groupedDisplayUnsupported"];
 
 	if (self.reloadingThemeBySelection) {
 		self.reloadingThemeBySelection = NO;
@@ -579,6 +586,130 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	return YES;
+}
+
+#pragma mark -
+#pragma mark Display
+
+/* The time and nickname formats each display is made for */
+static NSString * const _chatNicknameFormat = @"%@%n";
+static NSString * const _chatTimestampFormat = @"%H:%M";
+
++ (NSString *)nicknameFormatForGroupingStyle:(TVCLogLineGroupingStyle)groupingStyle
+{
+	if (groupingStyle == TVCLogLineGroupingStyleGrouped) {
+		return _chatNicknameFormat;
+	}
+
+	return [TPCPreferences themeNicknameFormatDefault];
+}
+
++ (NSString *)timestampFormatForGroupingStyle:(TVCLogLineGroupingStyle)groupingStyle
+{
+	if (groupingStyle == TVCLogLineGroupingStyleGrouped) {
+		return _chatTimestampFormat;
+	}
+
+	return [TPCPreferences themeTimestampFormatDefault];
+}
+
++ (NSString *)displayNameForGroupingStyle:(TVCLogLineGroupingStyle)groupingStyle
+{
+	if (groupingStyle == TVCLogLineGroupingStyleGrouped) {
+		return TXTLS(@"TDCPreferencesController[g7d-n1]");
+	}
+
+	return TXTLS(@"TDCPreferencesController[g7d-n2]");
+}
+
+- (NSUInteger)messageGroupingStyle
+{
+	return [TPCPreferences messageGroupingStyle];
+}
+
+- (void)setMessageGroupingStyle:(NSUInteger)messageGroupingStyle
+{
+	TVCLogLineGroupingStyle previousStyle = [TPCPreferences messageGroupingStyle];
+
+	if (previousStyle == messageGroupingStyle) {
+		return;
+	}
+
+	[self willChangeValueForKey:@"groupedDisplayUnsupported"];
+
+	[TPCPreferences setMessageGroupingStyle:messageGroupingStyle];
+
+	[self didChangeValueForKey:@"groupedDisplayUnsupported"];
+
+	[self changeFormatsFromGroupingStyle:previousStyle toGroupingStyle:messageGroupingStyle];
+}
+
+- (BOOL)groupedDisplayUnsupported
+{
+	return ([TPCPreferences messageGroupingStyle] == TVCLogLineGroupingStyleGrouped &&
+			theme().supportsGroupedDisplay == NO);
+}
+
+/* Formats still at the previous display's change silently; formats someone
+ chose themselves only after asking */
+- (void)changeFormatsFromGroupingStyle:(TVCLogLineGroupingStyle)previousStyle toGroupingStyle:(TVCLogLineGroupingStyle)newStyle
+{
+	NSString *nicknameFormat = [self.class nicknameFormatForGroupingStyle:newStyle];
+	NSString *timestampFormat = [self.class timestampFormatForGroupingStyle:newStyle];
+
+	BOOL formatsAreDefaults =
+	([[TPCPreferences themeNicknameFormat] isEqualToString:[self.class nicknameFormatForGroupingStyle:previousStyle]] &&
+	 [[TPCPreferences themeTimestampFormat] isEqualToString:[self.class timestampFormatForGroupingStyle:previousStyle]]);
+
+	BOOL formatsAlreadyMatch =
+	([[TPCPreferences themeNicknameFormat] isEqualToString:nicknameFormat] &&
+	 [[TPCPreferences themeTimestampFormat] isEqualToString:timestampFormat]);
+
+	void (^changeFormats)(void) = ^{
+		[TPCPreferences setThemeNicknameFormat:nicknameFormat];
+		[TPCPreferences setThemeTimestampFormat:timestampFormat];
+	};
+
+	NSWindow *window = self.view.window;
+
+	if (formatsAlreadyMatch || window == nil) {
+		[self onChangedTheme:nil];
+
+		return;
+	}
+
+	if (formatsAreDefaults) {
+		changeFormats();
+
+		[self onChangedTheme:nil];
+
+		return;
+	}
+
+	/* Examples read better than format symbols */
+	NSString *timestampExample = TXFormattedTimestamp([NSDate date], timestampFormat);
+
+	if (timestampExample == nil) {
+		timestampExample = timestampFormat;
+	}
+
+	NSString *nicknameExample = [nicknameFormat stringByReplacingOccurrencesOfString:@"%@" withString:@"@"];
+
+	nicknameExample = [nicknameExample stringByReplacingOccurrencesOfString:@"%n" withString:@"alice"];
+
+	[TDCAlert alertSheetWithWindow:window
+							  body:TXTLS(@"TDCPreferencesController[g7d-b1]", [self.class displayNameForGroupingStyle:newStyle], timestampExample, nicknameExample)
+							 title:TXTLS(@"TDCPreferencesController[g7d-t1]")
+					 defaultButton:TXTLS(@"TDCPreferencesController[g7d-y1]")
+				   alternateButton:TXTLS(@"TDCPreferencesController[g7d-k1]")
+					   otherButton:nil
+				   completionBlock:^(TDCAlertResponse buttonClicked, BOOL suppressed, id underlyingAlert) {
+		if (buttonClicked == TDCAlertResponseDefault) {
+			changeFormats();
+		}
+
+		[self onChangedTheme:nil];
+	}];
 }
 
 - (void)onChangedScrollbackSaveLimit:(nullable id)sender

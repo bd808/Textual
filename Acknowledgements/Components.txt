@@ -5,7 +5,8 @@
 #
 # kind | title | notice files, relative to the repository (";" between files) | build: all, or direct (not in the App Store build) | files the entry covers (";")
 
-textual | Textual | LICENSE | all |
+textual | Textual | LICENSE | all | App/Resources/Styling/Bundled Styles/Lumen/design.css
+# The Lumen style is Textual's own, under its licence
 # LimeChat's notice is part of LICENSE (Textual began as a fork of it)
 textual | Cocoa Extensions | Frameworks/Cocoa Extensions/LICENSE.txt; Frameworks/Cocoa Extensions/ACKNOWLEDGEMENT.txt | all |
 code | Colloquy | Acknowledgements/Colloquy.txt | all |

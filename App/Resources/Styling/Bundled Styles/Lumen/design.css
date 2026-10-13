@@ -1,0 +1,562 @@
+/* Lumen: the rules for both varieties. Each variety's design.css
+ (Varieties/Light, Varieties/Dark) sets the colours they use. */
+
+@import "inlineMedia.css";
+
+/* ------------------------------------------------------------------ *
+ * Basic Body Structure                                                *
+ * ------------------------------------------------------------------ */
+
+* {
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+	word-wrap: break-word;
+	word-break: break-word;
+}
+
+body {
+	color: var(--text);
+	height: 100%;
+	z-index: 100;
+	font-size: 13px;
+	line-height: 1.55;
+	overflow: hidden;
+	background-color: var(--bg);
+	font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+::selection {
+	background-color: var(--selection);
+}
+
+#body {
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	max-height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden; /* leaving this unset lets the CSS overflow spec's
+	visible->auto quirk turn it on too, showing a horizontal scrollbar
+	whenever any inline media is a hair wider than the column */
+	z-index: 100;
+	position: absolute;
+	opacity: 0; /* Set by JavaScript */
+}
+
+/* Only factor in height of topic bar when selected == true
+ because that is only time the topic is displayed according
+ to the logic defined by baseLayout.css */
+body[data-selected="true"][data-view-type="channel"] #body,
+body[data-selected="true"][data-view-type="query"] #body {
+	max-height: calc(100% - 2.2em); /* height minus topic */
+}
+
+div.line {
+	clear: both;
+}
+
+body[dir="rtl"] .sender {
+	display: inline-block;
+}
+
+/* Loading Screen */
+
+#loadingScreen {
+	position: absolute;
+	top: 45%;
+	/* half the border box: 300px content + 2 * 12px padding */
+	left: calc(50% - (324px / 2));
+	width: 300px;
+	font-size: 16px;
+	background: var(--bg-elevated);
+	border: 1px solid var(--rule);
+	border-radius: 8px;
+	padding: 6px 12px;
+	opacity: 1; /* Set by JavaScript */
+}
+
+/* Time */
+
+body[dir="ltr"] .time {
+	color: var(--text-faint);
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+	transition: opacity 0.15s ease;
+}
+
+body[dir="rtl"] .time {
+	color: var(--text-faint);
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+	padding-left: 0.4em;
+	display: inline-block;
+	transition: opacity 0.15s ease;
+}
+
+/* Encryption Lock */
+
+.encryptionLock img {
+	float: right;
+	margin: 0;
+	padding: 0;
+	height: 11px;
+	margin-top: 2px;
+	padding-left: 10px;
+}
+
+/* Links */
+
+a {
+	color: var(--link);
+	border-color: transparent;
+	text-decoration: none;
+}
+
+a:hover {
+	color: var(--link-hover);
+	border-bottom: 1px solid currentColor;
+}
+
+/* Topic Bar */
+
+#topicBar {
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 400;
+	opacity: 0; /* Set by JavaScript */
+	color: var(--text);
+	position: fixed;
+	padding: 4px 10px 5px;
+	border-bottom: 1px solid var(--rule);
+	background-color: color-mix(in srgb, var(--bg) 82%, transparent);
+	-webkit-backdrop-filter: blur(20px) saturate(1.6);
+	backdrop-filter: blur(20px) saturate(1.6);
+	-webkit-font-smoothing: antialiased;
+	font-weight: 500;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#topicBar:hover {
+	overflow: visible;
+	white-space: normal;
+}
+
+#topicBar a,
+#topicBar span.channel {
+	color: var(--link);
+	border-color: var(--link);
+}
+
+/* Remember Line */
+
+#mark {
+	clear: both;
+	position: relative;
+	z-index: 295;
+	margin-top: -1px;
+	border-bottom: 1px dashed var(--notice);
+}
+
+/* Message buffer loading animation */
+
+.message_buffer_loading_indicator {
+	text-align: center;
+	height: 42px;
+}
+
+.message_buffer_loading_indicator span {
+	font-family: -apple-system, "Helvetica Neue", sans-serif;
+	font-size: 30px;
+	font-weight: 600;
+	letter-spacing: 4px;
+	line-height: 43px;
+	color: var(--rule);
+	-webkit-animation: ellipsis-period 1.5s infinite;
+	animation: ellipsis-period 1.5s infinite;
+}
+
+.message_buffer_loading_indicator span:nth-child(1) {
+	-webkit-animation-delay: 0.0s;
+	animation-delay: 0.0s;
+}
+
+.message_buffer_loading_indicator span:nth-child(2) {
+	-webkit-animation-delay: 0.1s;
+	animation-delay: 0.1s;
+}
+
+.message_buffer_loading_indicator span:nth-child(3) {
+	-webkit-animation-delay: 0.2s;
+	animation-delay: 0.2s;
+}
+
+@keyframes ellipsis-period {
+	0% { opacity: 0.2; }
+	20% { opacity: 1.0; }
+	100% { opacity: 0.2; }
+}
+
+/* Typing indicator (draft/typing) */
+
+#typing-indicator {
+	padding: 2px 10px;
+	font-style: italic;
+	color: var(--text-faint);
+}
+
+.typingIndicatorDots {
+	display: inline-block;
+	margin-left: 2px;
+}
+
+.typingIndicatorDots span {
+	font-weight: 600;
+	-webkit-animation: ellipsis-period 1.4s infinite;
+	animation: ellipsis-period 1.4s infinite;
+}
+
+.typingIndicatorDots span:nth-child(1) {
+	-webkit-animation-delay: 0.0s;
+	animation-delay: 0.0s;
+}
+
+.typingIndicatorDots span:nth-child(2) {
+	-webkit-animation-delay: 0.15s;
+	animation-delay: 0.15s;
+}
+
+.typingIndicatorDots span:nth-child(3) {
+	-webkit-animation-delay: 0.3s;
+	animation-delay: 0.3s;
+}
+
+/* Message buffer session indicator */
+
+.date_indicator,
+.session_indicator {
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	padding: 1.1em 0 0.7em;
+}
+
+.date_indicator > hr,
+.session_indicator > hr {
+	background: var(--rule);
+	border: 0;
+	height: 1px;
+	margin-top: 0;
+	flex: 1;
+	-webkit-flex: 1;
+}
+
+.date_indicator > span,
+.session_indicator > span {
+	font-size: 0.85em;
+	font-weight: 600;
+	margin: 0 1em;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+
+.date_indicator + #mark,
+.session_indicator + #mark {
+	display: none;
+}
+
+/* Base message row */
+
+div.line {
+	padding: 2px 10px;
+	border-left: 3px solid transparent;
+}
+
+div.line[data-line-type="privmsg"],
+div.line[data-line-type="action"] {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+/* The gap before a new sender's message lives here as external margin,
+not as .header's margin-top -- div.line has a border (even transparent
+ones block margin collapse) and padding, so a margin on .header would
+be trapped inside div.line's own box instead of sitting outside it.
+That made the hover/selection highlight look lopsided: a big gap above
+the sender name, almost none below the message text. :has(.header)
+scopes this to lines that actually show one (i.e. not grouped with
+the previous message), matching what .header's margin-top used to do. */
+div.line:has(.header) {
+	margin-top: 8px;
+}
+
+div.line[data-line-type="privmsg"]:hover,
+div.line[data-line-type="action"]:hover {
+	background-color: var(--hover-fill);
+}
+
+/* Message header (the Chat display: Preferences, Style, Display) */
+
+div.line .header {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+	margin-top: 0;
+	margin-bottom: 3px;
+}
+
+div.line .header .time {
+	font-size: 0.85em;
+	font-weight: 400;
+}
+
+div.line .messageBody {
+	cursor: default;
+}
+
+/* Consecutive messages from the same sender collapse their repeated
+header; the message reveals its own timestamp, trailing the text,
+when hovered. */
+
+div.line[data-grouped="true"] {
+	padding-top: 0;
+	margin-top: -2px;
+}
+
+div.line[data-grouped="true"] .hoverTimestamp {
+	display: none;
+	margin-left: 0.5em;
+	font-size: 0.75em;
+	color: var(--text-faint);
+	white-space: nowrap;
+}
+
+div.line[data-grouped="true"]:hover .hoverTimestamp {
+	display: inline;
+}
+
+/* NOTICE/CTCP/WALLOPS */
+
+div.line[data-line-type="ctcp"],
+div.line[data-line-type="notice"],
+div.line[data-line-type="wallops"] {
+	border-left-color: var(--notice);
+	background-color: var(--notice-fill);
+}
+
+div.line[data-line-type="notice"] .sender {
+	color: var(--notice-sender);
+	font-weight: 600;
+}
+
+/* Selected User Messages */
+
+.sender {
+	cursor: pointer;
+}
+
+div.line[data-line-type="privmsg"]:not(.selectedUser),
+div.line[data-line-type="action"]:not(.selectedUser) {
+	transition-property: border-left-color, background-color;
+	transition-duration: 0.4s, 0.4s;
+}
+
+div.line.selectedUser[data-highlight="false"] {
+	transition-property: border-left-color, background-color;
+	transition-duration: 0.4s, 0.4s;
+	border-left-color: var(--tracked);
+	background-color: var(--tracked-fill);
+}
+
+/* PRIVMSG */
+
+/* The fill is kept low and the left border does the work. A heavier wash
+spanning the full window width reads as a slab of color rather than as a
+marker on one message. */
+div.line[data-line-type="privmsg"][data-highlight="true"],
+div.line[data-line-type="action"][data-highlight="true"] {
+	font-weight: normal;
+	border-left-color: var(--mention);
+	background-color: var(--mention-fill);
+}
+
+div.line[data-line-type="privmsg"] .message {
+	color: var(--text-strong);
+}
+
+div.line[data-line-type="privmsg"] .sender {
+	font-weight: 600;
+	white-space: pre-wrap;
+}
+
+/* ACTION */
+
+div.line[data-line-type="action"] .message {
+	color: var(--text-strong);
+	font-style: italic;
+}
+
+div.line[data-line-type="action"] .sender {
+	font-weight: 600;
+	font-style: italic;
+}
+
+div.line[data-line-type="action"][data-member-type="myself"] .sender,
+div.line[data-line-type="action"][data-member-type="myself"] .message {
+	color: var(--nick-self-action);
+}
+
+body[dir="ltr"] div.line[data-line-type="action"] .sender:before {
+	content: "\2022";
+	margin-right: 0.4em;
+}
+
+body[dir="rtl"] div.line[data-line-type="action"] .sender:before {
+	content: "\2022";
+	margin-left: 0.4em;
+}
+
+/* DEBUG/INVITE */
+
+div.line[data-line-type="invite"],
+div.line[data-line-type="debug"],
+div.line[data-line-type="dcc-file-transfer"],
+div.line[data-line-type="off-the-record-encryption-status"] {
+	color: var(--text-muted);
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+div.line[data-line-type="off-the-record-encryption-status"] .message {
+	color: var(--danger);
+	font-weight: 600;
+}
+
+/* Message of the Day (MOTD) */
+/* 720, 721, 722 are used by ShadowIRCd for Oper MOTD. */
+/* 372, 375, 376 are normal MOTD shared by several IRCds. */
+
+div.line[data-command="372"],
+div.line[data-command="375"],
+div.line[data-command="376"],
+div.line[data-command="720"],
+div.line[data-command="721"],
+div.line[data-command="722"] {
+	color: var(--text-muted);
+}
+
+div.line[data-command="372"] .message,
+div.line[data-command="375"] .message,
+div.line[data-command="376"] .message,
+div.line[data-command="720"] .message,
+div.line[data-command="721"] .message,
+div.line[data-command="722"] .message {
+	font-family: var(--font-mono) !important;
+	/* rem, not em: this resolves against the root element, which
+	baseLayout.mustache sets to the size configured in preferences, so the
+	MOTD renders at that size no matter what it is nested inside. */
+	font-size: 1rem;
+}
+
+/* GENERAL EVENT */
+
+/* Status lines are supporting material: worth having on screen (anyone who
+disagrees can hide them outright in preferences) but not worth competing
+with what people actually said. They recede without ever changing type
+size -- message text renders at whatever size is configured in
+preferences -- using the faintest color in the ramp, desaturated glyphs,
+and tighter leading so a burst of joins reads as one block.
+Hovering brings a line back up to full strength for when you do care. */
+div.line[data-line-type="join"],
+div.line[data-line-type="part"],
+div.line[data-line-type="kick"],
+div.line[data-line-type="quit"],
+div.line[data-line-type="kill"],
+div.line[data-line-type="nick"],
+div.line[data-line-type="mode"],
+div.line[data-line-type="topic"],
+div.line[data-line-type="website"] {
+	padding-top: 1px;
+	padding-bottom: 1px;
+	line-height: 1.45;
+	color: var(--text-faint);
+	transition: color 0.15s ease;
+}
+
+div.line[data-line-type="join"]:hover,
+div.line[data-line-type="part"]:hover,
+div.line[data-line-type="kick"]:hover,
+div.line[data-line-type="quit"]:hover,
+div.line[data-line-type="kill"]:hover,
+div.line[data-line-type="nick"]:hover,
+div.line[data-line-type="mode"]:hover,
+div.line[data-line-type="topic"]:hover,
+div.line[data-line-type="website"]:hover {
+	color: var(--text-muted);
+}
+
+body[dir="ltr"] div.line[data-line-type="join"] .message:before {
+	content: "→";
+	color: var(--join);
+	margin-right: 0.4em;
+}
+
+body[dir="ltr"] div.line[data-line-type="kick"] .message:before,
+body[dir="ltr"] div.line[data-line-type="part"] .message:before,
+body[dir="ltr"] div.line[data-line-type="quit"] .message:before {
+	content: "←";
+	color: var(--leave);
+	margin-right: 0.4em;
+}
+
+body[dir="ltr"] div.line[data-line-type="nick"] .message:before {
+	content: "•";
+	color: var(--join);
+	margin-right: 0.4em;
+}
+
+body[dir="rtl"] div.line[data-line-type="join"] .message:before {
+	content: "→";
+	color: var(--join);
+	margin-left: 0.4em;
+}
+
+body[dir="rtl"] div.line[data-line-type="kick"] .message:before,
+body[dir="rtl"] div.line[data-line-type="part"] .message:before,
+body[dir="rtl"] div.line[data-line-type="quit"] .message:before {
+	content: "←";
+	color: var(--leave);
+	margin-left: 0.4em;
+}
+
+body[dir="rtl"] div.line[data-line-type="nick"] .message:before {
+	content: "•";
+	color: var(--join);
+	margin-left: 0.4em;
+}
+
+/* Monospace runs (IRCv3 formatting, and <tt> from baseLayout.css) */
+
+tt {
+	font-family: var(--font-mono) !important;
+	padding: 0 0.25em;
+	border-radius: 3px;
+	background-color: var(--hover-fill);
+}
+
+/* Nickname Colors */
+
+.inlineSender {
+	font-weight: 600;
+}
+
+/* Applies only when nickname colours are off; when they are on, the colour
+arrives as an inline style from Textual, which outranks this. */
+div.line[data-line-type="privmsg"] .sender[data-member-type="myself"] {
+	color: var(--nick-self);
+}

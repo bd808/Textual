@@ -14,18 +14,18 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="oeR-nv-slx" userLabel="Style">
-            <rect key="frame" x="0.0" y="0.0" width="670" height="346"/>
+            <rect key="frame" x="0.0" y="0.0" width="670" height="381"/>
             <subviews>
                 <tabView translatesAutoresizingMaskIntoConstraints="NO" id="lpz-77-UDw">
-                    <rect key="frame" x="13" y="10" width="644" height="326"/>
+                    <rect key="frame" x="13" y="10" width="644" height="361"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="310" id="g8B-Bz-RFb"/>
+                        <constraint firstAttribute="height" constant="345" id="g8B-Bz-RFb"/>
                     </constraints>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
                         <tabViewItem label="General" identifier="1" id="yKL-ON-PSA">
                             <view key="view" id="bCO-56-p1h">
-                                <rect key="frame" x="10" y="33" width="624" height="280"/>
+                                <rect key="frame" x="10" y="33" width="624" height="315"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EC4-0b-hiq">
@@ -175,6 +175,52 @@
                                             <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Dq4-lB-7mA">
+                                        <rect key="frame" x="96" y="200" width="53" height="16"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Display:" id="Dq4-lC-7mA">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Dq4-pU-7mA">
+                                        <rect key="frame" x="149" y="194" width="100" height="25"/>
+                                        <popUpButtonCell key="cell" type="push" title="Classic" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Dq4-mI-c01" id="Dq4-pC-7mA">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                            <menu key="menu" id="Dq4-mN-7mA">
+                                                <items>
+                                                    <menuItem title="Classic" state="on" id="Dq4-mI-c01"/>
+                                                    <menuItem title="Chat" tag="1" id="Dq4-mI-c02"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <accessibility description="Message Display"/>
+                                        <connections>
+                                            <accessibilityConnection property="title" destination="Dq4-lB-7mA" id="Dq4-aX-7mA"/>
+                                            <binding destination="-2" name="selectedTag" keyPath="self.messageGroupingStyle" id="Dq4-bT-7mA"/>
+                                            <binding destination="-2" name="enabled" keyPath="self.reloadingTheme" id="Dq4-bE-7mA">
+                                                <dictionary key="options">
+                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                </dictionary>
+                                            </binding>
+                                        </connections>
+                                    </popUpButton>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Dq4-nT-7mA">
+                                        <rect key="frame" x="255" y="201" width="250" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="This style only has the Classic display." id="Dq4-nC-7mA">
+                                            <font key="font" metaFont="cellTitle"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                        <connections>
+                                            <binding destination="-2" name="hidden" keyPath="self.groupedDisplayUnsupported" id="Dq4-bH-7mA">
+                                                <dictionary key="options">
+                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                </dictionary>
+                                            </binding>
+                                        </connections>
+                                    </textField>
                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="j2v-v4-NVg">
                                         <rect key="frame" x="40" y="209" width="544" height="5"/>
                                     </box>
@@ -246,7 +292,14 @@
                                     <constraint firstItem="Mpf-VK-Ftr" firstAttribute="centerX" secondItem="bCO-56-p1h" secondAttribute="centerX" id="7VT-n8-ZQX"/>
                                     <constraint firstItem="Mpf-VK-Ftr" firstAttribute="leading" secondItem="bCO-56-p1h" secondAttribute="leading" constant="112" id="8Sa-hn-VYQ"/>
                                     <constraint firstItem="yk4-L0-S54" firstAttribute="centerX" secondItem="bCO-56-p1h" secondAttribute="centerX" id="8bF-Co-Wx1"/>
-                                    <constraint firstItem="j2v-v4-NVg" firstAttribute="top" secondItem="Mpf-VK-Ftr" secondAttribute="bottom" constant="18" id="9Xx-Fw-4FG"/>
+                                    <constraint firstItem="j2v-v4-NVg" firstAttribute="top" secondItem="Dq4-pU-7mA" secondAttribute="bottom" constant="18" id="9Xx-Fw-4FG"/>
+                                    <constraint firstItem="Dq4-pU-7mA" firstAttribute="top" secondItem="Mpf-VK-Ftr" secondAttribute="bottom" constant="12" id="Dq4-c1-7mA"/>
+                                    <constraint firstItem="Dq4-pU-7mA" firstAttribute="leading" secondItem="ICa-wc-PBy" secondAttribute="leading" id="Dq4-c2-7mA"/>
+                                    <constraint firstItem="Dq4-lB-7mA" firstAttribute="trailing" secondItem="inL-ss-ERr" secondAttribute="trailing" id="Dq4-c3-7mA"/>
+                                    <constraint firstItem="Dq4-lB-7mA" firstAttribute="firstBaseline" secondItem="Dq4-pU-7mA" secondAttribute="firstBaseline" id="Dq4-c4-7mA"/>
+                                    <constraint firstItem="Dq4-nT-7mA" firstAttribute="leading" secondItem="Dq4-pU-7mA" secondAttribute="trailing" constant="8" symbolic="YES" id="Dq4-c5-7mA"/>
+                                    <constraint firstItem="Dq4-nT-7mA" firstAttribute="firstBaseline" secondItem="Dq4-pU-7mA" secondAttribute="firstBaseline" id="Dq4-c6-7mA"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Dq4-nT-7mA" secondAttribute="trailing" constant="20" id="Dq4-c7-7mA"/>
                                     <constraint firstItem="I3x-2t-PYn" firstAttribute="leading" secondItem="7LB-4e-2Po" secondAttribute="leading" constant="18" id="I7d-gL-zJK"/>
                                     <constraint firstItem="yk4-L0-S54" firstAttribute="top" secondItem="FAp-of-4TG" secondAttribute="bottom" constant="18" id="L1x-hg-vqa"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="I3x-2t-PYn" secondAttribute="trailing" constant="20" id="MnT-ef-fUY"/>
@@ -262,7 +315,7 @@
                         </tabViewItem>
                         <tabViewItem label="Developers" identifier="" id="1bZ-1x-Ua9">
                             <view key="view" id="zwO-BD-Weo">
-                                <rect key="frame" x="10" y="33" width="625" height="280"/>
+                                <rect key="frame" x="10" y="33" width="625" height="315"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="hcQ-eU-esk">
@@ -314,7 +367,7 @@
                         </tabViewItem>
                         <tabViewItem label="Scrollback" identifier="" id="77x-1S-pOH">
                             <view key="view" id="Ez7-yK-bTh">
-                                <rect key="frame" x="10" y="33" width="625" height="280"/>
+                                <rect key="frame" x="10" y="33" width="625" height="315"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="51b-3N-Ofw">
@@ -393,7 +446,7 @@ Messages are not saved between app launches unless “Restore scrollback from pr
                         </tabViewItem>
                         <tabViewItem label="Advanced" identifier="2" id="ze5-c7-Zra">
                             <view key="view" id="GFi-uq-h4X">
-                                <rect key="frame" x="10" y="33" width="625" height="280"/>
+                                <rect key="frame" x="10" y="33" width="625" height="315"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="3m7-iu-b8N">
@@ -406,6 +459,9 @@ Messages are not saved between app launches unless “Restore scrollback from pr
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <objectValues>
+                                                <string>%H:%M</string>
+                                                <string>%H:%M:%S</string>
+                                                <string>%I:%M %p</string>
                                                 <string>[%H:%M]</string>
                                                 <string>[%H:%M:%S]</string>
                                                 <string>[%I:%M:%S %p]</string>
@@ -549,6 +605,8 @@ Messages are not saved between app launches unless “Restore scrollback from pr
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <objectValues>
+                                                <string>%n</string>
+                                                <string>%@%n</string>
                                                 <string>%n: </string>
                                                 <string>%@%n: </string>
                                                 <string>(%n) </string>

@@ -56,3 +56,10 @@ Click “Edit Style” to add your own style sheet rules. This feature can also 
 "ddh-hr" = "• Timestamp Format";
 "we8-i8" = "• Channel View Font";
 "s7f-n1" = "System Font";
+
+"g7d-n1" = "Chat";
+"g7d-n2" = "Classic";
+"g7d-t1" = "Change the time and nickname formats too?";
+"g7d-b1" = "The %1$@ display is made for times shown as “%2$@” and nicknames shown as “%3$@”. You changed these formats yourself, so they are only replaced if you want.\n\nThey can be changed at any time in the Advanced tab.";
+"g7d-y1" = "Use These Formats";
+"g7d-k1" = "Keep My Formats";

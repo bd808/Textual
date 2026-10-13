@@ -87,6 +87,11 @@ TEXTUAL_EXTERN NSNotificationName const TPCPreferencesPreventSleepWhileConnected
 
 + (void)setShowInlineMedia:(BOOL)showInlineMedia;
 
++ (void)setMessageGroupingStyle:(TVCLogLineGroupingStyle)messageGroupingStyle;
+
++ (void)setThemeNicknameFormat:(NSString *)value;
++ (void)setThemeTimestampFormat:(NSString *)value;
+
 + (void)setSoundIsMuted:(BOOL)soundIsMuted;
 
 + (void)setSound:(nullable NSString *)value forEvent:(TXNotificationType)event;

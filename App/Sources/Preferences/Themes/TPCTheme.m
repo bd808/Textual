@@ -675,6 +675,8 @@ typedef NS_OPTIONS(NSUInteger, _TPCThemeMonitoringResult) {
 
 		[self _combineFiles];
 
+		self->_supportsGroupedDisplay = [self _templatesSupportGroupedDisplay];
+
 		[self _populateSettings];
 
 		/* Assign the default repository after populating settings
@@ -803,6 +805,47 @@ typedef NS_OPTIONS(NSUInteger, _TPCThemeMonitoringResult) {
 
 #pragma mark -
 #pragma mark Templates
+
+/* Message templates a style may replace: the line type ones are looked up first */
+- (BOOL)_templatesSupportGroupedDisplay
+{
+	NSMutableArray<TPCThemeVariety *> *varieties = [NSMutableArray arrayWithCapacity:2];
+
+	TPCThemeVariety *variety = self.variety;
+
+	if (variety != nil && variety.isGlobalVariety == NO) {
+		[varieties addObject:variety];
+	}
+
+	[varieties addObject:self.globalVariety];
+
+	NSArray *templateNames = @[@"Line Types/privmsg.mustache", @"Line Types/action.mustache", @"newMessagePostedWithSender.mustache"];
+
+	for (NSString *templateName in templateNames) {
+		for (TPCThemeVariety *variety in varieties) {
+			NSURL *templateURL = [variety.templatesURL URLByAppendingPathComponent:templateName];
+
+			if (templateURL == nil) {
+				continue;
+			}
+
+			NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:NULL];
+
+			if (template == nil) {
+				continue;
+			}
+
+			/* The first one found is the one used */
+			if ([template contains:@"groupedDisplayEnabled"] == NO) {
+				return NO;
+			}
+
+			break;
+		}
+	}
+
+	return YES;
+}
 
 + (NSDictionary<NSString *, NSString *> *)_templateLineTypes
 {	

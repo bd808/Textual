@@ -358,6 +358,16 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 	return [RZUserDefaults() boolForKey:@"DisplayEventInLogView -> Date Changes"];
 }
 
++ (TVCLogLineGroupingStyle)messageGroupingStyle
+{
+	return (TVCLogLineGroupingStyle)[RZUserDefaults() unsignedIntegerForKey:@"DisplayEventInLogView -> Message Grouping Style"];
+}
+
++ (void)setMessageGroupingStyle:(TVCLogLineGroupingStyle)messageGroupingStyle
+{
+	[RZUserDefaults() setUnsignedInteger:messageGroupingStyle forKey:@"DisplayEventInLogView -> Message Grouping Style"];
+}
+
 + (void)setShowInlineMedia:(BOOL)showInlineMedia
 {
 	[RZUserDefaults() setBool:showInlineMedia forKey:@"DisplayEventInLogView -> Inline Media"];
@@ -662,6 +672,11 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 	return [RZUserDefaults() objectForKey:@"Theme -> Nickname Format"];
 }
 
++ (void)setThemeNicknameFormat:(NSString *)value
+{
+	[RZUserDefaults() setObject:value forKey:@"Theme -> Nickname Format"];
+}
+
 + (BOOL)themeNicknameFormatPreferenceUserConfigurable
 {
 	return [RZUserDefaults() boolForKey:@"Theme -> Nickname Format Preference Enabled"];
@@ -680,6 +695,11 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 + (NSString *)themeTimestampFormat
 {
 	return [RZUserDefaults() objectForKey:@"Theme -> Timestamp Format"];
+}
+
++ (void)setThemeTimestampFormat:(NSString *)value
+{
+	[RZUserDefaults() setObject:value forKey:@"Theme -> Timestamp Format"];
 }
 
 + (BOOL)themeTimestampFormatPreferenceUserConfigurable

@@ -20,7 +20,47 @@
 	data-member-type="{{nicknameType}}"
 {{/isRemoteMessage}}
 
+{{#isGroupedWithPrevious}}
+	data-grouped="true"
+{{/isGroupedWithPrevious}}
+
 	data-timestamp="{{timestamp}}">
+
+{{! The Chat display: the sender and time above their messages, and messages
+ sent close together under one name. Styles with their own copy of this
+ template that lack groupedDisplayEnabled are shown in the Classic display. }}
+{{#groupedDisplayEnabled}}
+
+	{{^isGroupedWithPrevious}}
+	<p class="header">
+		<span class="sender"
+			onclick="Textual.nicknameMaybeWasDoubleClicked(this)"
+			oncontextmenu="Textual.openStandardNicknameContextualMenu()"
+			data-member-type="{{nicknameType}}"
+			data-nickname="{{nickname}}"
+
+			{{#nicknameColorHashingEnabled}}
+				{{#nicknameColorStyleOverride}}
+				data-override-color="true"
+				{{/nicknameColorStyleOverride}}
+
+				{{^ isEmpty(nicknameColorStyle) }}
+				style="color: {{nicknameColorStyle}};"
+				{{/ isEmpty(nicknameColorStyle) }}
+			{{/nicknameColorHashingEnabled}}>{{formattedNickname}}</span>
+
+		<span class="time"
+
+		{{^ isEmpty(localizedTimestamp) }}
+			title="{{localizedTimestamp}}"
+		{{/ isEmpty(localizedTimestamp) }}>{{formattedTimestamp}}</span>
+	</p>
+	{{/isGroupedWithPrevious}}
+
+	<p class="messageBody message">{{#isEncrypted}}{{> encryptedMessageLock}}{{/isEncrypted}}<span class="innerMessage">{{{formattedMessage}}}{{#inlineMediaEnabled}}<span class="inlineMediaContainer"></span>{{/inlineMediaEnabled}}</span>{{#isGroupedWithPrevious}}<span class="hoverTimestamp"{{^ isEmpty(localizedTimestamp) }} title="{{localizedTimestamp}}"{{/ isEmpty(localizedTimestamp) }}>{{formattedTimestamp}}</span>{{/isGroupedWithPrevious}}</p>
+
+{{/groupedDisplayEnabled}}
+{{^groupedDisplayEnabled}}
 
 	<p>
 		<span class="time"
@@ -61,6 +101,8 @@
 			</span>
 		</span>
 	</p>
+
+{{/groupedDisplayEnabled}}
 </div>
 
 {{#showSessionIndicator}}

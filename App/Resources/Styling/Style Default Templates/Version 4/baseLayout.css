@@ -310,3 +310,37 @@ body[data-selected="false"] #topicBar {
 	padding-right: 7px;
 	padding-left: 0px;
 }
+
+/* The Chat display (newMessagePostedWithSender.mustache): the sender and time
+ above their messages; a message grouped under the one before it shows its
+ time when pointed at. Zero specificity (:where), so any style's own rules win */
+:where(div.line p.header) {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+	margin-top: 0.4em;
+}
+
+:where(div.line p.header .sender) {
+	font-weight: bold;
+}
+
+:where(div.line p.header .time) {
+	font-size: 0.85em;
+}
+
+:where(div.line[data-line-type="action"] p.messageBody) {
+	font-style: italic;
+}
+
+:where(div.line .hoverTimestamp) {
+	display: none;
+	margin-left: 0.5em;
+	font-size: 0.85em;
+	opacity: 0.6;
+	white-space: nowrap;
+}
+
+:where(div.line:hover .hoverTimestamp) {
+	display: inline;
+}

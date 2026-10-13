@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSURL *jsFile;
 @property (nonatomic, copy) NSDictionary<NSString *, id> *settings;
 @property (nonatomic, strong, nullable) GRMustacheTemplateRepository *templateRepository;
+@property (nonatomic, copy, nullable) NSURL *templatesURL;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithURL:(NSURL *)url NS_DESIGNATED_INITIALIZER;

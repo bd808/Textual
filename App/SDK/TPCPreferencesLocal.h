@@ -118,6 +118,13 @@ typedef NS_ENUM(NSUInteger, TXChannelViewArrangement) {
 	TXChannelViewArrangedVertically 	NS_SWIFT_NAME(vertical)		= 1
 };
 
+/* How messages are laid out in the chat view. Chat puts the sender's name
+ above their messages and groups messages sent close together. */
+typedef NS_ENUM(NSUInteger, TVCLogLineGroupingStyle) {
+	TVCLogLineGroupingStyleClassic 	NS_SWIFT_NAME(classic)	= 0,
+	TVCLogLineGroupingStyleGrouped 	NS_SWIFT_NAME(grouped)	= 1
+};
+
 typedef NS_ENUM(NSUInteger, TXPreferredAppearance) {
 	TXPreferredAppearanceInherited 	= 0,
 	TXPreferredAppearanceLight 		= 1,
@@ -195,6 +202,7 @@ typedef NS_ENUM(NSUInteger, TXPreferredAppearance) {
 
 + (BOOL)autoAddScrollbackMark;
 + (BOOL)showDateChanges;
++ (TVCLogLineGroupingStyle)messageGroupingStyle;
 + (BOOL)showInlineMedia;
 + (BOOL)showJoinLeave;
 + (BOOL)displayServerMOTD;

@@ -93,6 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSURL *templatesURL = [self.class _compatTemplatesAtURL:url];
 
+	self.templatesURL = templatesURL;
+
 	self.templateRepository = [GRMustacheTemplateRepository templateRepositoryWithBaseURL:templatesURL];
 
 	/* Load settings dictionary */

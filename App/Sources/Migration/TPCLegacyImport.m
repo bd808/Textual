@@ -570,9 +570,13 @@ NS_ASSUME_NONNULL_BEGIN
 		[RZUserDefaults() _migrateObject:object forKey:key];
 	}];
 
-	/* Textual 7's default font (Lucida Grande 12) was never stored: without these,
-	 the import would quietly switch to Textual 8's (the system font at 13). The
-	 new look is offered on purpose instead (10.6). */
+	/* Textual 7's default style (Simplified) and font (Lucida Grande 12) were
+	 never stored: without these, the import would quietly switch to Textual 8's
+	 (Lumen, the system font at 13). The new look is offered on purpose instead (10.6). */
+	if (preferences[TPCPreferencesThemeNameDefaultsKey] == nil) {
+		[RZUserDefaults() _migrateObject:@"resource:Simplified" forKey:TPCPreferencesThemeNameDefaultsKey];
+	}
+
 	if (preferences[TPCPreferencesThemeFontNameDefaultsKey] == nil) {
 		[RZUserDefaults() _migrateObject:@"Lucida Grande" forKey:TPCPreferencesThemeFontNameDefaultsKey];
 	}
