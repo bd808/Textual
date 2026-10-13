@@ -344,3 +344,26 @@ body[data-selected="false"] #topicBar {
 :where(div.line:hover .hoverTimestamp) {
 	display: inline;
 }
+
+/* A collapsed run of joins, parts, quits and nickname changes (eventGroups.js):
+ its summary line opens and closes it. Zero specificity (:where), so any
+ style's own rules win */
+:where(div.line.eventGroupSummary) {
+	cursor: pointer;
+	opacity: 0.7;
+}
+
+/* The arrow turns to point down while the group is open */
+:where(div.line.eventGroupSummary .message)::before {
+	content: "\25B8";
+	display: inline-block;
+	width: 1em;
+	text-align: center;
+	text-indent: 0; /* the Classic display's hanging indent would push it out of its box */
+	margin-right: 0.25em;
+	transition: transform 0.15s ease;
+}
+
+:where(div.line.eventGroupSummary[data-expanded="true"] .message)::before {
+	transform: rotate(90deg);
+}

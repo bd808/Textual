@@ -157,6 +157,7 @@ static NSMutableDictionary<NSString *, WKWebViewConfiguration *> *_clientWebView
 		@"private/core/clickMenuSelection.js",
 		@"private/core/documentBody.js",
 		@"private/core/events.js",
+		@"private/core/eventGroups.js",
 		@"private/core/inlineMedia.js",
 		@"private/core/messageBuffer.js",
 		@"private/core/scrollTo.js",

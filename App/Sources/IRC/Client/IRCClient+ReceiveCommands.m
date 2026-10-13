@@ -1293,12 +1293,12 @@ NS_ASSUME_NONNULL_BEGIN
 	if (printMessage) {
 		NSString *message = TXTLS(@"IRC[ziu-p9]", sender, m.senderUsername, m.senderAddress.stringByAppendingIRCFormattingStop);
 
-		[self print:message
-				 by:nil
-		  inChannel:channel
-			 asType:TVCLogLineTypeJoin
-			command:m.command
-		 receivedAt:m.receivedAt];
+		[self printGeneralEvent:message
+				 aboutNicknames:@[sender]
+					  inChannel:channel
+						 asType:TVCLogLineTypeJoin
+						command:m.command
+					 receivedAt:m.receivedAt];
 	}
 
 	if (isPrintOnlyMessage) {
@@ -1375,12 +1375,12 @@ NS_ASSUME_NONNULL_BEGIN
 			message = TXTLS(@"IRC[ozy-6i]", message, comment.stringByAppendingIRCFormattingStop);
 		}
 
-		[self print:message
-				 by:nil
-		  inChannel:channel
-			 asType:TVCLogLineTypePart
-			command:m.command
-		 receivedAt:m.receivedAt];
+		[self printGeneralEvent:message
+				 aboutNicknames:@[sender]
+					  inChannel:channel
+						 asType:TVCLogLineTypePart
+						command:m.command
+					 receivedAt:m.receivedAt];
 	}
 
 	if (isPrintOnlyMessage == NO) {
@@ -1567,12 +1567,12 @@ NS_ASSUME_NONNULL_BEGIN
 			message = TXTLS(@"IRC[8bk-mx]", sender);
 		}
 
-		[self print:message
-				 by:nil
-		  inChannel:channel
-			 asType:TVCLogLineTypeQuit
-			command:m.command
-		 receivedAt:m.receivedAt];
+		[self printGeneralEvent:message
+				 aboutNicknames:@[sender]
+					  inChannel:channel
+						 asType:TVCLogLineTypeQuit
+						command:m.command
+					 receivedAt:m.receivedAt];
 	};
 
 	if (isPrintOnlyMessage) {
@@ -1773,12 +1773,12 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 
 		/* Print message */
-		[self print:messageToPrint
-				 by:nil
-		  inChannel:channel
-			 asType:TVCLogLineTypeNick
-			command:m.command
-		 receivedAt:m.receivedAt];
+		[self printGeneralEvent:messageToPrint
+				 aboutNicknames:@[oldNickname, newNickname]
+					  inChannel:channel
+						 asType:TVCLogLineTypeNick
+						command:m.command
+					 receivedAt:m.receivedAt];
 	};
 
 	/* Target print */

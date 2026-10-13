@@ -1541,6 +1541,69 @@ async def scenario_styles(client):
 		pass
 
 
+async def scenario_collapse(client):
+	"""Joins, parts, quits and nickname changes for checking how runs of them collapse:
+	#collapse gets a few minutes of lines first (two runs, a single join, a kick between
+	events), then live events every two seconds that join the run at the bottom, a
+	message, and a run that ends the scenario. Stays connected (Ctrl-C to stop)."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+	channel = "#collapse"
+
+	def at(minutes_ago):
+		stamp = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=minutes_ago)
+		return "@time=" + stamp.strftime("%Y-%m-%dT%H:%M:%S.000Z") + " "
+
+	await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+	await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice bob")
+	await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+	await client.collect(1)
+
+	lines = [
+		(10, ":alice!a@alice.test PRIVMSG #collapse :Three joins and a quit follow: one summary line"),
+		(9, ":carl!c@carl.test JOIN #collapse"),
+		(9, ":dave!d@dave.test JOIN #collapse"),
+		(9, ":erin!e@erin.test JOIN #collapse"),
+		(8, ":carl!c@carl.test QUIT :Quit: bye"),
+		(7, ":bob!b@bob.test PRIVMSG #collapse :A single join follows: shown as it is"),
+		(7, ":frank!f@frank.test JOIN #collapse"),
+		(6, ":alice!a@alice.test PRIVMSG #collapse :A nickname change, a part and a join, then a kick between two joins"),
+		(6, ":dave!d@dave.test NICK :david"),
+		(6, ":erin!e@erin.test PART #collapse :Leaving"),
+		(5, ":gina!g@gina.test JOIN #collapse"),
+		(5, ":hank!h@hank.test JOIN #collapse"),
+		(5, ":alice!a@alice.test KICK #collapse hank :No"),
+		(5, ":ivan!i@ivan.test JOIN #collapse"),
+		(5, ":bob!b@bob.test PRIVMSG #collapse :A join and a nickname change: named, as up to three events are"),
+		(5, ":olga!o@olga.test JOIN #collapse"),
+		(5, ":olga!o@olga.test NICK :olga_"),
+		(4, ":bob!b@bob.test PRIVMSG #collapse :Live events follow every two seconds"),
+	]
+
+	for minutes_ago, line in lines:
+		await client.send(at(minutes_ago) + line)
+
+	live = [
+		":jane!j@jane.test JOIN #collapse",
+		":kyle!k@kyle.test JOIN #collapse",
+		":jane!j@jane.test QUIT :Ping timeout",
+		":kyle!k@kyle.test NICK :kyle_",
+		":alice!a@alice.test PRIVMSG #collapse :A message ends that run",
+		":lena!l@lena.test JOIN #collapse",
+		":mike!m@mike.test JOIN #collapse",
+		":nora!n@nora.test JOIN #collapse",
+	]
+
+	for line in live:
+		await asyncio.sleep(2)
+		await client.send(line)
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1549,6 +1612,7 @@ async def scenario_silent(client):
 
 SCENARIOS = {
 	"styles": scenario_styles,
+	"collapse": scenario_collapse,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -1590,7 +1654,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

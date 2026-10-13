@@ -144,6 +144,8 @@ enum {
 
 - (void)print:(NSString *)messageBody by:(nullable NSString *)nickname inChannel:(nullable IRCChannel *)channel asType:(TVCLogLineType)lineType command:(NSString *)command escapeMessage:(BOOL)escapeMessage;
 
+- (void)printGeneralEvent:(NSString *)messageBody aboutNicknames:(NSArray<NSString *> *)nicknames inChannel:(IRCChannel *)channel asType:(TVCLogLineType)lineType command:(NSString *)command receivedAt:(NSDate *)receivedAt;
+
 - (void)logFileRecordSessionChanged:(BOOL)toNewSession inChannel:(nullable IRCChannel *)channel;
 @end
 

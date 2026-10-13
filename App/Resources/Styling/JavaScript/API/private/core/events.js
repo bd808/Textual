@@ -149,6 +149,8 @@ _Textual.viewFinishedLoading = function(configuration) /* PRIVATE */
 	var isReloadingTheme = configuration.reloadingTheme;
 	var textSizeMultiplier = configuration.textSizeMultiplier;
 	var scrollbackLimit = configuration.scrollbackLimit;
+	var collapseGeneralEvents = configuration.collapseGeneralEvents;
+	var generalEventStrings = configuration.generalEventStrings;
 
 	_TextualScroller.createMutationObserver();
 
@@ -176,6 +178,8 @@ _Textual.viewFinishedLoading = function(configuration) /* PRIVATE */
 	if (scrollbackLimit !== 0) { // 0 = use default
 		_MessageBuffer.setBufferLimit(scrollbackLimit);
 	}
+
+	_EventGroups.configure(collapseGeneralEvents, generalEventStrings);
 };
 
 _Textual.viewFinishedLoadingHistory = function() /* PRIVATE */
@@ -206,6 +210,13 @@ _Textual.messageAddedToView = function(lineNumber, fromBuffer) /* PRIVATE */
 		_Textual.messageAddedToViewForLine(lineNumber, fromBuffer);
 	}
 
+	/* After the style's handler, which may remove lines */
+	try {
+		_EventGroups.linesAdded(lineNumber, fromBuffer);
+	} catch (error) {
+		console.error(error);
+	}
+
 	appPrivate.notifyLinesAddedToView(lineNumber);
 };
 
@@ -219,6 +230,8 @@ _Textual.messageRemovedFromView = function(lineNumber) /* PRIVATE */
 	} else {
 		Textual.messageRemovedFromView(lineNumber);
 	}
+
+	_EventGroups.linesRemoved();
 
 	appPrivate.notifyLinesRemovedFromView(lineNumber);
 };

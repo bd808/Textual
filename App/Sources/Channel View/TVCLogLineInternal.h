@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 	BOOL _nicknameColorStyleOverride;
 	NSArray<NSString *> *_excludeKeywords;
 	NSArray<NSString *> *_highlightKeywords;
+	NSArray<NSString *> *_eventNicknames;
 	NSDictionary<NSString *, id> *_rendererAttributes;
 	NSDate *_receivedAt;
 	NSString *_command;

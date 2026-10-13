@@ -56,6 +56,9 @@ NSString * const TPCPreferencesThemeFontSizeDefaultsKey	= @"Theme -> Font Size";
 
 NSString * const TPCPreferencesThemeFontNameSystemFont = @"-apple-system";
 
+NSString * const TPCPreferencesGeneralEventDisplayDefaultsKey = @"DisplayEventInLogView -> Join, Part, Quit Display";
+NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey = @"DisplayEventInLogView -> Join, Part, Quit";
+
 NSString * const TPCPreferencesThemeNameMissingLocallyDefaultsKey = @"Theme -> Name -> Did Not Exist During Last Sync";
 
 NSString * const TPCPreferencesThemeFontNameMissingLocallyDefaultsKey = @"Theme -> Font Name -> Did Not Exist During Last Sync";
@@ -380,7 +383,50 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 
 + (BOOL)showJoinLeave
 {
-	return [RZUserDefaults() boolForKey:@"DisplayEventInLogView -> Join, Part, Quit"];
+	return ([self generalEventDisplay] != TXGeneralEventDisplayHide);
+}
+
++ (TXGeneralEventDisplay)generalEventDisplay
+{
+	NSUInteger generalEventDisplay = [RZUserDefaults() unsignedIntegerForKey:TPCPreferencesGeneralEventDisplayDefaultsKey];
+
+	if (generalEventDisplay > TXGeneralEventDisplayHide) {
+		return TXGeneralEventDisplayCollapse;
+	}
+
+	return (TXGeneralEventDisplay)generalEventDisplay;
+}
+
++ (void)setGeneralEventDisplay:(TXGeneralEventDisplay)generalEventDisplay
+{
+	[RZUserDefaults() setUnsignedInteger:generalEventDisplay forKey:TPCPreferencesGeneralEventDisplayDefaultsKey];
+}
+
+/* The "Join, Part, Quit" checkbox became Show / Collapse / Hide (10.13): a
+ setting someone made carries over once, then its key is gone */
++ (void)migrateGeneralEventPreference
+{
+	NSString *checkboxKey = TPCPreferencesGeneralEventCheckboxDefaultsKey;
+
+	id checkboxValue = [RZUserDefaults() objectForKey:checkboxKey];
+
+	if (checkboxValue == nil) {
+		return;
+	}
+
+	[self setGeneralEventDisplay:[self generalEventDisplayForCheckboxValue:checkboxValue]];
+
+	[RZUserDefaults() removeObjectForKey:checkboxKey];
+}
+
++ (TXGeneralEventDisplay)generalEventDisplayForCheckboxValue:(nullable id)checkboxValue
+{
+	/* Textual 7 showed them unless the checkbox was turned off */
+	if ([checkboxValue respondsToSelector:@selector(boolValue)] && [checkboxValue boolValue] == NO) {
+		return TXGeneralEventDisplayHide;
+	}
+
+	return TXGeneralEventDisplayShow;
 }
 
 + (BOOL)commandReturnSendsMessageAsAction
@@ -1405,6 +1451,8 @@ static NSArray<NSString *> *_matchKeywords = nil;
 	[self _migrateNicknameColorOverridesToVersion722];
 
 	[self migrateCaffeinePreference];
+
+	[self migrateGeneralEventPreference];
 
 	[TPCPathInfo startUsingTranscriptFolderURL];
 

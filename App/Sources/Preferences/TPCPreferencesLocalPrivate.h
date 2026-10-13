@@ -42,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 TEXTUAL_EXTERN NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotification;
 
+TEXTUAL_EXTERN NSString * const TPCPreferencesGeneralEventDisplayDefaultsKey;
+TEXTUAL_EXTERN NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey; // Textual 7's, before Show / Collapse / Hide
+
 @interface TPCPreferences (TPCPreferencesLocalPrivate)
 + (void)initPreferences;
 
@@ -88,6 +91,11 @@ TEXTUAL_EXTERN NSNotificationName const TPCPreferencesPreventSleepWhileConnected
 + (void)setShowInlineMedia:(BOOL)showInlineMedia;
 
 + (void)setMessageGroupingStyle:(TVCLogLineGroupingStyle)messageGroupingStyle;
+
++ (void)setGeneralEventDisplay:(TXGeneralEventDisplay)generalEventDisplay;
+
++ (void)migrateGeneralEventPreference;
++ (TXGeneralEventDisplay)generalEventDisplayForCheckboxValue:(nullable id)checkboxValue;
 
 + (void)setThemeNicknameFormat:(NSString *)value;
 + (void)setThemeTimestampFormat:(NSString *)value;

@@ -1896,6 +1896,19 @@ NS_INLINE BOOL _lineTypeIsGroupable(TVCLogLineType lineType)
 
 	// ---- //
 
+	/* Who a join, part, quit or nickname change is about (collapsed runs name them) */
+	NSArray<NSString *> *eventNicknames = logLine.eventNicknames;
+
+	if (eventNicknames.count > 0) {
+		templateAttributes[@"eventNickname"] = eventNicknames[0];
+	}
+
+	if (eventNicknames.count > 1) {
+		templateAttributes[@"eventNewNickname"] = eventNicknames[1];
+	}
+
+	// ---- //
+
 	if ([self groupedDisplayEnabled]) {
 		templateAttributes[@"groupedDisplayEnabled"] = @(YES);
 
@@ -2155,7 +2168,19 @@ NS_INLINE BOOL _lineTypeIsGroupable(TVCLogLineType lineType)
 			  @"visible" : @(self.visible),
 			  @"reloadingTheme" : @(self.pendingThemeReload),
 			  @"textSizeMultiplier" : @(textSizeMultiplier),
-			  @"scrollbackLimit" : @(scrollbackLimit)
+			  @"scrollbackLimit" : @(scrollbackLimit),
+			  @"collapseGeneralEvents" : @((BOOL)([TPCPreferences generalEventDisplay] == TXGeneralEventDisplayCollapse)),
+			  /* "%@" stays for the count, which the view fills in */
+			  @"generalEventStrings" : @{
+				  @"joined" : TXTLS(@"TVCMainWindow[e7g-j1]", @"%@"),
+				  @"left" : TXTLS(@"TVCMainWindow[e7g-p1]", @"%@"),
+				  @"quit" : TXTLS(@"TVCMainWindow[e7g-q1]", @"%@"),
+				  @"nickname" : TXTLS(@"TVCMainWindow[e7g-n1]", @"%@"),
+				  @"nicknameChange" : TXTLS(@"TVCMainWindow[e7g-n2]", @"%1$@", @"%2$@"),
+				  @"listPair" : TXTLS(@"TVCMainWindow[e7g-a1]", @"%1$@", @"%2$@"),
+				  @"listMore" : TXTLS(@"TVCMainWindow[e7g-a2]", @"%1$@", @"%2$@"),
+				  @"separator" : TXTLS(@"TVCMainWindow[e7g-s1]")
+			  }
 		  }
 	  ]];
 

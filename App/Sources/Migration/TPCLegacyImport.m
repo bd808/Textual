@@ -40,6 +40,7 @@
 #import "TPCApplicationInfo.h"
 #import "TPCPathInfo.h"
 #import "TPCPreferencesLocal.h"
+#import "TPCPreferencesLocalPrivate.h"
 #import "TPCPreferencesUserDefaults.h"
 #import "TPCPreferencesUserDefaultsLocal.h"
 #import "IRCWorldPrivate.h"
@@ -584,6 +585,13 @@ NS_ASSUME_NONNULL_BEGIN
 	if (preferences[TPCPreferencesThemeFontSizeDefaultsKey] == nil) {
 		[RZUserDefaults() _migrateObject:@(12.0) forKey:TPCPreferencesThemeFontSizeDefaultsKey];
 	}
+
+	/* Textual 7's "Join, Part, Quit" checkbox (on unless turned off) is Show or Hide:
+	 collapsing them is offered on purpose too (10.6) */
+	TXGeneralEventDisplay generalEventDisplay =
+	[TPCPreferences generalEventDisplayForCheckboxValue:preferences[TPCPreferencesGeneralEventCheckboxDefaultsKey]];
+
+	[RZUserDefaults() _migrateObject:@(generalEventDisplay) forKey:TPCPreferencesGeneralEventDisplayDefaultsKey];
 
 	[RZUserDefaults() _migrateObject:self.servers forKey:IRCWorldClientListDefaultsKey];
 

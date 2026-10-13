@@ -258,6 +258,7 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 	self.showTreeBadgeCountCheck.state = self.config.showTreeBadgeCount;
 
 	self.ignoreGeneralEventMessagesCheck.state = self.config.ignoreGeneralEventMessages;
+	self.ignoreGeneralEventMessagesCheck.enabled = [TPCPreferences showJoinLeave]; // nothing to disable while they are hidden everywhere
 	self.ignoreHighlightsCheck.state = self.config.ignoreHighlights;
 
 	self.disableInlineMediaCheck.state = self.config.inlineMediaDisabled;

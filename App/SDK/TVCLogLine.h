@@ -99,6 +99,7 @@ typedef NS_ENUM(NSUInteger, TVCLogLineMemberType) {
 @property (readonly, copy, nullable) NSArray<NSString *> *excludeKeywords;
 @property (readonly, copy, nullable) NSDictionary<NSString *, id> *rendererAttributes;
 @property (readonly) NSUInteger sessionIdentifier;
+@property (readonly, copy, nullable) NSArray<NSString *> *eventNicknames; // who a join, part or quit is about; for a nickname change, the old and the new nickname
 
 - (nullable instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
 
@@ -129,6 +130,7 @@ typedef NS_ENUM(NSUInteger, TVCLogLineMemberType) {
 @property (nonatomic, copy, readwrite, nullable) NSArray<NSString *> *highlightKeywords;
 @property (nonatomic, copy, readwrite, nullable) NSArray<NSString *> *excludeKeywords;
 @property (nonatomic, copy, readwrite, nullable) NSDictionary<NSString *, id> *rendererAttributes;
+@property (nonatomic, copy, readwrite, nullable) NSArray<NSString *> *eventNicknames;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -139,6 +139,11 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 
 	self->_rendererAttributes = ([rendererAttributes isKindOfClass:[NSDictionary class]] ? rendererAttributes : nil);
 
+	id eventNicknames = [aDecoder decodeObjectOfClasses:[NSSet setWithObjects:[NSArray class], [NSString class], nil]
+												 forKey:@"eventNicknames"];
+
+	self->_eventNicknames = ([eventNicknames isKindOfClass:[NSArray class]] ? eventNicknames : nil);
+
 	self->_isEncrypted = [aDecoder decodeBoolForKey:@"isEncrypted"];
 	self->_isFirstForDay = [aDecoder decodeBoolForKey:@"isFirstForDay"];
 
@@ -204,6 +209,7 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 	[aCoder maybeEncodeObject:self.excludeKeywords forKey:@"excludeKeywords"];
 	[aCoder maybeEncodeObject:self.highlightKeywords forKey:@"highlightKeywords"];
 	[aCoder maybeEncodeObject:self.rendererAttributes forKey:@"rendererAttributes"];
+	[aCoder maybeEncodeObject:self.eventNicknames forKey:@"eventNicknames"];
 	[aCoder maybeEncodeObject:self.nickname forKey:@"nickname"];
 
 	[aCoder encodeBool:self.isEncrypted forKey:@"isEncrypted"];
@@ -432,6 +438,8 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 
 	object->_rendererAttributes = self->_rendererAttributes;
 
+	object->_eventNicknames = self->_eventNicknames;
+
 	object->_receivedAt = self->_receivedAt;
 
 	object->_command = self->_command;
@@ -468,6 +476,7 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 @dynamic memberType;
 @dynamic messageBody;
 @dynamic nickname;
+@dynamic eventNicknames;
 @dynamic receivedAt;
 
 + (BOOL)isMutable
@@ -548,6 +557,13 @@ DESIGNATED_INITIALIZER_EXCEPTION_BODY_END
 		self->_nickname = [nickname copy];
 
 		[self computeNicknameColorStyle];
+	}
+}
+
+- (void)setEventNicknames:(nullable NSArray<NSString *> *)eventNicknames
+{
+	if (self->_eventNicknames != eventNicknames) {
+		self->_eventNicknames = [eventNicknames copy];
 	}
 }
 

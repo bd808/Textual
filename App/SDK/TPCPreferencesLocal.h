@@ -125,6 +125,14 @@ typedef NS_ENUM(NSUInteger, TVCLogLineGroupingStyle) {
 	TVCLogLineGroupingStyleGrouped 	NS_SWIFT_NAME(grouped)	= 1
 };
 
+/* Joins, parts, quits and nickname changes: shown, a run of them collapsed
+ into one line that opens on a click, or hidden (with kicks and mode changes) */
+typedef NS_ENUM(NSUInteger, TXGeneralEventDisplay) {
+	TXGeneralEventDisplayShow 		NS_SWIFT_NAME(show)		= 0,
+	TXGeneralEventDisplayCollapse 	NS_SWIFT_NAME(collapse)	= 1,
+	TXGeneralEventDisplayHide 		NS_SWIFT_NAME(hide)		= 2
+};
+
 typedef NS_ENUM(NSUInteger, TXPreferredAppearance) {
 	TXPreferredAppearanceInherited 	= 0,
 	TXPreferredAppearanceLight 		= 1,
@@ -204,7 +212,8 @@ typedef NS_ENUM(NSUInteger, TXPreferredAppearance) {
 + (BOOL)showDateChanges;
 + (TVCLogLineGroupingStyle)messageGroupingStyle;
 + (BOOL)showInlineMedia;
-+ (BOOL)showJoinLeave;
++ (BOOL)showJoinLeave; // NO when general events are hidden
++ (TXGeneralEventDisplay)generalEventDisplay;
 + (BOOL)displayServerMOTD;
 + (BOOL)rightToLeftFormatting;
 + (BOOL)removeAllFormatting;

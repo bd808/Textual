@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[keys containsObject:@"DisableRemoteNicknameColorHashing"] ||
 		[keys containsObject:@"DisplayEventInLogView -> Date Changes"] ||
 		[keys containsObject:@"DisplayEventInLogView -> Inline Media"] ||
-		[keys containsObject:@"DisplayEventInLogView -> Join, Part, Quit"] ||
+		[keys containsObject:@"DisplayEventInLogView -> Join, Part, Quit Display"] ||
 		[keys containsObject:@"DisplayEventInLogView -> Message Grouping Style"] ||
 		[keys containsObject:@"Theme -> Nickname Format"] ||
 		[keys containsObject:@"Theme -> Timestamp Format"] ||

@@ -168,9 +168,6 @@ DQ
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
-                    <connections>
-                        <binding destination="nwg-0t-IZ6" name="enabled" keyPath="values.DisplayEventInLogView -&gt; Join, Part, Quit" id="N9c-1s-IKF"/>
-                    </connections>
                 </button>
                 <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="312">
                     <rect key="frame" x="20" y="196" width="285" height="5"/>

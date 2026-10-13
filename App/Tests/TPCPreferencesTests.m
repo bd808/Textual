@@ -69,6 +69,45 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqual([TPCPreferences reloadActionForKeys:@[]], TPCPreferencesReloadActionPreferencesChanged);
 }
 
+/* The "Join, Part, Quit" checkbox carries over once as Show or Hide, then its key
+ is gone; without it the default (Collapse) stays */
+- (void)testGeneralEventMigration
+{
+	NSString *checkboxKey = TPCPreferencesGeneralEventCheckboxDefaultsKey;
+	NSString *displayKey = TPCPreferencesGeneralEventDisplayDefaultsKey;
+
+	id savedDisplay = [RZUserDefaults() objectForKey:displayKey];
+
+	[RZUserDefaults() removeObjectForKey:displayKey];
+
+	[RZUserDefaults() setBool:NO forKey:checkboxKey];
+
+	[TPCPreferences migrateGeneralEventPreference];
+
+	XCTAssertEqual([TPCPreferences generalEventDisplay], TXGeneralEventDisplayHide);
+	XCTAssertFalse([TPCPreferences showJoinLeave]);
+	XCTAssertNil([RZUserDefaults() objectForKey:checkboxKey]);
+
+	[RZUserDefaults() setBool:YES forKey:checkboxKey];
+
+	[TPCPreferences migrateGeneralEventPreference];
+
+	XCTAssertEqual([TPCPreferences generalEventDisplay], TXGeneralEventDisplayShow);
+
+	[RZUserDefaults() removeObjectForKey:displayKey];
+
+	[TPCPreferences migrateGeneralEventPreference];
+
+	XCTAssertEqual([TPCPreferences generalEventDisplay], TXGeneralEventDisplayCollapse);
+
+	/* Textual 7 showed them when the checkbox was never changed (no key) */
+	XCTAssertEqual([TPCPreferences generalEventDisplayForCheckboxValue:nil], TXGeneralEventDisplayShow);
+
+	if (savedDisplay) {
+		[RZUserDefaults() setObject:savedDisplay forKey:displayKey];
+	}
+}
+
 /* Textual 7's Caffeine extension setting carries over once, then its key is gone */
 - (void)testCaffeineMigration
 {

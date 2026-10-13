@@ -599,11 +599,13 @@ _MessageBuffer.loadMessagesDuringScrollWithPayloadPostflight = function(requestP
 			console.error(error);			
 		}
 
-		/* Scroll line into view */
+		/* Scroll line into view (its group's summary while that is closed) */
+		var visibleLine = _EventGroups.visibleElementForLine(line);
+
 		if (before) {
-			line.scrollIntoViewAlignTop();
+			visibleLine.scrollIntoViewAlignTop();
 		} else {
-			line.scrollIntoViewAlignBottom();
+			visibleLine.scrollIntoViewAlignBottom();
 		}
 	} // renderedMessagesCount > 0
 

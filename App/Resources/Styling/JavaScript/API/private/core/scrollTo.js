@@ -91,6 +91,9 @@ Textual.scrollToElement = function(elementName) /* PUBLIC */
 	var element = document.getElementById(elementName);
 
 	if (element) {
+		/* A line in a collapsed group: the group opens */
+		_EventGroups.revealElement(element);
+
 		TextualScroller.scrollElementToCenter(element);
 
 		return true;

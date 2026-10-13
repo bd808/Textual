@@ -443,6 +443,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)print:(NSString *)messageBody by:(nullable NSString *)nickname inChannel:(nullable IRCChannel *)channel asType:(TVCLogLineType)lineType command:(nullable NSString *)command receivedAt:(NSDate *)receivedAt isEncrypted:(BOOL)isEncrypted escapeMessage:(BOOL)escapeMessage referenceMessage:(nullable IRCMessage *)referenceMessage completionBlock:(nullable TVCLogControllerPrintOperationCompletionBlock)completionBlock
 {
+	[self print:messageBody by:nickname inChannel:channel asType:lineType command:command receivedAt:receivedAt isEncrypted:isEncrypted escapeMessage:escapeMessage referenceMessage:referenceMessage eventNicknames:nil completionBlock:completionBlock];
+}
+
+/* A join, part, quit or nickname change: printed without a sender, and with the
+ nicknames it is about, which a collapsed run of them names */
+- (void)printGeneralEvent:(NSString *)messageBody aboutNicknames:(NSArray<NSString *> *)nicknames inChannel:(IRCChannel *)channel asType:(TVCLogLineType)lineType command:(NSString *)command receivedAt:(NSDate *)receivedAt
+{
+	NSParameterAssert(nicknames != nil);
+
+	[self print:messageBody by:nil inChannel:channel asType:lineType command:command receivedAt:receivedAt isEncrypted:NO escapeMessage:YES referenceMessage:nil eventNicknames:nicknames completionBlock:nil];
+}
+
+- (void)print:(NSString *)messageBody by:(nullable NSString *)nickname inChannel:(nullable IRCChannel *)channel asType:(TVCLogLineType)lineType command:(nullable NSString *)command receivedAt:(NSDate *)receivedAt isEncrypted:(BOOL)isEncrypted escapeMessage:(BOOL)escapeMessage referenceMessage:(nullable IRCMessage *)referenceMessage eventNicknames:(nullable NSArray<NSString *> *)eventNicknames completionBlock:(nullable TVCLogControllerPrintOperationCompletionBlock)completionBlock
+{
 	NSParameterAssert(messageBody != nil);
 	NSParameterAssert(command != nil || referenceMessage != nil);
 
@@ -525,6 +539,8 @@ NS_ASSUME_NONNULL_BEGIN
 	logLine.rendererAttributes = rendererAttributes;
 
 	logLine.nickname = nickname;
+
+	logLine.eventNicknames = eventNicknames;
 
 	logLine.messageBody = messageBody;
 
