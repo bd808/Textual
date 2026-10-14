@@ -35,7 +35,6 @@
  *
  *********************************************************************** */
 
-#import "ICMAssessedMedia.h"
 #import "ICMBandcamp.h"
 #import "ICMBluesky.h"
 #import "ICMCommonInlineAudio.h"
@@ -44,6 +43,7 @@
 #import "ICMDailymotion.h"
 #import "ICMGiphy.h"
 #import "ICMGitHub.h"
+#import "ICMPreviewCard.h"
 #import "ICMGyazo.h"
 #import "ICMImgurGifv.h"
 #import "ICMReddit.h"
@@ -95,15 +95,42 @@ NS_ASSUME_NONNULL_BEGIN
 			[ICMCommonInlineImages class],
 			[ICMCommonInlineAudio class],
 
-			/* These match any URL, so they come last: a page card
-			 (or the media a link turns out to be), or with page
-			 cards off, "Load everything" (media only) */
-			[ICMWebPage class],
-			[ICMAssessedMedia class]
+			/* Matches any URL, so it comes last: a page card, or
+			 the media a link turns out to be */
+			[ICMWebPage class]
 		];
 	});
 
 	return modules;
+}
+
++ (NSArray<NSString *> *)_serviceNamesOfModulesPassingTest:(BOOL (NS_NOESCAPE ^)(Class moduleClass))test
+{
+	NSMutableArray<NSString *> *serviceNames = [NSMutableArray array];
+
+	for (Class moduleClass in [self modules]) {
+		NSString *serviceName = [moduleClass serviceName];
+
+		if (serviceName && test(moduleClass)) {
+			[serviceNames addObject:serviceName];
+		}
+	}
+
+	return [serviceNames sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+}
+
++ (NSArray<NSString *> *)serviceNames
+{
+	return [self _serviceNamesOfModulesPassingTest:^BOOL(Class moduleClass) {
+		return YES;
+	}];
+}
+
++ (NSArray<NSString *> *)cardServiceNames
+{
+	return [self _serviceNamesOfModulesPassingTest:^BOOL(Class moduleClass) {
+		return [moduleClass isSubclassOfClass:[ICMPreviewCard class]];
+	}];
 }
 
 @end

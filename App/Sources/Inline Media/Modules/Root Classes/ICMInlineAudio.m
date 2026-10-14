@@ -157,16 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Resources
 
-+ (BOOL)contentImageOrVideo
-{
-	return YES;
-}
-
-+ (BOOL)contentIsFile
-{
-	return YES;
-}
-
 - (nullable NSURL *)templateURL
 {
 	return ICLResourceURL(@"ICMInlineAudio", @"mustache");

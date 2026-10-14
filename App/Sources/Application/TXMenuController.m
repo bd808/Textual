@@ -1295,6 +1295,23 @@ NS_ASSUME_NONNULL_BEGIN
 			return YES;
 		}
 
+		case MTUserControlsDontPreviewLinks: // "Don't Preview Links from …"
+		{
+			NSArray<NSString *> *nicknames = [self selectedMembersNicknames:menuItem];
+
+			menuItem.hidden = (c.isUtility || nicknames.count != 1);
+
+			if (menuItem.hidden) {
+				return NO;
+			}
+
+			menuItem.title = TXTLS(@"TVCMainWindow[nmi-dp]", nicknames[0]);
+
+			menuItem.state = [u ignoresInlineMediaFromNickname:nicknames[0]];
+
+			return YES;
+		}
+
 		case MTUserControlsInviteTo: // "Invite To…"
 		{
 			if (u.isLoggedIn == NO || c.isUtility) {

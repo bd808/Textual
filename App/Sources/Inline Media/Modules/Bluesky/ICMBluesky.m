@@ -34,6 +34,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMBluesky.h"
 
@@ -179,6 +180,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *> *)domains
 {
 	return @[@"bsky.app", @"www.bsky.app"];
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Bluesky");
 }
 
 @end

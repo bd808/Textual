@@ -161,24 +161,9 @@ NS_ASSUME_NONNULL_BEGIN
 	return nil;
 }
 
-+ (BOOL)contentImageOrVideo
++ (nullable NSString *)serviceName
 {
-	return NO;
-}
-
-+ (BOOL)contentUntrusted
-{
-	return NO;
-}
-
-+ (BOOL)contentNotSafeForWork
-{
-	return NO;
-}
-
-+ (BOOL)contentIsFile
-{
-	return NO;
+	return nil;
 }
 
 + (BOOL)requiresAddressWithScheme

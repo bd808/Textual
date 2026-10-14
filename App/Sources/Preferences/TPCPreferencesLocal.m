@@ -43,6 +43,7 @@
 #import "TPCPathInfoPrivate.h"
 #import "TPCPreferencesUserDefaultsLocal.h"
 #import "TPCResourceManager.h"
+#import "ICPCoreMediaPrivate.h"
 #import "TPCThemeController.h"
 #import "TPCTheme.h"
 #import "TPCPreferencesLocalPrivate.h"
@@ -58,6 +59,8 @@ NSString * const TPCPreferencesThemeFontNameSystemFont = @"-apple-system";
 
 NSString * const TPCPreferencesGeneralEventDisplayDefaultsKey = @"DisplayEventInLogView -> Join, Part, Quit Display";
 NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey = @"DisplayEventInLogView -> Join, Part, Quit";
+
+NSString * const TPCPreferencesShowInlineMediaDefaultsKey = @"DisplayEventInLogView -> Inline Media";
 
 NSString * const TPCPreferencesThemeNameMissingLocallyDefaultsKey = @"Theme -> Name -> Did Not Exist During Last Sync";
 
@@ -373,12 +376,155 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 
 + (void)setShowInlineMedia:(BOOL)showInlineMedia
 {
-	[RZUserDefaults() setBool:showInlineMedia forKey:@"DisplayEventInLogView -> Inline Media"];
+	[RZUserDefaults() setBool:showInlineMedia forKey:TPCPreferencesShowInlineMediaDefaultsKey];
 }
 
 + (BOOL)showInlineMedia
 {
-	return [RZUserDefaults() boolForKey:@"DisplayEventInLogView -> Inline Media"];
+	return [RZUserDefaults() boolForKey:TPCPreferencesShowInlineMediaDefaultsKey];
+}
+
++ (NSArray<NSString *> *)inlineMediaDisabledServices
+{
+	NSArray *services = [RZUserDefaults() arrayForKey:@"InlineMediaDisabledServices"];
+
+	if (services == nil) {
+		return @[];
+	}
+
+	return services;
+}
+
++ (void)setInlineMediaDisabledServices:(NSArray<NSString *> *)inlineMediaDisabledServices
+{
+	[RZUserDefaults() setObject:inlineMediaDisabledServices forKey:@"InlineMediaDisabledServices"];
+}
+
++ (BOOL)inlineMediaServiceIsEnabled:(NSString *)serviceName
+{
+	NSParameterAssert(serviceName != nil);
+
+	return ([[self inlineMediaDisabledServices] containsObject:serviceName] == NO);
+}
+
++ (void)setInlineMediaService:(NSString *)serviceName enabled:(BOOL)enabled
+{
+	NSParameterAssert(serviceName != nil);
+
+	NSMutableOrderedSet<NSString *> *services = [NSMutableOrderedSet orderedSetWithArray:[self inlineMediaDisabledServices]];
+
+	if (enabled) {
+		[services removeObject:serviceName];
+	} else {
+		[services addObject:serviceName];
+	}
+
+	[self setInlineMediaDisabledServices:services.array];
+}
+
++ (void)setInlineMediaWebPageCards:(BOOL)inlineMediaWebPageCards
+{
+	[RZUserDefaults() setBool:inlineMediaWebPageCards forKey:@"InlineMediaWebPageCards"];
+}
+
++ (BOOL)inlineMediaAudio
+{
+	return [RZUserDefaults() boolForKey:@"InlineMediaAudio"];
+}
+
++ (void)setInlineMediaAudio:(BOOL)inlineMediaAudio
+{
+	[RZUserDefaults() setBool:inlineMediaAudio forKey:@"InlineMediaAudio"];
+}
+
++ (TXInlineMediaDomainRuleMode)inlineMediaDomainRuleMode
+{
+	return (TXInlineMediaDomainRuleMode)[RZUserDefaults() unsignedIntegerForKey:@"InlineMediaDomainRuleMode"];
+}
+
++ (void)setInlineMediaDomainRuleMode:(TXInlineMediaDomainRuleMode)inlineMediaDomainRuleMode
+{
+	[RZUserDefaults() setUnsignedInteger:inlineMediaDomainRuleMode forKey:@"InlineMediaDomainRuleMode"];
+}
+
++ (NSArray<NSString *> *)inlineMediaDomains
+{
+	NSArray *domains = [RZUserDefaults() arrayForKey:@"InlineMediaDomainList"];
+
+	if (domains == nil) {
+		return @[];
+	}
+
+	return domains;
+}
+
++ (void)setInlineMediaDomains:(NSArray<NSString *> *)inlineMediaDomains
+{
+	[RZUserDefaults() setObject:inlineMediaDomains forKey:@"InlineMediaDomainList"];
+}
+
++ (nullable NSString *)normalizedInlineMediaDomain:(NSString *)domain
+{
+	NSParameterAssert(domain != nil);
+
+	NSString *host = domain.trim.lowercaseString;
+
+	/* An address pasted whole */
+	if ([host containsString:@"://"]) {
+		host = [NSURL URLWithString:host].host.lowercaseString;
+	} else {
+		NSRange pathStart = [host rangeOfString:@"/"];
+
+		if (pathStart.location != NSNotFound) {
+			host = [host substringToIndex:pathStart.location];
+		}
+	}
+
+	if ([host hasPrefix:@"*."]) {
+		host = [host substringFromIndex:2];
+	}
+
+	host = [host stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"."]];
+
+	/* No port, no user, no spaces; at least one dot ("localhost" is never previewed anyway) */
+	if (host.length == 0 ||
+		[host containsString:@"."] == NO ||
+		[host rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@":@ \t"]].location != NSNotFound)
+	{
+		return nil;
+	}
+
+	return host;
+}
+
++ (void)migrateInlineMediaLimits
+{
+	NSArray<NSString *> *limitKeys = @[@"InlineMediaLimitToBasics",
+									   @"InlineMediaLimitBasicsToFiles",
+									   @"InlineMediaLimitInsecureContent",
+									   @"InlineMediaLimitNaughtyContent",
+									   @"InlineMediaLimitUnsafeContent",
+									   @"InlineMediaCheckEverything"];
+
+	id limitToBasics = [RZUserDefaults() objectForKey:@"InlineMediaLimitToBasics"];
+
+	/* Files and clip services (Giphy, Gyazo, …) stay; "Including video
+	 services" folds into this; the other limits go without effect: "safe
+	 to view in public" (Pornhub only), plain HTTP (never previewed), "safe
+	 sources" (X cards show for everyone), "Load everything" (web page cards) */
+	if ([limitToBasics respondsToSelector:@selector(boolValue)] && [limitToBasics boolValue]) {
+		[self setInlineMediaWebPageCards:NO];
+
+		NSMutableOrderedSet<NSString *> *services = [NSMutableOrderedSet orderedSetWithArray:[self inlineMediaDisabledServices]];
+
+		[services addObjectsFromArray:[ICPCoreMedia cardServiceNames]];
+
+		[self setInlineMediaDisabledServices:services.array];
+	}
+
+	for (NSString *limitKey in limitKeys) {
+		[RZUserDefaults() removeObjectForKey:limitKey];
+	}
 }
 
 + (BOOL)showJoinLeave
@@ -1453,6 +1599,8 @@ static NSArray<NSString *> *_matchKeywords = nil;
 	[self migrateCaffeinePreference];
 
 	[self migrateGeneralEventPreference];
+
+	[self migrateInlineMediaLimits];
 
 	[TPCPathInfo startUsingTranscriptFolderURL];
 

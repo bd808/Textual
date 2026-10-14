@@ -63,3 +63,27 @@ Click “Edit Style” to add your own style sheet rules. This feature can also 
 "g7d-b1" = "The %1$@ display is made for times shown as “%2$@” and nicknames shown as “%3$@”. You changed these formats yourself, so they are only replaced if you want.\n\nThey can be changed at any time in the Advanced tab.";
 "g7d-y1" = "Use These Formats";
 "g7d-k1" = "Keep My Formats";
+
+/* Inline Media (E2.6) */
+"imp-t1" = "General";
+"imp-t2" = "Services";
+"imp-t3" = "Rules";
+"imp-s1" = "Show previews of links (images, videos and cards)";
+"imp-s2" = "Previews load pictures and page details from the sites that links point to, through each server’s proxy if it has one. Channels can turn previews off in Channel Properties.";
+"imp-mb" = "%lu MB";
+"imp-l1" = "Largest image:";
+"imp-l2" = "Show images at most";
+"imp-u1" = "pixels wide";
+"imp-l3" = "Hide images taller than";
+"imp-u2" = "pixels (0 for any height)";
+"imp-w1" = "Cards for other web pages";
+"imp-w2" = "The title, description and picture of any page the services below don’t cover. Only for links written with https://.";
+"imp-a1" = "A player for links to audio files";
+"imp-v1" = "Services:";
+"imp-r1" = "Preview links from:";
+"imp-r2" = "All sites except these";
+"imp-r3" = "Only these sites";
+"imp-rp" = "example.com";
+"imp-ra" = "Add Site";
+"imp-rr" = "Remove Site";
+"imp-rn" = "A site includes its subdomains: example.com also covers www.example.com. To stop previews from one person, choose “Don’t Preview Links from …” in their nickname menu; for one channel, use Channel Properties.";

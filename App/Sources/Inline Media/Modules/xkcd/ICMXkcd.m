@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMXkcd.h"
 
@@ -123,17 +124,17 @@ NS_ASSUME_NONNULL_BEGIN
 	return domains;
 }
 
-+ (BOOL)contentIsFile
-{
-	return YES;
-}
-
 #pragma mark -
 #pragma mark Utilities
 
 - (void)finalizePreflight
 {
 	self.payload.classAttribute = @"inlineXkcd";
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"xkcd");
 }
 
 @end

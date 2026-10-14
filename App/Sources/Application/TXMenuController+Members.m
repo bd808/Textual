@@ -221,6 +221,27 @@ NS_ASSUME_NONNULL_BEGIN
 	[u sendCommand:command completeTarget:YES target:c.name];
 }
 
+- (void)memberToggleInlineMediaIgnore:(nullable id)sender
+{
+	IRCClient *u = self.selectedClient;
+
+	if (u == nil) {
+		return;
+	}
+
+	NSArray<NSString *> *nicknames = [self selectedMembersNicknames:sender];
+
+	[self deselectMembers:sender];
+
+	if (nicknames.count != 1) {
+		return;
+	}
+
+	NSString *nickname = nicknames[0];
+
+	[u setIgnoresInlineMedia:([u ignoresInlineMediaFromNickname:nickname] == NO) fromNickname:nickname];
+}
+
 - (void)memberModifyIgnore:(nullable id)sender
 {
 	IRCClient *u = self.selectedClient;

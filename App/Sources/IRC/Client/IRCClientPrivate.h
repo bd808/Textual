@@ -124,6 +124,11 @@ enum {
 /* An address book ignore entry for this person turns off previews of their
  links. Main thread (the match cache isn't thread safe). */
 - (BOOL)ignoresInlineMediaFromNickname:(NSString *)nickname;
+
+/* "Don't Preview Links from …" (D-E2.11): on sets it on the one ignore entry
+ that matches the person, or adds an entry that only does this; off clears
+ it, removing entries that did nothing else */
+- (void)setIgnoresInlineMedia:(BOOL)ignoresInlineMedia fromNickname:(NSString *)nickname;
 @end
 
 @interface IRCClient (SendingPrivate)

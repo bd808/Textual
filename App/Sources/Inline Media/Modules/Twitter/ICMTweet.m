@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMTweet.h"
 
@@ -230,6 +231,11 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 
 	return domains;
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"X");
 }
 
 @end

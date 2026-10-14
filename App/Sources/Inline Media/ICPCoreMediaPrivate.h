@@ -42,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
  and third-party modules are no longer loaded. */
 @interface ICPCoreMedia : NSObject
 @property (readonly, copy, class) NSArray<Class> *modules;
+
+/* The services that can be turned off (+[ICLInlineContentModule serviceName]),
+ sorted; and those of them that show a preview card (not a file or clip) */
+@property (readonly, copy, class) NSArray<NSString *> *serviceNames;
+@property (readonly, copy, class) NSArray<NSString *> *cardServiceNames;
 @end
 
 NS_ASSUME_NONNULL_END

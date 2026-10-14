@@ -118,7 +118,15 @@
 	<integer>0</integer>
 	<key>IRCopDefaultLocalizaiton -&gt; Shun Reason</key>
 	<integer>0</integer>
+	<key>InlineMediaAudio</key>
+	<integer>0</integer>
 	<key>InlineMediaCheckEverything</key>
+	<integer>0</integer>
+	<key>InlineMediaDisabledServices</key>
+	<integer>0</integer>
+	<key>InlineMediaDomainList</key>
+	<integer>0</integer>
+	<key>InlineMediaDomainRuleMode</key>
 	<integer>0</integer>
 	<key>InlineMediaLimitToBasics</key>
 	<integer>0</integer>

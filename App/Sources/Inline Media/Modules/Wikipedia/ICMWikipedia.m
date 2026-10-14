@@ -34,6 +34,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMWikipedia.h"
 
@@ -115,6 +116,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *> *)domains
 {
 	return @[@"*.wikipedia.org"];
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Wikipedia");
 }
 
 @end

@@ -34,6 +34,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMReddit.h"
 
@@ -120,6 +121,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *> *)domains
 {
 	return @[@"reddit.com", @"www.reddit.com", @"old.reddit.com", @"new.reddit.com", @"m.reddit.com", @"redd.it"];
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Reddit");
 }
 
 @end

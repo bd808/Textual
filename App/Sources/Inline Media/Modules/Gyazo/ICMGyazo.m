@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMGyazo.h"
 
@@ -212,19 +213,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Utilities
 
-+ (BOOL)contentImageOrVideo
-{
-	return YES;
-}
-
-+ (BOOL)contentIsFile
-{
-	return YES;
-}
-
 - (void)finalizePreflight
 {
 	self.payload.classAttribute = @"inlineGyazo";
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Gyazo");
 }
 
 @end

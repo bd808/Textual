@@ -123,30 +123,11 @@ typedef void (^ICLInlineContentModuleActionBlock)(ICLInlineContentModule *module
 #pragma mark Context
 
 /**
- Whether the module's content is an image or video.
- This can include video services, not just video files.
+ The service the module previews ("YouTube"), shown in Preferences →
+ Inline Media → Services, where each can be turned off. nil for modules
+ that aren't a service (files by their extension, any web page).
  */
-@property (readonly, class) BOOL contentImageOrVideo;
-
-/**
- Whether the module's content is a regular file,
- such as an image or video. Not an iframe, embedded,
- or dynamic content (such as JavaScript).
- */
-@property (readonly, class) BOOL contentIsFile;
-
-/**
- Whether the module might add content to the DOM which
- is not trusted such as HTML downloaded from some website.
- A module that loads remote JavaScript libraries is also
- considered untrusted.
- */
-@property (readonly, class) BOOL contentUntrusted;
-
-/**
- Whether module might load content that is not safe for work.
- */
-@property (readonly, class) BOOL contentNotSafeForWork;
+@property (readonly, class, copy, nullable) NSString *serviceName;
 
 /**
  Whether the module only handles addresses written with their scheme

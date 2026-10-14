@@ -259,11 +259,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ICMInlineImageFoundation
 
-+ (BOOL)contentImageOrVideo
-{
-	return YES;
-}
-
 - (nullable NSURL *)templateURL
 {
 	return ICLResourceURL(@"ICMInlineImage", @"mustache");

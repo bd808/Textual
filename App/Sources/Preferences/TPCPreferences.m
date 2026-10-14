@@ -90,46 +90,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[RZUserDefaults() setUnsignedInteger:value forKey:@"InlineMediaMaximumHeight"];
 }
 
-+ (BOOL)inlineMediaLimitToBasics
-{
-	return [RZUserDefaults() boolForKey:@"InlineMediaLimitToBasics"];
-}
-
-+ (void)setInlineMediaLimitToBasics:(BOOL)inlineMediaLimitToBasics
-{
-	[RZUserDefaults() setBool:inlineMediaLimitToBasics forKey:@"InlineMediaLimitToBasics"];
-}
-
-+ (BOOL)inlineMediaLimitBasicsToFiles
-{
-	return [RZUserDefaults() boolForKey:@"InlineMediaLimitBasicsToFiles"];
-}
-
-+ (void)setInlineMediaLimitBasicsToFiles:(BOOL)inlineMediaLimitBasicsToFiles
-{
-	[RZUserDefaults() setBool:inlineMediaLimitBasicsToFiles forKey:@"InlineMediaLimitBasicsToFiles"];
-}
-
-+ (BOOL)inlineMediaLimitInsecureContent
-{
-	return [RZUserDefaults() boolForKey:@"InlineMediaLimitInsecureContent"];
-}
-
-+ (BOOL)inlineMediaLimitNaughtyContent
-{
-	return [RZUserDefaults() boolForKey:@"InlineMediaLimitNaughtyContent"];
-}
-
-+ (BOOL)inlineMediaLimitUnsafeContent
-{
-	return [RZUserDefaults() boolForKey:@"InlineMediaLimitUnsafeContent"];
-}
-
-+ (BOOL)inlineMediaCheckEverything
-{
-	return [RZUserDefaults() boolForKey:@"InlineMediaCheckEverything"];
-}
-
 + (BOOL)inlineMediaWebPageCards
 {
 	return [RZUserDefaults() boolForKey:@"InlineMediaWebPageCards"];

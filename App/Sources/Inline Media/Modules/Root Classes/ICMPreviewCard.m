@@ -48,12 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ICMPreviewCard
 
-/* The markup is the card's own template; providers only supply escaped values */
-+ (BOOL)contentUntrusted
-{
-	return NO;
-}
-
 - (void)performActionForCard:(ICMPreviewCardContent *)card
 {
 	NSParameterAssert(card != nil);

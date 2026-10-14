@@ -132,11 +132,6 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"_ICMInlineHTML";
 }
 
-+ (BOOL)contentUntrusted
-{
-	return YES;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

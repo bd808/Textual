@@ -330,6 +330,7 @@ enum
 	MTUserControlsIRCOperatorMenuBanFromServer = 16240004, // "Ban from Server (G:Line)"
 	MTUserControlsGiveOwner = 1625, // "Give Owner (+q)"
 	MTUserControlsTakeOwner = 1626, // "Take Owner (-q)"
+	MTUserControlsDontPreviewLinks = 1627, // "Don't Preview Links from …"
 
 	/* Dock menu */
 	MTDockMenuDisableAllNotifications = 1700, // "Disable All Notifications"
@@ -420,6 +421,7 @@ enum
 - (void)deselectMembers:(nullable id)sender;
 
 - (IBAction)memberAddIgnore:(nullable id)sender;
+- (IBAction)memberToggleInlineMediaIgnore:(nullable id)sender;
 - (IBAction)memberModifyIgnore:(nullable id)sender;
 - (IBAction)memberRemoveIgnore:(nullable id)sender;
 

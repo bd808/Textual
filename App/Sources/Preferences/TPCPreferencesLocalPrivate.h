@@ -45,6 +45,13 @@ TEXTUAL_EXTERN NSNotificationName const TPCPreferencesPreventSleepWhileConnected
 TEXTUAL_EXTERN NSString * const TPCPreferencesGeneralEventDisplayDefaultsKey;
 TEXTUAL_EXTERN NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey; // Textual 7's, before Show / Collapse / Hide
 
+TEXTUAL_EXTERN NSString * const TPCPreferencesShowInlineMediaDefaultsKey;
+
+typedef NS_ENUM(NSUInteger, TXInlineMediaDomainRuleMode) {
+	TXInlineMediaDomainRuleModeExcept = 0, // links from every site except those listed
+	TXInlineMediaDomainRuleModeOnly = 1 // links only from the sites listed
+};
+
 @interface TPCPreferences (TPCPreferencesLocalPrivate)
 + (void)initPreferences;
 
@@ -89,6 +96,26 @@ TEXTUAL_EXTERN NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey; /
 + (void)setScrollbackVisibleLimit:(NSUInteger)scrollbackVisibleLimit;
 
 + (void)setShowInlineMedia:(BOOL)showInlineMedia;
+
+/* Inline media (E2.6): services turned off by name (+[ICPCoreMedia serviceNames]),
+ web page cards, audio, and which sites' links are previewed */
+@property (class, copy) NSArray<NSString *> *inlineMediaDisabledServices;
++ (BOOL)inlineMediaServiceIsEnabled:(NSString *)serviceName;
++ (void)setInlineMediaService:(NSString *)serviceName enabled:(BOOL)enabled;
+
++ (void)setInlineMediaWebPageCards:(BOOL)inlineMediaWebPageCards;
+
+@property (class) BOOL inlineMediaAudio;
+
+@property (class) TXInlineMediaDomainRuleMode inlineMediaDomainRuleMode;
+@property (class, copy) NSArray<NSString *> *inlineMediaDomains; // normalized: "example.com"
+
+/* "https://www.Example.com/x" → "www.example.com", "*.example.com" → "example.com"; nil if not a domain */
++ (nullable NSString *)normalizedInlineMediaDomain:(NSString *)domain;
+
+/* Textual 7's limits (D-E2.12): "Only inline images and videos" turns every
+ service card and web page cards off; the limits are removed */
++ (void)migrateInlineMediaLimits;
 
 + (void)setMessageGroupingStyle:(TVCLogLineGroupingStyle)messageGroupingStyle;
 

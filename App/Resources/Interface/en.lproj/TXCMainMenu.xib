@@ -1288,6 +1288,12 @@ CA
                         <action selector="memberRemoveIgnore:" target="267" id="01h-cr-wYk"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Don’t Preview Links" tag="1627" id="dPl-u7-x4k">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="memberToggleInlineMediaIgnore:" target="267" id="dPl-a9-c2m"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" tag="1603" id="lgn-Pi-rSn"/>
                 <menuItem title="Invite to..." tag="1604" id="1003">
                     <modifierMask key="keyEquivalentModifierMask"/>

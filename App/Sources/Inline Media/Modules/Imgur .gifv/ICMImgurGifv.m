@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICMImgurGifv.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -114,14 +115,14 @@ NS_ASSUME_NONNULL_BEGIN
 	return cachedValue;
 }
 
-+ (BOOL)contentIsFile
-{
-	return YES;
-}
-
 - (void)finalizePreflight
 {
 	self.payload.classAttribute = @"inlineImgurGifv";
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Imgur");
 }
 
 @end

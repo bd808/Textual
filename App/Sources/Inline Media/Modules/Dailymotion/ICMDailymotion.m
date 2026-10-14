@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMDailymotion.h"
 
@@ -160,6 +161,11 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 
 	return domains;
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Dailymotion");
 }
 
 @end

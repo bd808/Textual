@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMVimeo.h"
 
@@ -145,6 +146,11 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 
 	return domains;
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Vimeo");
 }
 
 @end

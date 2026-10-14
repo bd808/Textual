@@ -34,6 +34,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMGitHub.h"
 
@@ -279,6 +280,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *> *)domains
 {
 	return @[@"github.com", @"www.github.com"];
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"GitHub");
 }
 
 @end

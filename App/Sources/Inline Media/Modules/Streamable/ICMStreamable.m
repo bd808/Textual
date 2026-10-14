@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMStreamable.h"
 
@@ -119,17 +120,17 @@ NS_ASSUME_NONNULL_BEGIN
 	return domains;
 }
 
-+ (BOOL)contentIsFile
-{
-	return YES;
-}
-
 #pragma mark -
 #pragma mark Utilities
 
 - (void)finalizePreflight
 {
 	self.payload.classAttribute = @"inlineStreamable";
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Streamable");
 }
 
 @end

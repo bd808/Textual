@@ -35,7 +35,7 @@
  *
  *********************************************************************** */
 
-#import "TPCPreferences.h"
+#import "TPCPreferencesLocalPrivate.h"
 #import "ICLPayloadPrivate.h"
 #import "ICLURLSessionPrivate.h"
 #import "ICLInlineContentModulePrivate.h"
@@ -164,6 +164,11 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 		return;
 	}
 
+	/* Preferences → Inline Media → Rules */
+	if ([self.class host:urlHost isPreviewedWithDomains:[TPCPreferences inlineMediaDomains] mode:[TPCPreferences inlineMediaDomainRuleMode]] == NO) {
+		return;
+	}
+
 	urlComponents.scheme = urlScheme;
 	urlComponents.host = urlHost;
 
@@ -202,6 +207,30 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 	(void)[self _processPayload:payload withModulesForDomain:@"*" addressHasScheme:addressHasScheme];
 }
 
++ (BOOL)host:(NSString *)host isPreviewedWithDomains:(NSArray<NSString *> *)domains mode:(TXInlineMediaDomainRuleMode)mode
+{
+	NSParameterAssert(host != nil);
+	NSParameterAssert(domains != nil);
+
+	host = host.lowercaseString;
+
+	BOOL listed = NO;
+
+	for (NSString *domain in domains) {
+		if ([host isEqualToString:domain] || [host hasSuffix:[@"." stringByAppendingString:domain]]) {
+			listed = YES;
+
+			break;
+		}
+	}
+
+	if (mode == TXInlineMediaDomainRuleModeOnly) {
+		return listed;
+	}
+
+	return (listed == NO);
+}
+
 - (BOOL)_processPayload:(ICLPayloadMutable *)payload withModulesForDomain:(NSString *)domain addressHasScheme:(BOOL)addressHasScheme
 {
 	NSParameterAssert(payload != nil);
@@ -226,14 +255,10 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 	NSParameterAssert(payloadIn != nil);
 	NSParameterAssert(moduleClass != NULL);
 
-	/* Do not allow unsafe content */
-	if ([moduleClass contentImageOrVideo] == NO && [TPCPreferences inlineMediaLimitToBasics]) {
-		return NO;
-	} else if ([moduleClass contentIsFile] == NO && [TPCPreferences inlineMediaLimitToBasics] && [TPCPreferences inlineMediaLimitBasicsToFiles]) {
-		return NO;
-	} else if ([moduleClass contentNotSafeForWork] && [TPCPreferences inlineMediaLimitNaughtyContent]) {
-		return NO;
-	} else if ([moduleClass contentUntrusted] && [TPCPreferences inlineMediaLimitUnsafeContent]) {
+	/* A service turned off in Preferences */
+	NSString *serviceName = [moduleClass serviceName];
+
+	if (serviceName && [TPCPreferences inlineMediaServiceIsEnabled:serviceName] == NO) {
 		return NO;
 	}
 

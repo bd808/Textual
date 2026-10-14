@@ -34,7 +34,7 @@
  *
  *********************************************************************** */
 
-#import "TPCPreferences.h"
+#import "TPCPreferencesLocalPrivate.h"
 #import "ICLHelpers.h"
 #import "ICLMediaAssessor.h"
 #import "ICMWebPage.h"
@@ -59,6 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 								 /* A page, or nothing to show */
 								 if (responseType == ICLMediaTypeOther) {
 									 return YES;
+								 }
+
+								 /* Audio turned off: a link like any other that isn't a page */
+								 if (responseType == ICLMediaTypeAudio && [TPCPreferences inlineMediaAudio] == NO) {
+									 return NO;
 								 }
 
 								 /* An image over the size limit is left as a link */

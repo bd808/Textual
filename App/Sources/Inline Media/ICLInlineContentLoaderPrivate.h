@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TPCPreferencesLocalPrivate.h"
 #import "ICLMediaType.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -47,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
  to TVCLogControllerInlineMediaService. */
 @interface ICLInlineContentLoader : NSObject
 + (ICLInlineContentLoader *)sharedLoader;
+
+/* Preferences → Inline Media → Rules: a listed domain includes its subdomains
+ (domains as +[TPCPreferences normalizedInlineMediaDomain:] makes them) */
++ (BOOL)host:(NSString *)host isPreviewedWithDomains:(NSArray<NSString *> *)domains mode:(TXInlineMediaDomainRuleMode)mode;
 
 - (void)processURL:(NSURL *)url
 withUniqueIdentifier:(NSString *)uniqueIdentifier

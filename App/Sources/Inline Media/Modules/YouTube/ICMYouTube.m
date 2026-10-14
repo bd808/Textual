@@ -35,6 +35,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMInlineVideo.h"
 #import "ICMYouTube.h"
@@ -183,6 +184,11 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 
 	return domains;
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"YouTube");
 }
 
 @end

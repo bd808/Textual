@@ -34,6 +34,7 @@
  *
  *********************************************************************** */
 
+#import "TLOLocalization.h"
 #import "ICLHelpers.h"
 #import "ICMSpotify.h"
 
@@ -108,6 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *> *)domains
 {
 	return @[@"open.spotify.com"];
+}
+
++ (nullable NSString *)serviceName
+{
+	return TXLocalizationNotNeeded(@"Spotify");
 }
 
 @end

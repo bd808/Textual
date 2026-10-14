@@ -34,6 +34,7 @@
  *
  *********************************************************************** */
 
+#import "TPCPreferencesLocalPrivate.h"
 #import "ICMCommonInlineAudio.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -42,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable ICLInlineContentModuleActionBlock)actionBlockForURL:(NSURL *)url
 {
+	if ([TPCPreferences inlineMediaAudio] == NO) {
+		return nil;
+	}
+
 	NSString *urlPathExtension = url.path.pathExtension.lowercaseString;
 
 	if ([[self validFileExtensions] containsObject:urlPathExtension] == NO) {

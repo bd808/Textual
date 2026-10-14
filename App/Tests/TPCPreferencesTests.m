@@ -39,6 +39,8 @@
 #import "TPCPreferencesLocalPrivate.h"
 #import "TPCPreferencesReloadPrivate.h"
 #import "TPCPreferencesUserDefaults.h"
+#import "ICLInlineContentLoaderPrivate.h"
+#import "ICPCoreMediaPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -106,6 +108,82 @@ NS_ASSUME_NONNULL_BEGIN
 	if (savedDisplay) {
 		[RZUserDefaults() setObject:savedDisplay forKey:displayKey];
 	}
+}
+
+/* "Only inline images and videos" (D-E2.12): service cards and web page cards
+ off, files and clip services stay; every Textual 7 limit is gone afterwards */
+- (void)testInlineMediaLimitsMigration
+{
+	NSArray<NSString *> *limitKeys = @[@"InlineMediaLimitToBasics", @"InlineMediaLimitBasicsToFiles", @"InlineMediaLimitInsecureContent", @"InlineMediaLimitNaughtyContent", @"InlineMediaLimitUnsafeContent", @"InlineMediaCheckEverything"];
+
+	NSArray<NSString *> *savedServices = [TPCPreferences inlineMediaDisabledServices];
+
+	BOOL savedWebPageCards = [TPCPreferences inlineMediaWebPageCards];
+
+	TPCPreferences.inlineMediaDisabledServices = @[];
+
+	[TPCPreferences setInlineMediaWebPageCards:YES];
+
+	for (NSString *limitKey in limitKeys) {
+		[RZUserDefaults() setBool:YES forKey:limitKey];
+	}
+
+	[TPCPreferences migrateInlineMediaLimits];
+
+	XCTAssertFalse([TPCPreferences inlineMediaWebPageCards]);
+	XCTAssertFalse([TPCPreferences inlineMediaServiceIsEnabled:@"YouTube"]);
+	XCTAssertFalse([TPCPreferences inlineMediaServiceIsEnabled:@"X"]);
+	XCTAssertFalse([TPCPreferences inlineMediaServiceIsEnabled:@"Bandcamp"]);
+	XCTAssertTrue([TPCPreferences inlineMediaServiceIsEnabled:@"Giphy"]);
+	XCTAssertTrue([TPCPreferences inlineMediaServiceIsEnabled:@"xkcd"]);
+	XCTAssertTrue([[ICPCoreMedia serviceNames] containsObject:@"Giphy"]);
+
+	for (NSString *limitKey in limitKeys) {
+		XCTAssertNil([RZUserDefaults() objectForKey:limitKey], @"%@", limitKey);
+	}
+
+	/* Without the limit, nothing changes */
+	TPCPreferences.inlineMediaDisabledServices = @[];
+
+	[TPCPreferences setInlineMediaWebPageCards:YES];
+
+	[RZUserDefaults() setBool:NO forKey:@"InlineMediaLimitToBasics"];
+
+	[TPCPreferences migrateInlineMediaLimits];
+
+	XCTAssertTrue([TPCPreferences inlineMediaWebPageCards]);
+	XCTAssertEqualObjects([TPCPreferences inlineMediaDisabledServices], @[]);
+
+	TPCPreferences.inlineMediaDisabledServices = savedServices;
+
+	[TPCPreferences setInlineMediaWebPageCards:savedWebPageCards];
+}
+
+/* Preferences → Inline Media → Rules: a site covers its subdomains, not
+ lookalikes; typed or pasted sites become plain domains */
+- (void)testInlineMediaDomainRules
+{
+	NSArray<NSString *> *domains = @[@"example.com", @"cdn.other.org"];
+
+	TXInlineMediaDomainRuleMode except = TXInlineMediaDomainRuleModeExcept;
+	TXInlineMediaDomainRuleMode only = TXInlineMediaDomainRuleModeOnly;
+
+	XCTAssertFalse([ICLInlineContentLoader host:@"example.com" isPreviewedWithDomains:domains mode:except]);
+	XCTAssertFalse([ICLInlineContentLoader host:@"www.EXAMPLE.com" isPreviewedWithDomains:domains mode:except]);
+	XCTAssertTrue([ICLInlineContentLoader host:@"badexample.com" isPreviewedWithDomains:domains mode:except]);
+	XCTAssertTrue([ICLInlineContentLoader host:@"other.org" isPreviewedWithDomains:domains mode:except]);
+	XCTAssertTrue([ICLInlineContentLoader host:@"anything.net" isPreviewedWithDomains:@[] mode:except]);
+
+	XCTAssertTrue([ICLInlineContentLoader host:@"img.cdn.other.org" isPreviewedWithDomains:domains mode:only]);
+	XCTAssertFalse([ICLInlineContentLoader host:@"other.org" isPreviewedWithDomains:domains mode:only]);
+	XCTAssertFalse([ICLInlineContentLoader host:@"anything.net" isPreviewedWithDomains:@[] mode:only]);
+
+	XCTAssertEqualObjects([TPCPreferences normalizedInlineMediaDomain:@" https://www.Example.com/page?x=1 "], @"www.example.com");
+	XCTAssertEqualObjects([TPCPreferences normalizedInlineMediaDomain:@"*.example.com"], @"example.com");
+	XCTAssertEqualObjects([TPCPreferences normalizedInlineMediaDomain:@"example.com/path"], @"example.com");
+	XCTAssertNil([TPCPreferences normalizedInlineMediaDomain:@"localhost"]);
+	XCTAssertNil([TPCPreferences normalizedInlineMediaDomain:@"user@example.com"]);
+	XCTAssertNil([TPCPreferences normalizedInlineMediaDomain:@""]);
 }
 
 /* Textual 7's Caffeine extension setting carries over once, then its key is gone */

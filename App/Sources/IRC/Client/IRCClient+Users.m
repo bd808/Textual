@@ -163,6 +163,89 @@ NS_ASSUME_NONNULL_BEGIN
 	return [self findAddressBookEntryForHostmask:hostmask].ignoreInlineMedia;
 }
 
+- (void)setIgnoresInlineMedia:(BOOL)ignoresInlineMedia fromNickname:(NSString *)nickname
+{
+	NSParameterAssert(nickname != nil);
+
+	IRCUser *user = [self findUser:nickname];
+
+	NSString *hostmask = user.hostmask;
+
+	if (hostmask == nil) {
+		hostmask = [NSString stringWithFormat:@"%@!*@*", nickname];
+	}
+
+	NSMutableArray<IRCAddressBookEntry *> *ignoreList = [self.config.ignoreList mutableCopy];
+
+	NSMutableArray<IRCAddressBookEntry *> *matchingEntries = [NSMutableArray array];
+
+	for (IRCAddressBookEntry *entry in ignoreList) {
+		if (entry.entryType == IRCAddressBookEntryTypeIgnore && [entry checkMatch:hostmask]) {
+			[matchingEntries addObject:entry];
+		}
+	}
+
+	if (ignoresInlineMedia) {
+		if (matchingEntries.count == 1) {
+			IRCAddressBookEntryMutable *entry = [matchingEntries[0] mutableCopy];
+
+			entry.ignoreInlineMedia = YES;
+
+			ignoreList[[ignoreList indexOfObjectIdenticalTo:matchingEntries[0]]] = [entry copy];
+		} else {
+			IRCAddressBookEntryMutable *entry = [[IRCAddressBookEntry newIgnoreEntryForHostmask:((user) ? user.banMask : hostmask)] mutableCopy];
+
+			entry.ignoreClientToClientProtocol = NO;
+			entry.ignoreFileTransferRequests = NO;
+			entry.ignoreGeneralEventMessages = NO;
+			entry.ignoreNoticeMessages = NO;
+			entry.ignorePrivateMessageHighlights = NO;
+			entry.ignorePrivateMessages = NO;
+			entry.ignorePublicMessageHighlights = NO;
+			entry.ignorePublicMessages = NO;
+
+			[ignoreList addObject:[entry copy]];
+		}
+	} else {
+		for (IRCAddressBookEntry *matchingEntry in matchingEntries) {
+			if (matchingEntry.ignoreInlineMedia == NO) {
+				continue;
+			}
+
+			NSUInteger index = [ignoreList indexOfObjectIdenticalTo:matchingEntry];
+
+			BOOL onlyInlineMedia =
+			(matchingEntry.ignoreClientToClientProtocol == NO &&
+			 matchingEntry.ignoreFileTransferRequests == NO &&
+			 matchingEntry.ignoreGeneralEventMessages == NO &&
+			 matchingEntry.ignoreNoticeMessages == NO &&
+			 matchingEntry.ignorePrivateMessageHighlights == NO &&
+			 matchingEntry.ignorePrivateMessages == NO &&
+			 matchingEntry.ignorePublicMessageHighlights == NO &&
+			 matchingEntry.ignorePublicMessages == NO &&
+			 matchingEntry.ignoreMessagesContainingMatch == NO);
+
+			if (onlyInlineMedia) {
+				[ignoreList removeObjectAtIndex:index];
+			} else {
+				IRCAddressBookEntryMutable *entry = [matchingEntry mutableCopy];
+
+				entry.ignoreInlineMedia = NO;
+
+				ignoreList[index] = [entry copy];
+			}
+		}
+	}
+
+	IRCClientConfigMutable *mutableClientConfig = [self.config mutableCopy];
+
+	mutableClientConfig.ignoreList = ignoreList;
+
+	self.config = mutableClientConfig;
+
+	[self clearAddressBookCacheForHostmask:hostmask];
+}
+
 - (void)clearAddressBookCache
 {
 	[self.addressBookMatchCache clearCachedMatches];

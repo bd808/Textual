@@ -124,6 +124,7 @@
 		6629EC30C06F122F65345BBD /* TDCPreferencesPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */; };
 		FF3154F13D955A95E47DEDC5 /* TDCPreferencesAppearancePanes.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */; };
 		A158CC599D81585F02DDA31A /* TDCPreferencesAdvancedPanes.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */; };
+		4C497A2FFD766E56B1D4752B /* TDCPreferencesInlineMediaPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC6E20C4C4C3271153F5FAE /* TDCPreferencesInlineMediaPane.m */; };
 		4C06E65720EC55B90055D09A /* TDCPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31526920EB673E00448776 /* TDCPreferencesController.m */; };
 		4C06E65820EC55B90055D09A /* TDCServerEndpointListSheetTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528E20EB673E00448776 /* TDCServerEndpointListSheetTableCellView.m */; };
 		4C06E65920EC55B90055D09A /* TDCServerEndpointListSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528F20EB673E00448776 /* TDCServerEndpointListSheet.m */; };
@@ -288,7 +289,6 @@
 		9471684F5F3C6F86E0580C98 /* TDCPreferencesInterface.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A35D27EF96FFC74A6869D3 /* TDCPreferencesInterface.xib */; };
 		AC4A30CEF9591DAF566A4EBF /* TDCPreferencesStyle.xib in Resources */ = {isa = PBXBuildFile; fileRef = A73A5E526AEB7AC7283655E1 /* TDCPreferencesStyle.xib */; };
 		20E2049F9465339B806E1A4C /* TDCPreferencesFileTransfers.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A86FC252272A4C650A623F9 /* TDCPreferencesFileTransfers.xib */; };
-		3DA478422519A0282F703097 /* TDCPreferencesInlineMedia.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D33E9CCAA97A2C9D9E8F83C /* TDCPreferencesInlineMedia.xib */; };
 		12CD8D31DBC6122AC252F039 /* TDCPreferencesLogLocation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 08D335810934BFDDC1E0256A /* TDCPreferencesLogLocation.xib */; };
 		0D6A5CEB6807BFB03FC79896 /* TDCPreferencesInstalledAddons.xib in Resources */ = {isa = PBXBuildFile; fileRef = 98B0901F0A010630CFEEA02A /* TDCPreferencesInstalledAddons.xib */; };
 		A28C323389D2A5568981950B /* TDCPreferencesHidden.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A60DDFDF7E4D649DFFAB9E0 /* TDCPreferencesHidden.xib */; };
@@ -585,7 +585,6 @@
 		4C89A000E42E1ACB13529C83 /* ICLMediaViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */; };
 		4CE82CE3AF30E3F4C26ACFCA /* ICLImageViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA01D5513FD4215069513BB /* ICLImageViewer.m */; };
 		4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */; };
-		4C84AA1C38E0C57C911973F8 /* ICMAssessedMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00B576CC9A61B6A0FDAD79 /* ICMAssessedMedia.m */; };
 		4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C18A25932EB1EB261EAA2FA /* ICMCommonInlineImages.m */; };
 		4C05502EEC02BDE06CBFD1B2 /* ICMCommonInlineVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD3FBC6AA3F21DA7684CFF /* ICMCommonInlineVideos.m */; };
 		4C0F3D08A76F1B319FC1BA04 /* ICMDailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE67423BB267BA07605E197 /* ICMDailymotion.m */; };
@@ -934,7 +933,6 @@
 		86575818A34B7185FE1C48CA /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesInterface.xib; sourceTree = "<group>"; };
 		A7C020A1C9A5D01DFE946CE9 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesStyle.xib; sourceTree = "<group>"; };
 		CE0587A74C399654B9F85962 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesFileTransfers.xib; sourceTree = "<group>"; };
-		017E1D4296752D715990554D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesInlineMedia.xib; sourceTree = "<group>"; };
 		12F825AB3D94657314B42D4B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesLogLocation.xib; sourceTree = "<group>"; };
 		E8C81E856846445257533ED3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesInstalledAddons.xib; sourceTree = "<group>"; };
 		9DFF1725DB394BCF89510B8E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCPreferencesHidden.xib; sourceTree = "<group>"; };
@@ -1251,6 +1249,7 @@
 		1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesPane.m; sourceTree = "<group>"; };
 		42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesAppearancePanes.m; sourceTree = "<group>"; };
 		0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesAdvancedPanes.m; sourceTree = "<group>"; };
+		4CC6E20C4C4C3271153F5FAE /* TDCPreferencesInlineMediaPane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesInlineMediaPane.m; sourceTree = "<group>"; };
 		4C31526920EB673E00448776 /* TDCPreferencesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesController.m; sourceTree = "<group>"; };
 		4C31526B20EB673E00448776 /* TDCChannelSpotlightPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCChannelSpotlightPanel.m; sourceTree = "<group>"; };
 		4C31526C20EB673E00448776 /* TDCChannelSpotlightSearchResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCChannelSpotlightSearchResult.m; sourceTree = "<group>"; };
@@ -1432,8 +1431,6 @@
 		4CA01D5513FD4215069513BB /* ICLImageViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLImageViewer.m; sourceTree = "<group>"; };
 		4C705795DB60F25E1ADCEEAF /* ICLMediaSchemeHandlerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLMediaSchemeHandlerPrivate.h; sourceTree = "<group>"; };
 		4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICPCoreMedia.m; sourceTree = "<group>"; };
-		4C827C6117D480FF1C9FA2DC /* ICMAssessedMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMAssessedMedia.h; sourceTree = "<group>"; };
-		4C00B576CC9A61B6A0FDAD79 /* ICMAssessedMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMAssessedMedia.m; sourceTree = "<group>"; };
 		4C9FE75801B06DEF73E7DC48 /* ICMCommonInlineImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMCommonInlineImages.h; sourceTree = "<group>"; };
 		4C18A25932EB1EB261EAA2FA /* ICMCommonInlineImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMCommonInlineImages.m; sourceTree = "<group>"; };
 		4CD45EA47B3C12F27A638A5E /* ICMCommonInlineVideos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMCommonInlineVideos.h; sourceTree = "<group>"; };
@@ -1888,15 +1885,6 @@
 			path = Dialogs;
 			sourceTree = "<group>";
 		};
-		4C2B3301B290E048BCB2D35F /* Assessed Media */ = {
-			isa = PBXGroup;
-			children = (
-				4C827C6117D480FF1C9FA2DC /* ICMAssessedMedia.h */,
-				4C00B576CC9A61B6A0FDAD79 /* ICMAssessedMedia.m */,
-			);
-			path = "Assessed Media";
-			sourceTree = "<group>";
-		};
 		4C167438650AB9850D6B75A2 /* Common Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -2097,7 +2085,6 @@
 		4C9A9B69D3346F799340A7D2 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				4C2B3301B290E048BCB2D35F /* Assessed Media */,
 				4C167438650AB9850D6B75A2 /* Common Images */,
 				4CC505240DD94816BA75221F /* Common Videos */,
 				4C151F885EFDCD7523EDAD23 /* Dailymotion */,
@@ -2532,6 +2519,7 @@
 				1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */,
 				42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */,
 				0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */,
+				4CC6E20C4C4C3271153F5FAE /* TDCPreferencesInlineMediaPane.m */,
 				4C31523920EB673E00448776 /* TDCPreferencesNotificationConfigurationPrivate.h */,
 				1AC03A0E588A1C197CD2B2D0 /* TDCPreferencesPanePrivate.h */,
 				4CB873DB22B4A56B005AB046 /* TDCPreferencesUserStyleSheet.m */,
@@ -2801,7 +2789,6 @@
 				F7A35D27EF96FFC74A6869D3 /* TDCPreferencesInterface.xib */,
 				A73A5E526AEB7AC7283655E1 /* TDCPreferencesStyle.xib */,
 				6A86FC252272A4C650A623F9 /* TDCPreferencesFileTransfers.xib */,
-				3D33E9CCAA97A2C9D9E8F83C /* TDCPreferencesInlineMedia.xib */,
 				08D335810934BFDDC1E0256A /* TDCPreferencesLogLocation.xib */,
 				98B0901F0A010630CFEEA02A /* TDCPreferencesInstalledAddons.xib */,
 				7A60DDFDF7E4D649DFFAB9E0 /* TDCPreferencesHidden.xib */,
@@ -3486,7 +3473,6 @@
 				9471684F5F3C6F86E0580C98 /* TDCPreferencesInterface.xib in Resources */,
 				AC4A30CEF9591DAF566A4EBF /* TDCPreferencesStyle.xib in Resources */,
 				20E2049F9465339B806E1A4C /* TDCPreferencesFileTransfers.xib in Resources */,
-				3DA478422519A0282F703097 /* TDCPreferencesInlineMedia.xib in Resources */,
 				12CD8D31DBC6122AC252F039 /* TDCPreferencesLogLocation.xib in Resources */,
 				0D6A5CEB6807BFB03FC79896 /* TDCPreferencesInstalledAddons.xib in Resources */,
 				A28C323389D2A5568981950B /* TDCPreferencesHidden.xib in Resources */,
@@ -3712,6 +3698,7 @@
 				6629EC30C06F122F65345BBD /* TDCPreferencesPane.m in Sources */,
 				FF3154F13D955A95E47DEDC5 /* TDCPreferencesAppearancePanes.m in Sources */,
 				A158CC599D81585F02DDA31A /* TDCPreferencesAdvancedPanes.m in Sources */,
+				4C497A2FFD766E56B1D4752B /* TDCPreferencesInlineMediaPane.m in Sources */,
 				4C06E65720EC55B90055D09A /* TDCPreferencesController.m in Sources */,
 				4C06E65820EC55B90055D09A /* TDCServerEndpointListSheetTableCellView.m in Sources */,
 				4C06E65920EC55B90055D09A /* TDCServerEndpointListSheet.m in Sources */,
@@ -3881,7 +3868,6 @@
 				4C89A000E42E1ACB13529C83 /* ICLMediaViewer.m */,
 				4CE82CE3AF30E3F4C26ACFCA /* ICLImageViewer.m */,
 				4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m */,
-				4C84AA1C38E0C57C911973F8 /* ICMAssessedMedia.m */,
 				4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m */,
 				4C05502EEC02BDE06CBFD1B2 /* ICMCommonInlineVideos.m */,
 				4C0F3D08A76F1B319FC1BA04 /* ICMDailymotion.m */,
@@ -4515,14 +4501,6 @@
 				CE0587A74C399654B9F85962 /* en */,
 			);
 			name = TDCPreferencesFileTransfers.xib;
-			sourceTree = "<group>";
-		};
-		3D33E9CCAA97A2C9D9E8F83C /* TDCPreferencesInlineMedia.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				017E1D4296752D715990554D /* en */,
-			);
-			name = TDCPreferencesInlineMedia.xib;
 			sourceTree = "<group>";
 		};
 		08D335810934BFDDC1E0256A /* TDCPreferencesLogLocation.xib */ = {
