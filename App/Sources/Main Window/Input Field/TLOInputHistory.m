@@ -42,7 +42,7 @@
 #import "IRCClient.h"
 #import "IRCChannel.h"
 #import "IRCWorld.h"
-#import "TVCMainWindow.h"
+#import "TVCMainWindowPrivate.h"
 #import "TVCMainWindowTextView.h"
 #import "TLOInputHistoryPrivate.h"
 
@@ -58,13 +58,13 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 @interface TLOInputHistory ()
 @property (nonatomic, weak) TVCMainWindow *window;
 @property (nonatomic, strong) NSMutableDictionary *historyObjects;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSAttributedString *> *drafts; // unsent text per channel, query and console (10.11)
 @property (nonatomic, copy, nullable) NSString *currentTreeItem;
 @end
 
 @interface TLOInputHistoryObject : NSObject <NSCopying>
 @property (nonatomic, assign) NSInteger historyBufferPosition;
 @property (nonatomic, strong) NSMutableArray *historyBuffer;
-@property (nonatomic, copy, nullable) NSAttributedString *lastHistoryItem;
 
 - (void)add:(NSAttributedString *)string;
 
@@ -102,15 +102,13 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 - (void)prepareInitialState
 {
 	self.historyObjects = [NSMutableDictionary dictionary];
+
+	self.drafts = [NSMutableDictionary dictionary];
 }
 
 - (void)destroy:(IRCTreeItem *)treeItem
 {
 	NSParameterAssert(treeItem != nil);
-
-	if ([TPCPreferences inputHistoryIsChannelSpecific] == NO) {
-		return;
-	}
 
 	@synchronized(self.historyObjects) {
 		if (treeItem.isClient) {
@@ -121,7 +119,12 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 
 		NSString *itemId = treeItem.uniqueIdentifier;
 
-		[self.historyObjects removeObjectForKey:itemId];
+		/* A closed channel or query takes its draft with it */
+		[self.drafts removeObjectForKey:itemId];
+
+		if ([TPCPreferences inputHistoryIsChannelSpecific]) {
+			[self.historyObjects removeObjectForKey:itemId];
+		}
 
 		if ([self.currentTreeItem isEqualToString:itemId]) {
 			self.currentTreeItem = nil;
@@ -129,35 +132,48 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 	}
 }
 
+/* Drafts are always kept per channel, query and server console (10.11): a
+ half-written message never follows you somewhere else. The setting only
+ decides whether ↑/↓ history is per channel or shared. */
 - (void)moveFocusTo:(IRCTreeItem *)treeItem
 {
 	NSParameterAssert(treeItem != nil);
 
-	if ([TPCPreferences inputHistoryIsChannelSpecific] == NO) {
-		return;
+	TVCMainWindow *window = self.window;
+
+	TVCMainWindowTextView *textView = window.inputTextField;
+
+	@synchronized(self.historyObjects) {
+		NSString *oldItemId = self.currentTreeItem;
+
+		NSString *newItemId = treeItem.uniqueIdentifier;
+
+		if ([oldItemId isEqualToString:newItemId]) {
+			return;
+		}
+
+		if (oldItemId) {
+			NSAttributedString *draft = textView.attributedStringValue;
+
+			if (draft.length > 0) {
+				self.drafts[oldItemId] = [draft copy];
+			} else {
+				[self.drafts removeObjectForKey:oldItemId];
+			}
+		}
+
+		self.currentTreeItem = newItemId;
+
+		[window restoreInputDraft:self.drafts[newItemId]];
 	}
+}
 
-	TVCMainWindowTextView *textView = self.window.inputTextField;
+- (nullable NSAttributedString *)draftForTreeItem:(IRCTreeItem *)treeItem
+{
+	NSParameterAssert(treeItem != nil);
 
-	/* Set current text field value to current object. */
-	TLOInputHistoryObject *oldObject = [self currentObjectForFocusedTreeView];
-
-	if (oldObject) {
-		oldObject.lastHistoryItem = textView.attributedStringValue;
-	}
-
-	/* Change to new view */
-	self.currentTreeItem = treeItem.uniqueIdentifier;
-
-	/* Does new selection have a history item? */
-	TLOInputHistoryObject *newObject = [self currentObjectForFocusedTreeView];
-
-	NSAttributedString *lastHistoryItem = newObject.lastHistoryItem;
-
-	if (lastHistoryItem) {
-		textView.attributedStringValue = lastHistoryItem;
-	} else {
-		textView.stringValue = @"";
+	@synchronized(self.historyObjects) {
+		return self.drafts[treeItem.uniqueIdentifier];
 	}
 }
 
@@ -180,9 +196,8 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 		}
 		else
 		{
+			/* Drafts and the current selection stay */
 			[self.historyObjects removeAllObjects];
-
-			self.currentTreeItem = nil;
 		}
 	}
 }
@@ -194,11 +209,7 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 	TLOInputHistoryObject *globalObject = self.historyObjects[_inputHistoryGlobalObjectKey];
 
 	if (globalObject) {
-		TLOInputHistoryObject *newObject = [globalObject copy];
-
-		newObject.lastHistoryItem = nil;
-
-		self.historyObjects[itemId] = newObject;
+		self.historyObjects[itemId] = [globalObject copy];
 	}
 }
 
@@ -400,7 +411,6 @@ NSString * const _inputHistoryGlobalObjectKey	= @"TLOInputHistoryDefaultObject";
 	[newObject->_historyBuffer addObjectsFromArray:self->_historyBuffer];
 
 	newObject->_historyBufferPosition = self->_historyBufferPosition;
-	newObject->_lastHistoryItem = self->_lastHistoryItem;
 
 	return newObject;
 }

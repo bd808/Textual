@@ -108,6 +108,7 @@ enum {
 /* Typing notifications, from the input field */
 - (void)typingInputChanged:(NSString *)text inChannel:(IRCChannel *)channel;
 - (void)sendTypingDoneToChannel:(IRCChannel *)channel;
+- (void)sendTypingPausedToChannel:(IRCChannel *)channel;
 - (void)typingMessageSentInChannel:(IRCChannel *)channel;
 + (nullable NSString *)typingIndicatorTextForNicknames:(NSArray<NSString *> *)nicknames;
 

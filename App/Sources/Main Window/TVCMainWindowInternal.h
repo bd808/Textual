@@ -72,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSValue *cachedSwipeOriginPoint;
 @property (nonatomic, assign, readwrite) double textSizeMultiplier;
 @property (nonatomic, assign, readwrite) BOOL reloadingTheme;
+@property (nonatomic, assign) BOOL inputDraftBeingRestored;
 - (void)inputTextAsCommand:(IRCRemoteCommand)command;
 @end
 

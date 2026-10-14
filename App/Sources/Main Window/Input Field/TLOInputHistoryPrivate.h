@@ -44,7 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithWindow:(TVCMainWindow *)mainWindow NS_DESIGNATED_INITIALIZER;
 
+/* Keeps the input field's text as the draft of the item left and shows the
+ draft of treeItem (10.11) */
 - (void)moveFocusTo:(IRCTreeItem *)treeItem;
+
+/* The unsent text kept for an item that isn't selected, or nil */
+- (nullable NSAttributedString *)draftForTreeItem:(IRCTreeItem *)treeItem;
 
 - (void)destroy:(IRCTreeItem *)treeItem;
 

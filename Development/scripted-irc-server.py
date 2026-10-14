@@ -1845,6 +1845,28 @@ async def scenario_previews_short(client):
 		pass
 
 
+async def scenario_drafts(client):
+	"""Drafts per channel (10.11): #one and #two, a private message from alice
+	and typing notifications allowed (message-tags), so the log shows the
+	client's +typing TAGMSGs (vm-dev scripted log). Stays connected."""
+	if not await client.register_with_capabilities("server-time message-tags"):
+		return
+
+	me = client.nickname
+
+	for channel in ("#one", "#two"):
+		await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+		await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice bob")
+		await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+
+	await client.collect(1)
+
+	await client.send(f":alice!a@alice.test PRIVMSG {me} :hi, a private message")
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1860,6 +1882,7 @@ SCENARIOS = {
 	"pages": scenario_pages,
 	"previews": scenario_previews,
 	"previews-short": scenario_previews_short,
+	"drafts": scenario_drafts,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -1901,7 +1924,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "previews", "previews-short", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "previews", "previews-short", "drafts", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

@@ -111,6 +111,10 @@ typedef NS_OPTIONS(NSUInteger, TVCMainWindowMouseLocation) {
 /* Typing notifications */
 - (void)updateTypingIndicatorForChannel:(IRCChannel *)channel;
 - (void)inputTextDidChange;
+
+/* Puts a channel's draft into the input field (10.11) without it counting as
+ typing: the other side is told only once you edit it */
+- (void)restoreInputDraft:(nullable NSAttributedString *)draft;
 @end
 
 @interface TVCMainWindow (InputPrivate)

@@ -129,6 +129,25 @@ static NSTimeInterval const IRCClientTypingExpiryInterval = 6.0;
 	[self sendLine:[NSString stringWithFormat:@"@+typing=done TAGMSG %@", channel.name]];
 }
 
+/* Left with the message half written (the draft stays, 10.11): "paused",
+ so the other side doesn't wait out the expiry, nor think it was dropped */
+- (void)sendTypingPausedToChannel:(IRCChannel *)channel
+{
+	NSParameterAssert(channel != nil);
+
+	if (channel.typingActiveSentAt == nil) {
+		return;
+	}
+
+	channel.typingActiveSentAt = nil;
+
+	if ([self canSendTypingNotificationsToChannel:channel] == NO) {
+		return;
+	}
+
+	[self sendLine:[NSString stringWithFormat:@"@+typing=paused TAGMSG %@", channel.name]];
+}
+
 /* A message ends typing without a "done" */
 - (void)typingMessageSentInChannel:(IRCChannel *)channel
 {

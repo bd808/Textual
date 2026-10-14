@@ -243,11 +243,19 @@ NS_ASSUME_NONNULL_BEGIN
 		[itemChangedFrom.viewController notifySelectionChanged];
 	}
 
-	/* Typing: leaving a conversation ends ours there; the next one shows its own */
+	/* Typing: leaving a conversation pauses ours there while a draft stays
+ (10.11), else ends it; the next one shows its own. The input field still
+ holds the text of the conversation left (moveFocusTo: comes below). */
 	if (itemChangedFrom && itemChangedFrom.isClient == NO) {
 		IRCChannel *previousChannel = (IRCChannel *)itemChangedFrom;
 
-		[previousChannel.associatedClient sendTypingDoneToChannel:previousChannel];
+		IRCClient *previousClient = previousChannel.associatedClient;
+
+		if (self.inputTextField.string.length > 0) {
+			[previousClient sendTypingPausedToChannel:previousChannel];
+		} else {
+			[previousClient sendTypingDoneToChannel:previousChannel];
+		}
 
 		[previousChannel.viewController removeTypingIndicator];
 	}
@@ -412,8 +420,25 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
+- (void)restoreInputDraft:(nullable NSAttributedString *)draft
+{
+	self.inputDraftBeingRestored = YES;
+
+	if (draft) {
+		self.inputTextField.attributedStringValue = draft;
+	} else {
+		self.inputTextField.stringValue = @"";
+	}
+
+	self.inputDraftBeingRestored = NO;
+}
+
 - (void)inputTextDidChange
 {
+	if (self.inputDraftBeingRestored) {
+		return;
+	}
+
 	IRCTreeItem *selectedItem = self.selectedItem;
 
 	if (selectedItem == nil || selectedItem.isClient) {
