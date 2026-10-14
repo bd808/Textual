@@ -111,6 +111,303 @@ NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 @end
 
 #pragma mark -
+#pragma mark HTML
+
+/* Pages are read up to this length */
+#define _maximumPageLength			(512 * 1024)
+
+@implementation ICLHelpers (HTML)
+
++ (NSString *)plainTextFromHTMLFragment:(NSString *)fragment
+{
+	NSParameterAssert(fragment != nil);
+
+	NSMutableString *text = [NSMutableString stringWithCapacity:fragment.length];
+
+	NSScanner *scanner = [NSScanner scannerWithString:fragment];
+
+	scanner.charactersToBeSkipped = nil;
+
+	while (scanner.isAtEnd == NO) {
+		NSString *chunk = nil;
+
+		if ([scanner scanUpToString:@"<" intoString:&chunk]) {
+			[text appendString:chunk];
+		}
+
+		if (scanner.isAtEnd) {
+			break;
+		}
+
+		NSString *tag = nil;
+
+		[scanner scanUpToString:@">" intoString:&tag];
+
+		if (scanner.isAtEnd == NO) {
+			scanner.scanLocation += 1;
+		}
+
+		/* <br> and <br/> become line breaks; other tags go */
+		if ([tag.lowercaseString hasPrefix:@"<br"]) {
+			[text appendString:@"\n"];
+		}
+	}
+
+	return [self stringByDecodingHTMLEntities:text].trim;
+}
+
++ (NSString *)stringByDecodingHTMLEntities:(NSString *)string
+{
+	if ([string containsString:@"&"] == NO) {
+		return string;
+	}
+
+	NSDictionary<NSString *, NSString *> *named =
+	@{
+	  @"amp" : @"&", @"lt" : @"<", @"gt" : @">", @"quot" : @"\"", @"apos" : @"'",
+	  @"nbsp" : @"\u00A0", @"mdash" : @"\u2014", @"ndash" : @"\u2013", @"hellip" : @"\u2026"
+	};
+
+	NSMutableString *result = [NSMutableString stringWithCapacity:string.length];
+
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+
+	scanner.charactersToBeSkipped = nil;
+
+	while (scanner.isAtEnd == NO) {
+		NSString *chunk = nil;
+
+		if ([scanner scanUpToString:@"&" intoString:&chunk]) {
+			[result appendString:chunk];
+		}
+
+		if (scanner.isAtEnd) {
+			break;
+		}
+
+		NSUInteger entityStart = scanner.scanLocation;
+
+		NSRange semicolon = [string rangeOfString:@";" options:0 range:NSMakeRange(entityStart, MIN((NSUInteger)12, (string.length - entityStart)))];
+
+		if (semicolon.location == NSNotFound) {
+			[result appendString:@"&"];
+
+			scanner.scanLocation = (entityStart + 1);
+
+			continue;
+		}
+
+		NSString *entity = [string substringWithRange:NSMakeRange((entityStart + 1), (semicolon.location - entityStart - 1))];
+
+		NSString *decoded = named[entity];
+
+		if (decoded == nil && [entity hasPrefix:@"#"] && entity.length > 1) {
+			unsigned long long codePoint = 0;
+
+			BOOL hexadecimal = ([entity hasPrefix:@"#x"] || [entity hasPrefix:@"#X"]);
+
+			NSScanner *numberScanner = [NSScanner scannerWithString:[entity substringFromIndex:((hexadecimal) ? 2 : 1)]];
+
+			BOOL scanned = ((hexadecimal) ? [numberScanner scanHexLongLong:&codePoint] : [numberScanner scanUnsignedLongLong:&codePoint]);
+
+			if (scanned && numberScanner.isAtEnd && codePoint > 0 && codePoint <= 0x10FFFF && (codePoint < 0xD800 || codePoint > 0xDFFF)) {
+				UTF32Char character = (UTF32Char)codePoint;
+
+				decoded = [[NSString alloc] initWithBytes:&character length:sizeof(character) encoding:NSUTF32LittleEndianStringEncoding];
+			}
+		}
+
+		if (decoded) {
+			[result appendString:decoded];
+
+			scanner.scanLocation = NSMaxRange(semicolon);
+		} else {
+			[result appendString:@"&"];
+
+			scanner.scanLocation = (entityStart + 1);
+		}
+	}
+
+	return [result copy];
+}
+
+/* The value of name="…" or name='…' in a tag, or nil */
++ (nullable NSString *)_attribute:(NSString *)name inTag:(NSString *)tag
+{
+	NSUInteger searchFrom = 0;
+
+	while (searchFrom < tag.length) {
+		NSRange nameRange = [tag rangeOfString:name options:NSCaseInsensitiveSearch range:NSMakeRange(searchFrom, (tag.length - searchFrom))];
+
+		if (nameRange.location == NSNotFound) {
+			return nil;
+		}
+
+		searchFrom = NSMaxRange(nameRange);
+
+		/* A whole attribute name: after a space, followed by = */
+		unichar before = ((nameRange.location > 0) ? [tag characterAtIndex:(nameRange.location - 1)] : ' ');
+
+		if (before != ' ' && before != '\t' && before != '\n' && before != '\r') {
+			continue;
+		}
+
+		NSUInteger position = NSMaxRange(nameRange);
+
+		while (position < tag.length && [tag characterAtIndex:position] == ' ') {
+			position++;
+		}
+
+		if (position >= tag.length || [tag characterAtIndex:position] != '=') {
+			continue;
+		}
+
+		position++;
+
+		while (position < tag.length && [tag characterAtIndex:position] == ' ') {
+			position++;
+		}
+
+		if (position >= tag.length) {
+			return nil;
+		}
+
+		unichar quote = [tag characterAtIndex:position];
+
+		if (quote != '"' && quote != '\'') {
+			continue;
+		}
+
+		NSRange closingQuote = [tag rangeOfString:[NSString stringWithCharacters:&quote length:1] options:0 range:NSMakeRange((position + 1), (tag.length - position - 1))];
+
+		if (closingQuote.location == NSNotFound) {
+			return nil;
+		}
+
+		return [tag substringWithRange:NSMakeRange((position + 1), (closingQuote.location - position - 1))];
+	}
+
+	return nil;
+}
+
++ (NSDictionary<NSString *, NSString *> *)metadataInHTML:(NSString *)html
+{
+	NSParameterAssert(html != nil);
+
+	if (html.length > _maximumPageLength) {
+		html = [html substringToIndex:_maximumPageLength];
+	}
+
+	NSRange headEnd = [html rangeOfString:@"</head>" options:NSCaseInsensitiveSearch];
+
+	if (headEnd.location != NSNotFound) {
+		html = [html substringToIndex:headEnd.location];
+	}
+
+	NSMutableDictionary<NSString *, NSString *> *metadata = [NSMutableDictionary dictionary];
+
+	/* <title>…</title> */
+	NSRange titleStart = [html rangeOfString:@"<title" options:NSCaseInsensitiveSearch];
+
+	if (titleStart.location != NSNotFound) {
+		NSRange titleTagEnd = [html rangeOfString:@">" options:0 range:NSMakeRange(NSMaxRange(titleStart), (html.length - NSMaxRange(titleStart)))];
+
+		if (titleTagEnd.location != NSNotFound) {
+			NSRange titleEnd = [html rangeOfString:@"</title>" options:NSCaseInsensitiveSearch range:NSMakeRange(NSMaxRange(titleTagEnd), (html.length - NSMaxRange(titleTagEnd)))];
+
+			if (titleEnd.location != NSNotFound) {
+				NSString *title = [self plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(NSMaxRange(titleTagEnd), (titleEnd.location - NSMaxRange(titleTagEnd)))]];
+
+				if (title.length > 0) {
+					metadata[@"title"] = title;
+				}
+			}
+		}
+	}
+
+	/* <meta property="og:…" content="…"> and <meta name="twitter:…" content="…"> */
+	NSUInteger searchFrom = 0;
+
+	while (searchFrom < html.length) {
+		NSRange metaStart = [html rangeOfString:@"<meta" options:NSCaseInsensitiveSearch range:NSMakeRange(searchFrom, (html.length - searchFrom))];
+
+		if (metaStart.location == NSNotFound) {
+			break;
+		}
+
+		NSUInteger tagSearchLength = MIN((NSUInteger)4096, (html.length - NSMaxRange(metaStart)));
+
+		NSRange metaEnd = [html rangeOfString:@">" options:0 range:NSMakeRange(NSMaxRange(metaStart), tagSearchLength)];
+
+		if (metaEnd.location == NSNotFound) {
+			break;
+		}
+
+		searchFrom = NSMaxRange(metaEnd);
+
+		NSString *tag = [html substringWithRange:NSMakeRange(metaStart.location, (NSMaxRange(metaEnd) - metaStart.location))];
+
+		NSString *name = ([self _attribute:@"property" inTag:tag] ?: [self _attribute:@"name" inTag:tag]).lowercaseString;
+
+		if ([name hasPrefix:@"og:"] == NO && [name hasPrefix:@"twitter:"] == NO) {
+			continue;
+		}
+
+		/* The first value of a name wins (og:image can repeat) */
+		if (metadata[name] != nil) {
+			continue;
+		}
+
+		NSString *content = [self _attribute:@"content" inTag:tag];
+
+		if (content == nil) {
+			continue;
+		}
+
+		content = [self stringByDecodingHTMLEntities:content].trim;
+
+		if (content.length > 0) {
+			metadata[name] = content;
+		}
+	}
+
+	return [metadata copy];
+}
+
++ (void)requestPageMetadataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(NSDictionary<NSString *, NSString *> * _Nullable metadata))completionBlock
+{
+	NSParameterAssert(url != nil);
+	NSParameterAssert(session != nil);
+	NSParameterAssert(completionBlock != nil);
+
+	[ICLURLSession requestDataFromURL:url session:session maximumLength:_maximumPageLength completionBlock:^(NSData * _Nullable data) {
+		if (data == nil) {
+			completionBlock(nil);
+
+			return;
+		}
+
+		NSString *html = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+		if (html == nil) {
+			html = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
+		}
+
+		if (html == nil) {
+			completionBlock(nil);
+
+			return;
+		}
+
+		NSDictionary *metadata = [self metadataInHTML:html];
+
+		completionBlock((metadata.count > 0) ? metadata : nil);
+	}];
+}
+
+@end
+
+#pragma mark -
 #pragma mark JSON
 
 @implementation ICLHelpers (JSON)

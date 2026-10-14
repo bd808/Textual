@@ -184,6 +184,18 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 		return;
 	}
 
+	/* Then modules for any subdomain of a parent domain, nearest first:
+	 en.m.wikipedia.org tries "*.m.wikipedia.org", then "*.wikipedia.org" */
+	NSArray<NSString *> *hostLabels = [urlHost componentsSeparatedByString:@"."];
+
+	for (NSUInteger firstLabel = 1; (firstLabel + 1) < hostLabels.count; firstLabel++) {
+		NSString *parentDomain = [[hostLabels subarrayWithRange:NSMakeRange(firstLabel, (hostLabels.count - firstLabel))] componentsJoinedByString:@"."];
+
+		if ([self _processPayload:payload withModulesForDomain:[@"*." stringByAppendingString:parentDomain]]) {
+			return;
+		}
+	}
+
 	/* If no module accepted responsibility for the urlHost,
 	 then we try modules that do not map to a specific domain. */
 	(void)[self _processPayload:payload withModulesForDomain:@"*"];

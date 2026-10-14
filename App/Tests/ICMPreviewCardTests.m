@@ -36,6 +36,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ICLHelpers.h"
 #import "ICMPreviewCard.h"
 #import "ICMTweet.h"
 
@@ -62,7 +63,31 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertNil([ICMTweet postFromEmbedHTML:@"<p>never closed"]);
 
 	/* Unknown or broken entities stay as they were */
-	XCTAssertEqualObjects([ICMTweet plainTextFromHTMLFragment:@"a &bogus; b &#xD800; c & d"], @"a &bogus; b &#xD800; c & d");
+	XCTAssertEqualObjects([ICLHelpers plainTextFromHTMLFragment:@"a &bogus; b &#xD800; c & d"], @"a &bogus; b &#xD800; c & d");
+}
+
+/* A page's title and Open Graph values from its head, however the tags are
+ written; nothing after </head> counts */
+- (void)testPageMetadataFromHead
+{
+	NSString *html = @"<html><head><TITLE>Plain &amp; title</TITLE>"
+					  "<meta property=\"og:title\" content=\"box, by GGG &quot;Blanstein&quot;\">"
+					  "<meta content='https://f4.bcbits.com/img/a1_5.jpg' property='og:image'/>"
+					  "<meta property=\"og:image\" content=\"https://example.com/second.jpg\">"
+					  "<meta name=\"twitter:card\" content=\"summary\">"
+					  "<meta name=\"description\" content=\"not Open Graph\">"
+					  "<meta xproperty=\"og:site_name\" content=\"not a property attribute\">"
+					  "</head><body><meta property=\"og:description\" content=\"in the body\"></body></html>";
+
+	NSDictionary<NSString *, NSString *> *metadata = [ICLHelpers metadataInHTML:html];
+
+	XCTAssertEqualObjects(metadata[@"title"], @"Plain & title");
+	XCTAssertEqualObjects(metadata[@"og:title"], @"box, by GGG \"Blanstein\"");
+	XCTAssertEqualObjects(metadata[@"og:image"], @"https://f4.bcbits.com/img/a1_5.jpg");
+	XCTAssertEqualObjects(metadata[@"twitter:card"], @"summary");
+	XCTAssertNil(metadata[@"description"]);
+	XCTAssertNil(metadata[@"og:site_name"]);
+	XCTAssertNil(metadata[@"og:description"]);
 }
 
 - (void)testDurations

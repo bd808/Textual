@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
  search (no HTML parser): <p …>TEXT</p>&mdash; NAME (@handle) <a …>DATE</a> */
 @interface ICMTweet (Extraction)
 + (nullable NSDictionary<NSString *, NSString *> *)postFromEmbedHTML:(NSString *)html; // text, date
-+ (NSString *)plainTextFromHTMLFragment:(NSString *)fragment; // tags removed, <br> as line breaks, entities decoded
 @end
 
 NS_ASSUME_NONNULL_END

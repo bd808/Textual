@@ -63,6 +63,22 @@ FOUNDATION_EXPORT NSURL * _Nullable ICLResourceURL(NSString *name, NSString *ext
 + (void)requestJSONObject:(NSString *)objectKey ofType:(Class)objectType inHierarchy:(nullable NSArray<NSString *> *)hierarchy fromAddress:(NSString *)address session:(NSURLSession *)session completionBlock:(void (^)(id _Nullable object))completionBlock;
 @end
 
+/* Text out of HTML without an HTML parser (3.4: no parsing of untrusted
+ markup beyond a bounded string search) */
+@interface ICLHelpers (HTML)
+/* Tags removed, <br> as line breaks, entities decoded, trimmed */
++ (NSString *)plainTextFromHTMLFragment:(NSString *)fragment;
++ (NSString *)stringByDecodingHTMLEntities:(NSString *)string;
+
+/* The page's <title> ("title") and its og:… and twitter:… <meta> values
+ (property or name lowercased), from the part before </head> */
++ (NSDictionary<NSString *, NSString *> *)metadataInHTML:(NSString *)html;
+
+/* The metadata of an HTML page: at most the first 512 KB, read as UTF-8
+ (or Latin-1); nil when the request fails or nothing was found */
++ (void)requestPageMetadataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(NSDictionary<NSString *, NSString *> * _Nullable metadata))completionBlock;
+@end
+
 @interface ICLHelpers (Errors)
 @property (copy, readonly, class) NSError *genericValidationFailedError;
 @end

@@ -36,14 +36,22 @@
  *********************************************************************** */
 
 #import "ICMAssessedMedia.h"
+#import "ICMBandcamp.h"
+#import "ICMBluesky.h"
 #import "ICMCommonInlineImages.h"
 #import "ICMCommonInlineVideos.h"
 #import "ICMDailymotion.h"
+#import "ICMGiphy.h"
+#import "ICMGitHub.h"
 #import "ICMGyazo.h"
 #import "ICMImgurGifv.h"
+#import "ICMReddit.h"
+#import "ICMSoundCloud.h"
+#import "ICMSpotify.h"
 #import "ICMStreamable.h"
 #import "ICMTweet.h"
 #import "ICMVimeo.h"
+#import "ICMWikipedia.h"
 #import "ICMXkcd.h"
 #import "ICMYouTube.h"
 #import "ICPCoreMediaPrivate.h"
@@ -64,12 +72,20 @@ NS_ASSUME_NONNULL_BEGIN
 		 YouTube, Vimeo, Dailymotion and X are preview cards (E2.2). */
 		modules =
 		@[
+			[ICMBandcamp class],
+			[ICMBluesky class],
 			[ICMDailymotion class],
+			[ICMGiphy class],
+			[ICMGitHub class],
 			[ICMGyazo class],
 			[ICMImgurGifv class],
+			[ICMReddit class],
+			[ICMSoundCloud class],
+			[ICMSpotify class],
 			[ICMStreamable class],
 			[ICMTweet class],
 			[ICMVimeo class],
+			[ICMWikipedia class],
 			[ICMXkcd class],
 			[ICMYouTube class],
 

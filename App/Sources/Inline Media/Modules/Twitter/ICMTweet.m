@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return nil;
 	}
 
-	NSString *text = [self plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(textStart, (paragraphEnd.location - textStart))]];
+	NSString *text = [ICLHelpers plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(textStart, (paragraphEnd.location - textStart))]];
 
 	if (text.length == 0) {
 		return nil;
@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 		NSRange lastLinkTagEnd = [html rangeOfString:@">" options:NSBackwardsSearch range:NSMakeRange(afterText, (lastLinkEnd.location - afterText))];
 
 		if (lastLinkTagEnd.location != NSNotFound) {
-			NSString *date = [self plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(NSMaxRange(lastLinkTagEnd), (lastLinkEnd.location - NSMaxRange(lastLinkTagEnd)))]];
+			NSString *date = [ICLHelpers plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(NSMaxRange(lastLinkTagEnd), (lastLinkEnd.location - NSMaxRange(lastLinkTagEnd)))]];
 
 			if (date.length > 0 && date.length <= 40) {
 				post[@"date"] = date;
@@ -159,119 +159,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	return [post copy];
-}
-
-+ (NSString *)plainTextFromHTMLFragment:(NSString *)fragment
-{
-	NSParameterAssert(fragment != nil);
-
-	NSMutableString *text = [NSMutableString stringWithCapacity:fragment.length];
-
-	NSScanner *scanner = [NSScanner scannerWithString:fragment];
-
-	scanner.charactersToBeSkipped = nil;
-
-	while (scanner.isAtEnd == NO) {
-		NSString *chunk = nil;
-
-		if ([scanner scanUpToString:@"<" intoString:&chunk]) {
-			[text appendString:chunk];
-		}
-
-		if (scanner.isAtEnd) {
-			break;
-		}
-
-		NSString *tag = nil;
-
-		[scanner scanUpToString:@">" intoString:&tag];
-
-		if (scanner.isAtEnd == NO) {
-			scanner.scanLocation += 1;
-		}
-
-		/* <br> and <br/> become line breaks; other tags go */
-		if ([tag.lowercaseString hasPrefix:@"<br"]) {
-			[text appendString:@"\n"];
-		}
-	}
-
-	return [self _stringByDecodingEntities:text].trim;
-}
-
-+ (NSString *)_stringByDecodingEntities:(NSString *)string
-{
-	if ([string containsString:@"&"] == NO) {
-		return string;
-	}
-
-	NSDictionary<NSString *, NSString *> *named =
-	@{
-	  @"amp" : @"&", @"lt" : @"<", @"gt" : @">", @"quot" : @"\"", @"apos" : @"'",
-	  @"nbsp" : @"\u00A0", @"mdash" : @"\u2014", @"ndash" : @"\u2013", @"hellip" : @"\u2026"
-	};
-
-	NSMutableString *result = [NSMutableString stringWithCapacity:string.length];
-
-	NSScanner *scanner = [NSScanner scannerWithString:string];
-
-	scanner.charactersToBeSkipped = nil;
-
-	while (scanner.isAtEnd == NO) {
-		NSString *chunk = nil;
-
-		if ([scanner scanUpToString:@"&" intoString:&chunk]) {
-			[result appendString:chunk];
-		}
-
-		if (scanner.isAtEnd) {
-			break;
-		}
-
-		NSUInteger entityStart = scanner.scanLocation;
-
-		NSRange semicolon = [string rangeOfString:@";" options:0 range:NSMakeRange(entityStart, MIN((NSUInteger)12, (string.length - entityStart)))];
-
-		if (semicolon.location == NSNotFound) {
-			[result appendString:@"&"];
-
-			scanner.scanLocation = (entityStart + 1);
-
-			continue;
-		}
-
-		NSString *entity = [string substringWithRange:NSMakeRange((entityStart + 1), (semicolon.location - entityStart - 1))];
-
-		NSString *decoded = named[entity];
-
-		if (decoded == nil && [entity hasPrefix:@"#"] && entity.length > 1) {
-			unsigned long long codePoint = 0;
-
-			BOOL hexadecimal = ([entity hasPrefix:@"#x"] || [entity hasPrefix:@"#X"]);
-
-			NSScanner *numberScanner = [NSScanner scannerWithString:[entity substringFromIndex:((hexadecimal) ? 2 : 1)]];
-
-			BOOL scanned = ((hexadecimal) ? [numberScanner scanHexLongLong:&codePoint] : [numberScanner scanUnsignedLongLong:&codePoint]);
-
-			if (scanned && numberScanner.isAtEnd && codePoint > 0 && codePoint <= 0x10FFFF && (codePoint < 0xD800 || codePoint > 0xDFFF)) {
-				UTF32Char character = (UTF32Char)codePoint;
-
-				decoded = [[NSString alloc] initWithBytes:&character length:sizeof(character) encoding:NSUTF32LittleEndianStringEncoding];
-			}
-		}
-
-		if (decoded) {
-			[result appendString:decoded];
-
-			scanner.scanLocation = NSMaxRange(semicolon);
-		} else {
-			[result appendString:@"&"];
-
-			scanner.scanLocation = (entityStart + 1);
-		}
-	}
-
-	return [result copy];
 }
 
 #pragma mark -

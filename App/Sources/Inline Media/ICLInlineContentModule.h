@@ -75,6 +75,9 @@ typedef void (^ICLInlineContentModuleActionBlock)(ICLInlineContentModule *module
  If this array is non-nil and the domain does not appear in the
  array, then the module is skipped over. One of the action methods
  defined below is never called.
+
+ "*.example.com" matches every subdomain of example.com (not
+ example.com itself); exact domains are tried first.
  */
 @property (readonly, copy, nullable, class) NSArray<NSString *> *domains;
 
