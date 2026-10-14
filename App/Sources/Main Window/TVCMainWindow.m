@@ -157,6 +157,8 @@ NSString * const TVCMainWindowSelectionChangedNotification = @"TVCMainWindowSele
 
 	[self loadWindowState];
 
+	[self setUpUnifiedTitlebar];
+
 	[self updateChannelViewArrangement];
 
 	[masterController() applicationWakeStepOne];

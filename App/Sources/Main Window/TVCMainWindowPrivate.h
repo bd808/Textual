@@ -125,6 +125,9 @@ typedef NS_OPTIONS(NSUInteger, TVCMainWindowMouseLocation) {
 @end
 
 @interface TVCMainWindow (TitleAndWindowPrivate)
+/* The sidebars carry on up into a transparent title bar (10.1) */
+- (void)setUpUnifiedTitlebar;
+
 - (BOOL)reloadLoadingScreen;
 
 - (void)updateTitle;
