@@ -630,6 +630,36 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 	[RZUserDefaults() removeObjectForKey:checkboxKey];
 }
 
+/* The member list's default width went from 120 (its minimum) to 190 (10.5).
+ The width is saved whether or not it was ever dragged, so a saved 120 is
+ taken as "never resized" and moves to the new default, once */
++ (void)migrateMemberListWidth
+{
+#define _migratedKey		@"TPCPreferences -> Migration -> Member List Width (800)"
+#define _framesKey			@"Window -> Main Window -> Split Channel View Saved Frames"
+
+	if ([RZUserDefaults() boolForKey:_migratedKey]) {
+		return;
+	}
+
+	[RZUserDefaults() setBool:YES forKey:_migratedKey];
+
+	NSDictionary *frames = [RZUserDefaults() dictionaryForKey:_framesKey];
+
+	if ([frames doubleForKey:@"memberList"] != 120) {
+		return;
+	}
+
+	NSMutableDictionary *framesMutable = [frames mutableCopy];
+
+	framesMutable[@"memberList"] = @(190);
+
+	[RZUserDefaults() setObject:[framesMutable copy] forKey:_framesKey];
+
+#undef _framesKey
+#undef _migratedKey
+}
+
 + (TXGeneralEventDisplay)generalEventDisplayForCheckboxValue:(nullable id)checkboxValue
 {
 	/* Textual 7 showed them unless the checkbox was turned off */
@@ -1690,6 +1720,8 @@ static NSArray<IRCHighlightKeyword *> *_matchKeywordEntries = nil;
 	[self migrateGeneralEventPreference];
 
 	[self migrateInlineMediaLimits];
+
+	[self migrateMemberListWidth];
 
 	[TPCPathInfo startUsingTranscriptFolderURL];
 

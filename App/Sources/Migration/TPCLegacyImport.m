@@ -608,6 +608,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[RZUserDefaults() _migrateObject:@(generalEventDisplay) forKey:TPCPreferencesGeneralEventDisplayDefaultsKey];
 
+	/* Textual 7's member list width, if never resized (120), becomes 190 at the
+	 restart (10.5): the one-time step runs again for the imported layout */
+	[RZUserDefaults() _migrateObject:nil forKey:@"TPCPreferences -> Migration -> Member List Width (800)"];
+
 	[RZUserDefaults() _migrateObject:self.servers forKey:IRCWorldClientListDefaultsKey];
 
 	/* From the menu, the running app keeps going until the restart: its
