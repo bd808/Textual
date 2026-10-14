@@ -266,6 +266,7 @@ typedef void (^ICLInlineContentModuleActionBlock)(ICLInlineContentModule *module
   • ICLMediaTypeImage for images,
   • ICLMediaTypeVideo for videos,
   • ICLMediaTypeVideoGif for videos presented as a gif
+  • ICLMediaTypeAudio for audio
 
  @param performCheck
   Whether to perform a web request to ensure that

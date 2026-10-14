@@ -1,0 +1,11 @@
+<span class="inlinePreviewCard inlineAudio {{classAttribute}}" id="inlineMedia-{{uniqueIdentifier}}" data-card-style="audio">
+	<span class="closeButton" onclick="_ICMInlineAudio.hideOnClick('{{uniqueIdentifier}}');">×</span>
+
+	<span class="previewCard" data-card-style="audio">
+		<span class="previewCardBody">
+			<span class="previewCardTitle">{{fileName}}</span>
+			<audio controls preload="none"><source src="{{audioURL}}"{{#contentType}} type="{{contentType}}"{{/contentType}} onerror="_ICMInlineAudio.loadFailedCallback()"></audio>
+			<span class="previewCardDetails">{{host}}</span>
+		</span>
+	</span>
+</span>

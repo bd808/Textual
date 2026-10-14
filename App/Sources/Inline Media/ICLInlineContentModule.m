@@ -243,7 +243,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	return (type == ICLMediaTypeImage ||
 			type == ICLMediaTypeVideo ||
-			type == ICLMediaTypeVideoGif);
+			type == ICLMediaTypeVideoGif ||
+			type == ICLMediaTypeAudio);
 }
 
 - (void)deferAsType:(ICLMediaType)type

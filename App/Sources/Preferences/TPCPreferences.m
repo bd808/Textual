@@ -130,6 +130,11 @@ NS_ASSUME_NONNULL_BEGIN
 	return [RZUserDefaults() boolForKey:@"InlineMediaCheckEverything"];
 }
 
++ (BOOL)inlineMediaWebPageCards
+{
+	return [RZUserDefaults() boolForKey:@"InlineMediaWebPageCards"];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

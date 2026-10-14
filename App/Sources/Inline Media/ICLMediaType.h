@@ -43,7 +43,8 @@ typedef NS_ENUM(NSUInteger, ICLMediaType)
 	ICLMediaTypeImage,
 	ICLMediaTypeVideo,
 	ICLMediaTypeVideoGif,
-	ICLMediaTypeOther
+	ICLMediaTypeOther,
+	ICLMediaTypeAudio
 };
 
 NS_ASSUME_NONNULL_END

@@ -55,8 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ICLURLSessionDataRequest : NSObject <NSURLSessionDataDelegate>
 @property (nonatomic, assign) NSUInteger maximumLength;
+@property (nonatomic, assign) BOOL readsPrefix; // the body is cut at maximumLength instead of refused
+@property (nonatomic, copy, nullable) NSArray<NSData *> *endMarkers;
+@property (nonatomic, copy, nullable) BOOL (^responseBlock)(NSHTTPURLResponse *response);
+@property (nonatomic, strong, nullable) NSHTTPURLResponse *response;
 @property (nonatomic, strong, nullable) NSMutableData *data;
-@property (nonatomic, copy, nullable) void (^completionBlock)(NSData * _Nullable data);
+@property (nonatomic, assign) BOOL dataComplete; // stopped early with all that was wanted
+@property (nonatomic, copy, nullable) void (^completionBlock)(NSHTTPURLResponse * _Nullable response, NSData * _Nullable data);
 @end
 
 #pragma mark -
@@ -448,25 +453,53 @@ static NSMapTable<NSURLSession *, NSURLSession *> *_mediaSessions = nil;
 
 + (void)requestDataFromURL:(NSURL *)url session:(NSURLSession *)session maximumLength:(NSUInteger)maximumLength completionBlock:(void (^)(NSData * _Nullable data))completionBlock
 {
+	NSParameterAssert(completionBlock != nil);
+
+	ICLURLSessionDataRequest *request = [ICLURLSessionDataRequest new];
+
+	request.maximumLength = maximumLength;
+
+	request.completionBlock = ^(NSHTTPURLResponse * _Nullable response, NSData * _Nullable data) {
+		completionBlock(data);
+	};
+
+	[self _performRequest:request withURL:url session:session];
+}
+
++ (void)requestPrefixFromURL:(NSURL *)url session:(NSURLSession *)session maximumLength:(NSUInteger)maximumLength endMarkers:(nullable NSArray<NSData *> *)endMarkers responseBlock:(nullable BOOL (^)(NSHTTPURLResponse *response))responseBlock completionBlock:(void (^)(NSHTTPURLResponse * _Nullable response, NSData * _Nullable data))completionBlock
+{
+	NSParameterAssert(completionBlock != nil);
+
+	ICLURLSessionDataRequest *request = [ICLURLSessionDataRequest new];
+
+	request.maximumLength = maximumLength;
+
+	request.readsPrefix = YES;
+
+	request.endMarkers = endMarkers;
+
+	request.responseBlock = responseBlock;
+
+	request.completionBlock = completionBlock;
+
+	[self _performRequest:request withURL:url session:session];
+}
+
++ (void)_performRequest:(ICLURLSessionDataRequest *)request withURL:(NSURL *)url session:(NSURLSession *)session
+{
+	NSParameterAssert(request != nil);
 	NSParameterAssert(url != nil);
 	NSParameterAssert(session != nil);
-	NSParameterAssert(maximumLength > 0);
-	NSParameterAssert(completionBlock != nil);
+	NSParameterAssert(request.maximumLength > 0);
 
 	[self checkURL:url session:session completionBlock:^(BOOL allowed) {
 		if (allowed == NO) {
 			LogToConsoleDebug("Refused request to a local, unresolvable or plain HTTP address");
 
-			completionBlock(nil);
+			request.completionBlock(nil, nil);
 
 			return;
 		}
-
-		ICLURLSessionDataRequest *request = [ICLURLSessionDataRequest new];
-
-		request.maximumLength = maximumLength;
-
-		request.completionBlock = completionBlock;
 
 		NSURLSessionDataTask *task = [session dataTaskWithURL:url];
 
@@ -542,9 +575,29 @@ static NSMapTable<NSURLSession *, NSURLSession *> *_mediaSessions = nil;
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler
 {
 	if ([response isKindOfClass:[NSHTTPURLResponse class]] == NO ||
-		((NSHTTPURLResponse *)response).statusCode != 200 ||
-		response.expectedContentLength > (long long)self.maximumLength)
+		((NSHTTPURLResponse *)response).statusCode != 200)
 	{
+		completionHandler(NSURLSessionResponseCancel);
+
+		return;
+	}
+
+	NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+
+	self.response = httpResponse;
+
+	/* The caller has seen all it wants (no data) */
+	BOOL (^responseBlock)(NSHTTPURLResponse *) = self.responseBlock;
+
+	if (responseBlock && responseBlock(httpResponse) == NO) {
+		completionHandler(NSURLSessionResponseCancel);
+
+		return;
+	}
+
+	if (self.readsPrefix == NO && response.expectedContentLength > (long long)self.maximumLength) {
+		self.response = nil;
+
 		completionHandler(NSURLSessionResponseCancel);
 
 		return;
@@ -559,29 +612,52 @@ static NSMapTable<NSURLSession *, NSURLSession *> *_mediaSessions = nil;
 {
 	NSMutableData *dataIn = self.data;
 
-	if (dataIn == nil) {
+	if (dataIn == nil || self.dataComplete) {
 		return;
 	}
 
 	/* The Content-Length header is optional and can lie */
-	if ((dataIn.length + data.length) > self.maximumLength) {
-		self.data = nil;
+	NSUInteger room = (self.maximumLength - dataIn.length);
+
+	if (data.length > room) {
+		if (self.readsPrefix == NO) {
+			self.data = nil;
+		} else {
+			[dataIn appendData:[data subdataWithRange:NSMakeRange(0, room)]];
+
+			self.dataComplete = YES;
+		}
 
 		[dataTask cancel];
 
 		return;
 	}
 
+	/* A marker can span two pieces */
+	NSUInteger searchFrom = dataIn.length;
+
 	[dataIn appendData:data];
+
+	for (NSData *endMarker in self.endMarkers) {
+		NSUInteger markerSearchFrom = ((searchFrom > endMarker.length) ? (searchFrom - endMarker.length) : 0);
+
+		if ([dataIn rangeOfData:endMarker options:0 range:NSMakeRange(markerSearchFrom, (dataIn.length - markerSearchFrom))].location != NSNotFound) {
+			self.dataComplete = YES;
+
+			[dataTask cancel];
+
+			return;
+		}
+	}
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error
 {
-	void (^completionBlock)(NSData * _Nullable) = self.completionBlock;
+	void (^completionBlock)(NSHTTPURLResponse * _Nullable, NSData * _Nullable) = self.completionBlock;
 
 	self.completionBlock = nil;
 
-	if (error) {
+	if (error && (self.dataComplete && error.isURLSessionCancelError) == NO) {
 		if (error.isURLSessionCancelError == NO) {
 			LogToConsoleDebug("Request failed: %{public}@", error.localizedDescription);
 		}
@@ -590,8 +666,10 @@ static NSMapTable<NSURLSession *, NSURLSession *> *_mediaSessions = nil;
 	}
 
 	if (completionBlock) {
-		completionBlock([self.data copy]);
+		completionBlock(self.response, [self.data copy]);
 	}
+
+	self.response = nil;
 
 	self.data = nil;
 }

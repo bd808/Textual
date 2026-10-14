@@ -70,13 +70,26 @@ FOUNDATION_EXPORT NSURL * _Nullable ICLResourceURL(NSString *name, NSString *ext
 + (NSString *)plainTextFromHTMLFragment:(NSString *)fragment;
 + (NSString *)stringByDecodingHTMLEntities:(NSString *)string;
 
-/* The page's <title> ("title") and its og:… and twitter:… <meta> values
- (property or name lowercased), from the part before </head> */
+/* The page's <title> ("title"), its description <meta> ("description") and
+ its og:… and twitter:… <meta> values (property or name lowercased), from
+ the part before </head> */
 + (NSDictionary<NSString *, NSString *> *)metadataInHTML:(NSString *)html;
 
-/* The metadata of an HTML page: at most the first 512 KB, read as UTF-8
- (or Latin-1); nil when the request fails or nothing was found */
+/* The start of a page as text: in the response's charset, else that of a
+ <meta> near the top, else UTF-8 (a character cut off at the end dropped),
+ else Latin-1 */
++ (nullable NSString *)stringFromHTMLData:(NSData *)data textEncodingName:(nullable NSString *)textEncodingName;
+
+/* text/html or application/xhtml+xml */
++ (BOOL)responseIsHTML:(NSHTTPURLResponse *)response;
+
+/* The metadata of an HTML page, read up to </head> and at most 512 KB; nil
+ when the request fails, it isn't HTML or nothing was found. Remembered for
+ 30 minutes like JSON. responseBlock, when given, sees the response first
+ and returns NO to stop there (a link that turns out to be an image, say).
+ pageURL is the address after redirects, for relative addresses in it. */
 + (void)requestPageMetadataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(NSDictionary<NSString *, NSString *> * _Nullable metadata))completionBlock;
++ (void)requestPageMetadataFromURL:(NSURL *)url session:(NSURLSession *)session responseBlock:(nullable BOOL (^)(NSHTTPURLResponse *response))responseBlock completionBlock:(void (^)(NSDictionary<NSString *, NSString *> * _Nullable metadata, NSURL * _Nullable pageURL))completionBlock;
 @end
 
 @interface ICLHelpers (Errors)

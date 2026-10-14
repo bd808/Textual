@@ -48,6 +48,12 @@ NS_ASSUME_NONNULL_BEGIN
 #define _JSONCacheLifetime			(30 * 60)
 #define _JSONCacheLimit				500
 
+/* Remembered answers (JSON and page metadata), main thread only */
+@interface ICLHelpers (Cache)
++ (nullable id)_cachedValueForKey:(NSString *)key;
++ (void)_cacheValue:(id)value forKey:(NSString *)key;
+@end
+
 NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 {
 	NSCParameterAssert(name != nil);
@@ -349,7 +355,7 @@ NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 
 		NSString *name = ([self _attribute:@"property" inTag:tag] ?: [self _attribute:@"name" inTag:tag]).lowercaseString;
 
-		if ([name hasPrefix:@"og:"] == NO && [name hasPrefix:@"twitter:"] == NO) {
+		if ([name hasPrefix:@"og:"] == NO && [name hasPrefix:@"twitter:"] == NO && [name isEqualToString:@"description"] == NO) {
 			continue;
 		}
 
@@ -374,35 +380,132 @@ NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 	return [metadata copy];
 }
 
++ (nullable NSString *)stringFromHTMLData:(NSData *)data textEncodingName:(nullable NSString *)textEncodingName
+{
+	NSParameterAssert(data != nil);
+
+	/* The charset of the response, else of a <meta> near the top */
+	NSString *charset = textEncodingName;
+
+	if (charset == nil) {
+		NSString *top = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, MIN(data.length, (NSUInteger)2048))] encoding:NSISOLatin1StringEncoding];
+
+		NSRange charsetRange = [top rangeOfString:@"charset=" options:NSCaseInsensitiveSearch];
+
+		if (charsetRange.location != NSNotFound) {
+			NSCharacterSet *nameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_:."];
+
+			NSScanner *scanner = [NSScanner scannerWithString:top];
+
+			scanner.charactersToBeSkipped = [NSCharacterSet characterSetWithCharactersInString:@"\"' "];
+
+			scanner.scanLocation = NSMaxRange(charsetRange);
+
+			NSString *name = nil;
+
+			if ([scanner scanCharactersFromSet:nameCharacters intoString:&name]) {
+				charset = name;
+			}
+		}
+	}
+
+	NSStringEncoding encoding = NSUTF8StringEncoding;
+
+	if (charset) {
+		CFStringEncoding charsetEncoding = CFStringConvertIANACharSetNameToEncoding((__bridge CFStringRef)charset);
+
+		if (charsetEncoding != kCFStringEncodingInvalidId) {
+			encoding = CFStringConvertEncodingToNSStringEncoding(charsetEncoding);
+		}
+	}
+
+	/* The read stops anywhere, so the last character can be cut short */
+	for (NSUInteger dropped = 0; dropped < 4 && dropped < data.length; dropped++) {
+		NSString *string = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, (data.length - dropped))] encoding:encoding];
+
+		if (string) {
+			return string;
+		}
+	}
+
+	return [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
+}
+
++ (BOOL)responseIsHTML:(NSHTTPURLResponse *)response
+{
+	NSParameterAssert(response != nil);
+
+	NSString *contentType = response.MIMEType.lowercaseString;
+
+	return ([contentType isEqualToString:@"text/html"] ||
+			[contentType isEqualToString:@"application/xhtml+xml"]);
+}
+
 + (void)requestPageMetadataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(NSDictionary<NSString *, NSString *> * _Nullable metadata))completionBlock
+{
+	NSParameterAssert(completionBlock != nil);
+
+	[self requestPageMetadataFromURL:url session:session responseBlock:nil completionBlock:^(NSDictionary<NSString *, NSString *> * _Nullable metadata, NSURL * _Nullable pageURL) {
+		completionBlock(metadata);
+	}];
+}
+
++ (void)requestPageMetadataFromURL:(NSURL *)url session:(NSURLSession *)session responseBlock:(nullable BOOL (^)(NSHTTPURLResponse *response))responseBlock completionBlock:(void (^)(NSDictionary<NSString *, NSString *> * _Nullable metadata, NSURL * _Nullable pageURL))completionBlock
 {
 	NSParameterAssert(url != nil);
 	NSParameterAssert(session != nil);
 	NSParameterAssert(completionBlock != nil);
 
-	[ICLURLSession requestDataFromURL:url session:session maximumLength:_maximumPageLength completionBlock:^(NSData * _Nullable data) {
-		if (data == nil) {
-			completionBlock(nil);
+	NSString *cacheKey = [@"page " stringByAppendingString:url.absoluteString];
 
-			return;
-		}
+	NSArray *cachedPage = [self _cachedValueForKey:cacheKey];
 
-		NSString *html = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	if (cachedPage) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			completionBlock(cachedPage[0], cachedPage[1]);
+		});
 
-		if (html == nil) {
-			html = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
-		}
+		return;
+	}
 
-		if (html == nil) {
-			completionBlock(nil);
+	/* The metadata is in the head: the read stops at its end */
+	NSArray<NSData *> *endMarkers = @[[@"</head>" dataUsingEncoding:NSASCIIStringEncoding],
+									  [@"</HEAD>" dataUsingEncoding:NSASCIIStringEncoding]];
 
-			return;
-		}
+	[ICLURLSession requestPrefixFromURL:url
+								session:session
+						  maximumLength:_maximumPageLength
+							 endMarkers:endMarkers
+						  responseBlock:^BOOL(NSHTTPURLResponse *response) {
+							  if (responseBlock && responseBlock(response) == NO) {
+								  return NO;
+							  }
 
-		NSDictionary *metadata = [self metadataInHTML:html];
+							  return [self responseIsHTML:response];
+						  }
+						completionBlock:^(NSHTTPURLResponse * _Nullable response, NSData * _Nullable data) {
+							NSURL *pageURL = response.URL;
 
-		completionBlock((metadata.count > 0) ? metadata : nil);
-	}];
+							if (data == nil || pageURL == nil) {
+								completionBlock(nil, nil);
+
+								return;
+							}
+
+							NSString *html = [self stringFromHTMLData:data textEncodingName:response.textEncodingName];
+
+							NSDictionary *metadata = ((html) ? [self metadataInHTML:html] : nil);
+
+							if (metadata.count == 0) {
+								completionBlock(nil, nil);
+
+								return;
+							}
+
+							[self _cacheValue:@[metadata, pageURL] forKey:cacheKey];
+
+							completionBlock(metadata, pageURL);
+						}];
 }
 
 @end
@@ -482,12 +585,12 @@ NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 	[self requestJSONObject:objectKey ofType:objectType inHierarchy:hierarchy fromURL:url session:session completionBlock:completionBlock];
 }
 
-/* Main thread only: URL → @[date, value] */
+/* Main thread only: key → @[date, value] */
 static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
 
-+ (nullable id)_cachedJSONForURL:(NSURL *)url
++ (nullable id)_cachedValueForKey:(NSString *)key
 {
-	NSArray *entry = _JSONCache[url.absoluteString];
+	NSArray *entry = _JSONCache[key];
 
 	if (entry == nil) {
 		return nil;
@@ -496,7 +599,7 @@ static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
 	NSDate *date = entry[0];
 
 	if (date.timeIntervalSinceNow < -(_JSONCacheLifetime)) {
-		[_JSONCache removeObjectForKey:url.absoluteString];
+		[_JSONCache removeObjectForKey:key];
 
 		return nil;
 	}
@@ -504,7 +607,7 @@ static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
 	return entry[1];
 }
 
-+ (void)_cacheJSON:(id)json forURL:(NSURL *)url
++ (void)_cacheValue:(id)value forKey:(NSString *)key
 {
 	if (_JSONCache == nil) {
 		_JSONCache = [NSMutableDictionary dictionary];
@@ -521,7 +624,7 @@ static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
 		}
 	}
 
-	_JSONCache[url.absoluteString] = @[[NSDate date], json];
+	_JSONCache[key] = @[[NSDate date], value];
 }
 
 + (void)requestJSONFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(id _Nullable json))completionBlock
@@ -529,7 +632,7 @@ static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
 	NSParameterAssert(url != nil);
 	NSParameterAssert(completionBlock != nil);
 
-	id cachedJSON = [self _cachedJSONForURL:url];
+	id cachedJSON = [self _cachedValueForKey:url.absoluteString];
 
 	if (cachedJSON) {
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -560,7 +663,7 @@ static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
 			return;
 		}
 
-		[self _cacheJSON:decodedJson forURL:url];
+		[self _cacheValue:decodedJson forKey:url.absoluteString];
 
 		completionBlock(decodedJson);
 	}];

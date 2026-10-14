@@ -603,6 +603,9 @@
 		4C96A7336ABA2FC3FEF7B423 /* ICMSpotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9DF30C1A96018389FC4BED /* ICMSpotify.m */; };
 		4CF9F2AA3A15056518450761 /* ICMSoundCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB8ED0CB2784D4BC3962F6E /* ICMSoundCloud.m */; };
 		4CA93E2E8DBCC5F7C280BF6B /* ICMBandcamp.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC38300ED11F3353372F21 /* ICMBandcamp.m */; };
+		4CF1B25693CC7958932ECB41 /* ICMInlineAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5C70342F07D50FCCDD5E50 /* ICMInlineAudio.m */; };
+		4CC593F673C1D3F7F98248A4 /* ICMCommonInlineAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9774B9792E453DE4F042EC /* ICMCommonInlineAudio.m */; };
+		4CCFF19F9CBCBB32BBC862A3 /* ICMWebPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DDEFDD69C5ABE6BCC220D /* ICMWebPage.m */; };
 		4C3CC9A5D53AEA964B11D4E3 /* ICMGiphy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB94AA0B86220A5591899D8 /* ICMGiphy.m */; };
 		4CC4BA95ECE5BAA046E19A9A /* ICMXkcd.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5FF01CAFCA24781E2C1665 /* ICMXkcd.m */; };
 		4C280DD92753C13004D3359C /* ICMYouTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC3904DD1A65CA428D82125 /* ICMYouTube.m */; };
@@ -1463,6 +1466,12 @@
 		4CB8ED0CB2784D4BC3962F6E /* ICMSoundCloud.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMSoundCloud.m; sourceTree = "<group>"; };
 		4C556D71FB92974A2ECB0D12 /* ICMBandcamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMBandcamp.h; sourceTree = "<group>"; };
 		4CEC38300ED11F3353372F21 /* ICMBandcamp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMBandcamp.m; sourceTree = "<group>"; };
+		4C5DC7BFE84C10B4261603FD /* ICMInlineAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMInlineAudio.h; sourceTree = "<group>"; };
+		4C5C70342F07D50FCCDD5E50 /* ICMInlineAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMInlineAudio.m; sourceTree = "<group>"; };
+		4CAE7C6BEB92A7286222238D /* ICMCommonInlineAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMCommonInlineAudio.h; sourceTree = "<group>"; };
+		4C9774B9792E453DE4F042EC /* ICMCommonInlineAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMCommonInlineAudio.m; sourceTree = "<group>"; };
+		4C07BBDED5A5BB1D95EF375D /* ICMWebPage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMWebPage.h; sourceTree = "<group>"; };
+		4C2DDEFDD69C5ABE6BCC220D /* ICMWebPage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMWebPage.m; sourceTree = "<group>"; };
 		4CC9F036C5EE2C491E200010 /* ICMGiphy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMGiphy.h; sourceTree = "<group>"; };
 		4CB94AA0B86220A5591899D8 /* ICMGiphy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMGiphy.m; sourceTree = "<group>"; };
 		4C64EBC649AE39569603B521 /* ICMXkcd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMXkcd.h; sourceTree = "<group>"; };
@@ -1938,6 +1947,8 @@
 				4C04D45C7182C9433368C14B /* ICMInlineImage.m */,
 				4CBA57B47CCDD2CBACA8D78F /* ICMInlineVideo.h */,
 				4CBCE092DEC024410CA7AB3D /* ICMInlineVideo.m */,
+				4C5DC7BFE84C10B4261603FD /* ICMInlineAudio.h */,
+				4C5C70342F07D50FCCDD5E50 /* ICMInlineAudio.m */,
 			);
 			path = "Root Classes";
 			sourceTree = "<group>";
@@ -2014,6 +2025,24 @@
 			path = SoundCloud;
 			sourceTree = "<group>";
 		};
+		4C151F3480E127CA066FF1A7 /* Common Audio */ = {
+			isa = PBXGroup;
+			children = (
+				4CAE7C6BEB92A7286222238D /* ICMCommonInlineAudio.h */,
+				4C9774B9792E453DE4F042EC /* ICMCommonInlineAudio.m */,
+			);
+			path = "Common Audio";
+			sourceTree = "<group>";
+		};
+		4C0166DEB7D1D025F63A2687 /* Web Page */ = {
+			isa = PBXGroup;
+			children = (
+				4C07BBDED5A5BB1D95EF375D /* ICMWebPage.h */,
+				4C2DDEFDD69C5ABE6BCC220D /* ICMWebPage.m */,
+			);
+			path = "Web Page";
+			sourceTree = "<group>";
+		};
 		4C31083D87CEBD50E5D5620A /* Bandcamp */ = {
 			isa = PBXGroup;
 			children = (
@@ -2080,6 +2109,8 @@
 				4CE9D79C11683CBDE1303A86 /* SoundCloud */,
 				4C31083D87CEBD50E5D5620A /* Bandcamp */,
 				4CEF4D6D63DD49EC4C6D34F2 /* Giphy */,
+				4C151F3480E127CA066FF1A7 /* Common Audio */,
+				4C0166DEB7D1D025F63A2687 /* Web Page */,
 				4CFAF96C8D7B94645E24F2DB /* xkcd */,
 				4C29C1431A27302840EA0A97 /* YouTube */,
 			);
@@ -3851,6 +3882,9 @@
 				4CF9F2AA3A15056518450761 /* ICMSoundCloud.m */,
 				4CA93E2E8DBCC5F7C280BF6B /* ICMBandcamp.m */,
 				4C3CC9A5D53AEA964B11D4E3 /* ICMGiphy.m */,
+				4CF1B25693CC7958932ECB41 /* ICMInlineAudio.m */,
+				4CC593F673C1D3F7F98248A4 /* ICMCommonInlineAudio.m */,
+				4CCFF19F9CBCBB32BBC862A3 /* ICMWebPage.m */,
 				4CC4BA95ECE5BAA046E19A9A /* ICMXkcd.m */,
 				4C280DD92753C13004D3359C /* ICMYouTube.m */,
 			);

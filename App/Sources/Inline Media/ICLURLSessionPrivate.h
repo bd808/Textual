@@ -85,6 +85,13 @@ typedef NS_ENUM(NSUInteger, ICLURLSessionResolution) {
 /* GET with a response size limit. data is nil when the address is refused,
  the request fails, the status is not 200 or the body exceeds maximumLength. */
 + (void)requestDataFromURL:(NSURL *)url session:(NSURLSession *)session maximumLength:(NSUInteger)maximumLength completionBlock:(void (^)(NSData * _Nullable data))completionBlock;
+
+/* GET of the start of a body: at most maximumLength bytes (cut there, not
+ refused), stopping early once one of endMarkers arrives. responseBlock sees
+ the response (status 200) first and returns NO to stop there; data is then
+ nil. response is nil when the address is refused or the status is not 200;
+ data is nil when the request fails. */
++ (void)requestPrefixFromURL:(NSURL *)url session:(NSURLSession *)session maximumLength:(NSUInteger)maximumLength endMarkers:(nullable NSArray<NSData *> *)endMarkers responseBlock:(nullable BOOL (^)(NSHTTPURLResponse *response))responseBlock completionBlock:(void (^)(NSHTTPURLResponse * _Nullable response, NSData * _Nullable data))completionBlock;
 @end
 
 NS_ASSUME_NONNULL_END

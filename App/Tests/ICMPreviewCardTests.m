@@ -39,6 +39,7 @@
 #import "ICLHelpers.h"
 #import "ICMPreviewCard.h"
 #import "ICMTweet.h"
+#import "ICMWebPage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 					  "<meta content='https://f4.bcbits.com/img/a1_5.jpg' property='og:image'/>"
 					  "<meta property=\"og:image\" content=\"https://example.com/second.jpg\">"
 					  "<meta name=\"twitter:card\" content=\"summary\">"
-					  "<meta name=\"description\" content=\"not Open Graph\">"
+					  "<meta name=\"description\" content=\"The page&#39;s description\">"
 					  "<meta xproperty=\"og:site_name\" content=\"not a property attribute\">"
 					  "</head><body><meta property=\"og:description\" content=\"in the body\"></body></html>";
 
@@ -85,9 +86,59 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqualObjects(metadata[@"og:title"], @"box, by GGG \"Blanstein\"");
 	XCTAssertEqualObjects(metadata[@"og:image"], @"https://f4.bcbits.com/img/a1_5.jpg");
 	XCTAssertEqualObjects(metadata[@"twitter:card"], @"summary");
-	XCTAssertNil(metadata[@"description"]);
+	XCTAssertEqualObjects(metadata[@"description"], @"The page's description");
 	XCTAssertNil(metadata[@"og:site_name"]);
 	XCTAssertNil(metadata[@"og:description"]);
+}
+
+/* A page's start is cut anywhere and comes in its own charset */
+- (void)testPageTextDecoding
+{
+	NSMutableData *cutUTF8 = [[@"<title>Café ü" dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+
+	[cutUTF8 appendBytes:"\xc3" length:1]; // the first half of "é"
+
+	XCTAssertEqualObjects([ICLHelpers stringFromHTMLData:cutUTF8 textEncodingName:nil], @"<title>Café ü");
+
+	NSMutableData *shiftJIS = [[@"<meta charset=\"Shift_JIS\"><title>" dataUsingEncoding:NSASCIIStringEncoding] mutableCopy];
+
+	[shiftJIS appendData:[@"日本語" dataUsingEncoding:NSShiftJISStringEncoding]];
+
+	XCTAssertTrue([[ICLHelpers stringFromHTMLData:shiftJIS textEncodingName:nil] hasSuffix:@"日本語"]);
+
+	NSData *latin1 = [@"<title>Grüße</title>" dataUsingEncoding:NSISOLatin1StringEncoding];
+
+	XCTAssertEqualObjects([ICLHelpers stringFromHTMLData:latin1 textEncodingName:@"iso-8859-1"], @"<title>Grüße</title>");
+}
+
+- (void)testWebPageCard
+{
+	NSURL *pageURL = [NSURL URLWithString:@"https://www.example.com/articles/42"]; // after a redirect
+	NSURL *linkURL = [NSURL URLWithString:@"https://example.com/a/42"];
+
+	/* Open Graph first, a relative picture, the site from the address */
+	ICMPreviewCardContent *card =
+	[ICMWebPage cardForPageMetadata:@{@"title" : @"Page title", @"og:title" : @"Article", @"description" : @"Plain description", @"twitter:description" : @"Twitter description", @"og:image" : @"/images/42.jpg"}
+							  atURL:pageURL
+							linkURL:linkURL];
+
+	XCTAssertEqualObjects(card.title, @"Article");
+	XCTAssertEqualObjects(card.text, @"Twitter description");
+	XCTAssertEqualObjects(card.imageURL.absoluteString, @"https://www.example.com/images/42.jpg");
+	XCTAssertEqualObjects(card.details, @[@"example.com"]);
+	XCTAssertEqualObjects(card.targetURL, linkURL);
+	XCTAssertEqual(card.style, ICMPreviewCardStylePage);
+
+	/* Only a <title>: a card with the title; a description that repeats it is left out */
+	card = [ICMWebPage cardForPageMetadata:@{@"title" : @"Example Domain", @"description" : @"Example Domain", @"og:site_name" : @"Example"} atURL:pageURL linkURL:linkURL];
+
+	XCTAssertEqualObjects(card.title, @"Example Domain");
+	XCTAssertNil(card.text);
+	XCTAssertNil(card.imageURL);
+	XCTAssertEqualObjects(card.details, @[@"Example"]);
+
+	/* No title: no card */
+	XCTAssertNil([ICMWebPage cardForPageMetadata:@{@"og:description" : @"Text", @"og:image" : @"https://example.com/a.jpg"} atURL:pageURL linkURL:linkURL]);
 }
 
 - (void)testDurations

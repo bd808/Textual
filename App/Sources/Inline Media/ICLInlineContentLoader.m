@@ -39,6 +39,7 @@
 #import "ICLPayloadPrivate.h"
 #import "ICLURLSessionPrivate.h"
 #import "ICLInlineContentModulePrivate.h"
+#import "ICMInlineAudio.h"
 #import "ICMInlineImage.h"
 #import "ICMInlineVideo.h"
 #import "ICPCoreMediaPrivate.h"
@@ -360,6 +361,16 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 			[self _addReferenceForModule:videoModule];
 
 			[videoModule performActionWithVideoCheck:performCheck];
+
+			break;
+		}
+		case ICLMediaTypeAudio:
+		{
+			ICMInlineAudio *audioModule = [[ICMInlineAudio alloc] initWithDeferredModule:module];
+
+			[self _addReferenceForModule:audioModule];
+
+			[audioModule performActionWithAudioCheck:performCheck];
 
 			break;
 		}

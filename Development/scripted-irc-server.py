@@ -1724,6 +1724,44 @@ async def scenario_services(client):
 		pass
 
 
+async def scenario_pages(client):
+	"""Web page cards and audio (E2.4; turn previews on; the VM needs
+	internet): #pages gets pages with Open Graph tags, one with only a title,
+	a GitHub page no GitHub card covers, an image link without an extension,
+	MP3 and Ogg audio, a PDF and a plain HTTP page (both stay links). Stays
+	connected (Ctrl-C to stop)."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+	channel = "#pages"
+
+	await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+	await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice bob")
+	await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+	await client.collect(1)
+
+	links = [
+		("alice", "Open Graph page: https://developer.mozilla.org/en-US/docs/Web/HTML"),
+		("bob", "Another: https://www.apple.com/macos/"),
+		("alice", "Libera: https://libera.chat/"),
+		("bob", "Only a title: https://example.com/"),
+		("alice", "A GitHub page without its own card: https://github.com/features/actions"),
+		("bob", "An image without an extension: https://picsum.photos/id/237/600/400"),
+		("alice", "MP3: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"),
+		("bob", "Ogg: https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg"),
+		("alice", "A PDF stays a link: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"),
+		("bob", "Plain HTTP stays a link: http://neverssl.com/"),
+	]
+
+	for sender, text in links:
+		await client.send(f":{sender}!{sender[0]}@{sender}.test PRIVMSG {channel} :{text}")
+		await asyncio.sleep(0.5)
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1736,6 +1774,7 @@ SCENARIOS = {
 	"query-info": scenario_query_info,
 	"media": scenario_media,
 	"services": scenario_services,
+	"pages": scenario_pages,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -1777,7 +1816,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

@@ -38,6 +38,7 @@
 #import "ICMAssessedMedia.h"
 #import "ICMBandcamp.h"
 #import "ICMBluesky.h"
+#import "ICMCommonInlineAudio.h"
 #import "ICMCommonInlineImages.h"
 #import "ICMCommonInlineVideos.h"
 #import "ICMDailymotion.h"
@@ -51,6 +52,7 @@
 #import "ICMStreamable.h"
 #import "ICMTweet.h"
 #import "ICMVimeo.h"
+#import "ICMWebPage.h"
 #import "ICMWikipedia.h"
 #import "ICMXkcd.h"
 #import "ICMYouTube.h"
@@ -91,9 +93,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 			[ICMCommonInlineVideos class],
 			[ICMCommonInlineImages class],
+			[ICMCommonInlineAudio class],
 
-			/* This module should ALWAYS be the last
-			 in line because it matches any URL. */
+			/* These match any URL, so they come last: a page card
+			 (or the media a link turns out to be), or with page
+			 cards off, "Load everything" (media only) */
+			[ICMWebPage class],
 			[ICMAssessedMedia class]
 		];
 	});

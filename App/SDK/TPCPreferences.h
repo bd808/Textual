@@ -52,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 
  // Check every single URL to find out if it is an image or video
 + (BOOL)inlineMediaCheckEverything;
+
+// Cards for web pages no service handles; links to images, videos and audio show as those
++ (BOOL)inlineMediaWebPageCards;
 @end
 
 NS_ASSUME_NONNULL_END

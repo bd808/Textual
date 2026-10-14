@@ -235,13 +235,7 @@ NSString * const ICLMediaAssessorErrorDomain = @"ICLMediaAssessorErrorDomain";
 	}
 
 	/* Figure out what type of media this is */
-	ICLMediaType mediaType = ICLMediaTypeOther;
-
-	if (contentType && [[self.class validImageContentTypes] containsObject:contentType]) {
-		mediaType = ICLMediaTypeImage;
-	} else if (contentType && [[self.class validVideoContentTypes] containsObject:contentType]) {
-		mediaType = ICLMediaTypeVideo;
-	}
+	ICLMediaType mediaType = [self.class mediaTypeForContentType:contentType];
 
 	/* Is this a type we are interested in? */
 	ICLMediaType expectedType = self.expectedType;
@@ -361,6 +355,52 @@ NSString * const ICLMediaAssessorErrorDomain = @"ICLMediaAssessorErrorDomain";
 	});
 
 	return cachedValue;
+}
+
++ (NSArray<NSString *> *)validAudioContentTypes
+{
+	static NSArray<NSString *> *cachedValue = nil;
+
+	static dispatch_once_t onceToken;
+
+	dispatch_once(&onceToken, ^{
+		/* application/ogg: Ogg audio as Wikimedia and others send it */
+		cachedValue =
+		@[@"application/ogg",
+		  @"audio/aac",
+		  @"audio/flac",
+		  @"audio/m4a",
+		  @"audio/mp3",
+		  @"audio/mp4",
+		  @"audio/mpeg",
+		  @"audio/ogg",
+		  @"audio/opus",
+		  @"audio/vnd.wave",
+		  @"audio/wav",
+		  @"audio/wave",
+		  @"audio/webm",
+		  @"audio/x-aac",
+		  @"audio/x-flac",
+		  @"audio/x-m4a",
+		  @"audio/x-wav"];
+	});
+
+	return cachedValue;
+}
+
++ (ICLMediaType)mediaTypeForContentType:(nullable NSString *)contentType
+{
+	if (contentType == nil) {
+		return ICLMediaTypeOther;
+	} else if ([[self validImageContentTypes] containsObject:contentType]) {
+		return ICLMediaTypeImage;
+	} else if ([[self validVideoContentTypes] containsObject:contentType]) {
+		return ICLMediaTypeVideo;
+	} else if ([[self validAudioContentTypes] containsObject:contentType]) {
+		return ICLMediaTypeAudio;
+	}
+
+	return ICLMediaTypeOther;
 }
 
 #pragma mark -

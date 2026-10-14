@@ -103,6 +103,10 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 		{
 			return ICLMediaAssessor.validVideoContentTypes;
 		}
+		case ICLMediaTypeAudio:
+		{
+			return ICLMediaAssessor.validAudioContentTypes;
+		}
 		default:
 		{
 			return [ICLMediaAssessor.validImageContentTypes arrayByAddingObjectsFromArray:ICLMediaAssessor.validVideoContentTypes];
