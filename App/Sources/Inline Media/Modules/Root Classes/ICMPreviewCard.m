@@ -134,6 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 	templateAttributes[@"dataAttributes"] = dataAttributes;
 
+	templateAttributes[@"playsInWindow"] = @(card.playsInWindow);
+
 	NSError *templateRenderError = nil;
 
 	NSString *html = [self.template renderObject:templateAttributes error:&templateRenderError];

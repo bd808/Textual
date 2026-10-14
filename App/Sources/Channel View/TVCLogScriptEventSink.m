@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 			@"loadInlineMedia" : @"sssn+",
 			@"nicknameDoubleClicked" : @"",
 			@"openImageViewer" : @"ssnn",
+			@"openVideoPlayer" : @"snss",
 			@"sendPluginPayload" : @"s*+",
 			@"setChannelName" : @"S+",
 			@"setNickname" : @"S+",

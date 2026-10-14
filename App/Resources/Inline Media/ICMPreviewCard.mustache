@@ -3,7 +3,7 @@
 
 	<a class="previewCard" href="{{targetURL}}" data-card-style="{{style}}">
 {{#isVideo}}
-		<span class="previewCardThumbnail">
+		<span class="previewCardThumbnail"{{#playsInWindow}} onclick="return _ICMPreviewCard.playClicked(event)"{{/playsInWindow}}>
 			{{#imageURL}}<img src="{{imageURL}}" alt="" onerror="this.remove()">{{/imageURL}}
 			<span class="previewCardPlay"></span>
 			{{#duration}}<span class="previewCardDuration">{{duration}}</span>{{/duration}}

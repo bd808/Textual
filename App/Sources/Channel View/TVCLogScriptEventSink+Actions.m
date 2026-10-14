@@ -60,6 +60,7 @@
 #import "TVCLogScriptEventSinkInternal.h"
 #import "ICLHelpers.h"
 #import "ICLImageViewer.h"
+#import "ICLYouTubePlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -160,6 +161,35 @@ NS_ASSUME_NONNULL_BEGIN
 	NSSize imageSize = NSMakeSize([arguments[2] doubleValue], [arguments[3] doubleValue]);
 
 	[ICLImageViewer showImageAtMediaURL:mediaURL linkURL:linkURL imageSize:imageSize];
+}
+
+/* A YouTube card's picture (E2.7): the video, where to start, the link and
+ the card's title */
+- (void)_openVideoPlayer:(TVCLogScriptEventSinkContext *)context
+{
+	NSArray *arguments = context.arguments;
+
+	NSString *videoIdentifier = arguments[0];
+
+	NSURL *linkURL = [ICLHelpers URLWithString:arguments[2]];
+
+	if ([ICLYouTubePlayer isValidVideoIdentifier:videoIdentifier] == NO || linkURL == nil) {
+		[self.class throwJavaScriptException:@"Not a YouTube video and a link"
+								   forCaller:context.caller
+								   inWebView:context.webView];
+
+		return;
+	}
+
+	NSTimeInterval startTime = MAX(0, [arguments[1] doubleValue]);
+
+	NSString *title = arguments[3];
+
+	if (title.length > 200) {
+		title = [title substringToIndex:200];
+	}
+
+	[ICLYouTubePlayer playVideo:videoIdentifier startTime:startTime title:title linkURL:linkURL client:context.associatedClient];
 }
 
 - (void)_sendPluginPayload:(TVCLogScriptEventSinkContext *)context

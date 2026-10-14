@@ -62,6 +62,7 @@ typedef NS_ENUM(NSUInteger, ICMPreviewCardStyle) {
 @property (nonatomic, copy, nullable) NSArray<NSString *> *details; // shown joined with " · "
 @property (nonatomic, assign) NSTimeInterval duration; // a video's length, 0 if unknown
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, NSString *> *dataAttributes; // data-… on the card, for its script (E2.7)
+@property (nonatomic, assign) BOOL playsInWindow; // a video card's picture opens Textual's player (YouTube, E2.7); the rest opens the link
 @end
 
 /* The root class of card providers */

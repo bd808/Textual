@@ -54,7 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSString *watchAddress = [NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", videoIdentifier];
 
-	NSURLComponents *requestComponents = [NSURLComponents componentsWithString:@"https://www.youtube.com/oembed"];
+	/* The privacy-enhanced domain, like the player (E2.7) */
+	NSURLComponents *requestComponents = [NSURLComponents componentsWithString:@"https://www.youtube-nocookie.com/oembed"];
 
 	requestComponents.queryItems =
 	@[
@@ -90,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 		  @"youtube-video" : videoIdentifier,
 		  @"youtube-start" : [NSString stringWithFormat:@"%.0f", startTime]
 		};
+
+		card.playsInWindow = YES;
 
 		[self performActionForCard:card];
 	}];

@@ -584,6 +584,7 @@
 		4C545872D07285844E21D5DA /* ICLMediaSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8F5036906C310B4032202C /* ICLMediaSchemeHandler.m */; };
 		4C89A000E42E1ACB13529C83 /* ICLMediaViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */; };
 		4CE82CE3AF30E3F4C26ACFCA /* ICLImageViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA01D5513FD4215069513BB /* ICLImageViewer.m */; };
+		4C6E80310EE631BD15A9FC9C /* ICLYouTubePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CFDF6D2E9975FEC9AA5686E /* ICLYouTubePlayer.m */; };
 		4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */; };
 		4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C18A25932EB1EB261EAA2FA /* ICMCommonInlineImages.m */; };
 		4C05502EEC02BDE06CBFD1B2 /* ICMCommonInlineVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDD3FBC6AA3F21DA7684CFF /* ICMCommonInlineVideos.m */; };
@@ -1429,6 +1430,8 @@
 		4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaViewer.m; sourceTree = "<group>"; };
 		4CA0EE75DC9655506C5CEFAC /* ICLImageViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLImageViewer.h; sourceTree = "<group>"; };
 		4CA01D5513FD4215069513BB /* ICLImageViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLImageViewer.m; sourceTree = "<group>"; };
+		4C0FB70D4B18A5EBE9D6158B /* ICLYouTubePlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLYouTubePlayer.h; sourceTree = "<group>"; };
+		4CFDF6D2E9975FEC9AA5686E /* ICLYouTubePlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLYouTubePlayer.m; sourceTree = "<group>"; };
 		4C705795DB60F25E1ADCEEAF /* ICLMediaSchemeHandlerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLMediaSchemeHandlerPrivate.h; sourceTree = "<group>"; };
 		4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICPCoreMedia.m; sourceTree = "<group>"; };
 		4C9FE75801B06DEF73E7DC48 /* ICMCommonInlineImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMCommonInlineImages.h; sourceTree = "<group>"; };
@@ -2117,6 +2120,8 @@
 				4CA01D5513FD4215069513BB /* ICLImageViewer.m */,
 				4C1A9604746D193B9C386E7D /* ICLMediaViewer.h */,
 				4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */,
+				4C0FB70D4B18A5EBE9D6158B /* ICLYouTubePlayer.h */,
+				4CFDF6D2E9975FEC9AA5686E /* ICLYouTubePlayer.m */,
 			);
 			path = Viewer;
 			sourceTree = "<group>";
@@ -3867,6 +3872,7 @@
 				4C545872D07285844E21D5DA /* ICLMediaSchemeHandler.m */,
 				4C89A000E42E1ACB13529C83 /* ICLMediaViewer.m */,
 				4CE82CE3AF30E3F4C26ACFCA /* ICLImageViewer.m */,
+				4C6E80310EE631BD15A9FC9C /* ICLYouTubePlayer.m */,
 				4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m */,
 				4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m */,
 				4C05502EEC02BDE06CBFD1B2 /* ICMCommonInlineVideos.m */,

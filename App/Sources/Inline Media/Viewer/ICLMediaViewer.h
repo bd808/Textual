@@ -40,12 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* A window for one piece of inline media (E2.5's images; E2.7's YouTube
  player builds on it): its own web view, sized to the media up to the
- screen, resizable and full screen, closed with Esc or ⌘W. The toolbar
+ screen, resizable and full screen, closed with Esc or ⌘W. It floats above
+ Textual's windows (decided 2026-10-14) and hides while another app is in
+ front. The toolbar
  and the context menu open or copy the link the media came from;
  subclasses add their own items and load their content. An open viewer
  keeps itself alive until it is closed. */
 @interface ICLMediaViewer : NSWindowController <NSWindowDelegate, NSToolbarDelegate>
-- (instancetype)initWithLinkURL:(NSURL *)linkURL title:(NSString *)title contentSize:(NSSize)contentSize;
+- (instancetype)initWithLinkURL:(NSURL *)linkURL title:(NSString *)title contentSize:(NSSize)contentSize; // -webViewConfiguration
+- (instancetype)initWithLinkURL:(NSURL *)linkURL title:(NSString *)title contentSize:(NSSize)contentSize webViewConfiguration:(WKWebViewConfiguration *)webViewConfiguration;
 
 @property (readonly, copy) NSURL *linkURL;
 @property (readonly) WKWebView *webView;

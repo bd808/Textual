@@ -34,8 +34,9 @@
  *
  *********************************************************************** */
 
-/* Preview cards (ICMPreviewCard): closing one is all there is to do here;
- clicking it opens its link like any link in the chat view. */
+/* Preview cards (ICMPreviewCard): clicking one opens its link like any link
+ in the chat view, except a YouTube card's picture, which plays the video in
+ Textual's player window (⌘-click still opens the link). */
 
 var _ICMPreviewCardPrototypeParent = InlineMediaPrototype;
 
@@ -48,3 +49,28 @@ _ICMPreviewCardPrototype.prototype.constructor = _ICMPreviewCardPrototype;
 _ICMPreviewCardPrototype.prototype.superClass = _ICMPreviewCardPrototypeParent.prototype;
 
 var _ICMPreviewCard = new _ICMPreviewCardPrototype();
+
+_ICMPreviewCard.playClicked = function(event)
+{
+	if (event.metaKey) {
+		return true;
+	}
+
+	var card = event.currentTarget.closest(".inlinePreviewCard");
+
+	var link = event.currentTarget.closest("a");
+
+	if (!card || !link || !card.dataset.youtubeVideo) {
+		return true;
+	}
+
+	var title = card.querySelector(".previewCardTitle");
+
+	var startTime = parseFloat(card.dataset.youtubeStart);
+
+	appPrivate.openVideoPlayer(card.dataset.youtubeVideo, ((startTime > 0) ? startTime : 0), link.href, ((title) ? title.textContent : ""));
+
+	event.preventDefault();
+
+	return false;
+};

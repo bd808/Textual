@@ -1762,6 +1762,89 @@ async def scenario_pages(client):
 		pass
 
 
+async def scenario_previews(client):
+	"""One of every kind of preview (turn previews on; the VM needs internet):
+	#previews gets images, video, clips, audio, every service card, a web page
+	card, a title-only page and links that stay links. Stays connected."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+	channel = "#previews"
+
+	await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+	await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice bob")
+	await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+	await client.collect(1)
+
+	links = [
+		("alice", "Image (JPEG): https://www.textualapp.com/textual-light.jpg"),
+		("bob", "Image (PNG, transparent): https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"),
+		("alice", "Image (WebP): https://www.gstatic.com/webp/gallery/1.webp"),
+		("bob", "Image without an extension: https://picsum.photos/id/237/600/400"),
+		("alice", "Video (MP4): https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"),
+		("bob", "Clip (Imgur): https://i.imgur.com/A61SaA1.gifv"),
+		("alice", "Clip (Giphy): https://giphy.com/gifs/bentuber-3o7aCSPqXE5C6T8tBC"),
+		("bob", "Audio (MP3): https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"),
+		("alice", "Audio (Ogg): https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg"),
+		("bob", "xkcd: https://xkcd.com/927/"),
+		("alice", "YouTube: https://www.youtube.com/watch?v=jNQXAC9IVRw"),
+		("bob", "Vimeo: https://vimeo.com/76979871"),
+		("alice", "Dailymotion: https://www.dailymotion.com/video/xbmufdm"),
+		("bob", "X: https://x.com/jack/status/20"),
+		("alice", "Bluesky: https://bsky.app/profile/bsky.app/post/3l6oveex3ii2l"),
+		("bob", "Reddit: https://www.reddit.com/r/IAmA/comments/z1c9z/i_am_barack_obama_president_of_the_united_states/"),
+		("alice", "GitHub repository: https://github.com/blendbyte/Textual"),
+		("bob", "GitHub pull request: https://github.com/apple/swift/pull/1"),
+		("alice", "Wikipedia: https://en.wikipedia.org/wiki/Internet_Relay_Chat"),
+		("bob", "Spotify: https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"),
+		("alice", "SoundCloud: https://soundcloud.com/forss/flickermood"),
+		("bob", "Bandcamp: https://radiohead.bandcamp.com/album/in-rainbows"),
+		("alice", "Any web page: https://developer.mozilla.org/en-US/docs/Web/HTML"),
+		("bob", "A page with only a title: https://example.com/"),
+		("alice", "Stays a link (PDF): https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"),
+		("bob", "Stays a link (plain HTTP): http://neverssl.com/"),
+	]
+
+	for sender, text in links:
+		await client.send(f":{sender}!{sender[0]}@{sender}.test PRIVMSG {channel} :{text}")
+		await asyncio.sleep(0.5)
+
+	while await client.collect(3600):
+		pass
+
+
+async def scenario_previews_short(client):
+	"""A few kinds of preview for comparing styles (turn previews on; the VM
+	needs internet): an image, a clip, audio, xkcd, a video card and a page
+	card in #previews. Stays connected."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+	channel = "#previews"
+
+	await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+	await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice bob")
+	await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+	await client.collect(1)
+
+	links = [
+		("alice", "Image: https://picsum.photos/id/237/600/400"),
+		("bob", "Audio: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"),
+		("alice", "xkcd: https://xkcd.com/927/"),
+		("bob", "Video card: https://www.youtube.com/watch?v=jNQXAC9IVRw"),
+		("alice", "Page card: https://en.wikipedia.org/wiki/Internet_Relay_Chat"),
+	]
+
+	for sender, text in links:
+		await client.send(f":{sender}!{sender[0]}@{sender}.test PRIVMSG {channel} :{text}")
+		await asyncio.sleep(0.5)
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1775,6 +1858,8 @@ SCENARIOS = {
 	"media": scenario_media,
 	"services": scenario_services,
 	"pages": scenario_pages,
+	"previews": scenario_previews,
+	"previews-short": scenario_previews_short,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -1816,7 +1901,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "previews", "previews-short", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

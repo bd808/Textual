@@ -74,8 +74,14 @@ static NSMutableSet<ICLMediaViewer *> *_openViewers = nil;
 
 - (instancetype)initWithLinkURL:(NSURL *)linkURL title:(NSString *)title contentSize:(NSSize)contentSize
 {
+	return [self initWithLinkURL:linkURL title:title contentSize:contentSize webViewConfiguration:[self webViewConfiguration]];
+}
+
+- (instancetype)initWithLinkURL:(NSURL *)linkURL title:(NSString *)title contentSize:(NSSize)contentSize webViewConfiguration:(WKWebViewConfiguration *)webViewConfiguration
+{
 	NSParameterAssert(linkURL != nil);
 	NSParameterAssert(title != nil);
+	NSParameterAssert(webViewConfiguration != nil);
 
 	NSWindow *window =
 	[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, contentSize.width, contentSize.height)
@@ -89,12 +95,17 @@ static NSMutableSet<ICLMediaViewer *> *_openViewers = nil;
 	window.contentMinSize = NSMakeSize(240, 160);
 	window.title = title;
 
+	/* Above Textual's windows, so it stays in view while you chat (like
+	 picture in picture), and hidden while another app is in front */
+	window.level = NSFloatingWindowLevel;
+	window.hidesOnDeactivate = YES;
+
 	if ((self = [super initWithWindow:window])) {
 		self->_linkURL = [linkURL copy];
 
 		window.delegate = self;
 
-		ICLMediaViewerWebView *webView = [[ICLMediaViewerWebView alloc] initWithFrame:NSMakeRect(0, 0, contentSize.width, contentSize.height) configuration:[self webViewConfiguration]];
+		ICLMediaViewerWebView *webView = [[ICLMediaViewerWebView alloc] initWithFrame:NSMakeRect(0, 0, contentSize.width, contentSize.height) configuration:webViewConfiguration];
 
 		webView.viewer = self;
 

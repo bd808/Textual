@@ -201,6 +201,13 @@ appPrivate.loadInlineMedia = function(address, uniqueIdentifier, lineNumber, ind
 	window.webkit.messageHandlers.loadInlineMedia.postMessage(dataValue);
 };
 
+appPrivate.openVideoPlayer = function(videoIdentifier, startTime, linkAddress, title)
+{
+	var dataValue = {"values" : [videoIdentifier, startTime, linkAddress, title]};
+
+	window.webkit.messageHandlers.openVideoPlayer.postMessage(dataValue);
+};
+
 appPrivate.openImageViewer = function(mediaAddress, linkAddress, width, height)
 {
 	var dataValue = {"values" : [mediaAddress, linkAddress, width, height]};

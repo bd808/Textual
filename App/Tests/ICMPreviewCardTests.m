@@ -38,6 +38,7 @@
 
 #import "ICLHelpers.h"
 #import "ICLImageViewer.h"
+#import "ICLYouTubePlayer.h"
 #import "ICMPreviewCard.h"
 #import "ICMTweet.h"
 #import "ICMWebPage.h"
@@ -159,6 +160,25 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqualObjects(fileName(@"https://example.com/.hidden.png", @"image/png"), @"hidden.png");
 	XCTAssertEqualObjects(fileName(@"https://example.com/", @"image/webp"), @"image.webp");
 	XCTAssertEqualObjects(fileName(@"https://example.com/x.png", nil), @"x.png");
+}
+
+/* The player only takes a YouTube video ID from the chat view's script, and
+ only ever loads YouTube's embed address */
+- (void)testYouTubePlayerAddress
+{
+	XCTAssertTrue([ICLYouTubePlayer isValidVideoIdentifier:@"dQw4w9WgXcQ"]);
+	XCTAssertTrue([ICLYouTubePlayer isValidVideoIdentifier:@"jNQXAC9IVRw"]);
+	XCTAssertFalse([ICLYouTubePlayer isValidVideoIdentifier:@"dQw4w9WgXc"]);
+	XCTAssertFalse([ICLYouTubePlayer isValidVideoIdentifier:@"../../evil?"]);
+	XCTAssertFalse([ICLYouTubePlayer isValidVideoIdentifier:@"dQw4w9WgX/Q"]);
+
+	NSURL *url = [ICLYouTubePlayer embedURLForVideo:@"jNQXAC9IVRw" startTime:5.7];
+
+	XCTAssertEqualObjects(url.absoluteString, @"https://www.youtube-nocookie.com/embed/jNQXAC9IVRw?autoplay=1&rel=0&start=5");
+
+	url = [ICLYouTubePlayer embedURLForVideo:@"dQw4w9WgXcQ" startTime:0];
+
+	XCTAssertEqualObjects(url.absoluteString, @"https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0");
 }
 
 - (void)testDurations
