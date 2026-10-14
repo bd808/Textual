@@ -47,6 +47,31 @@ _ICMInlineImagePrototype.prototype.superClass = _ICMInlineImagePrototypeParent.p
 
 var _ICMInlineImage = new _ICMInlineImagePrototype();
 
+/* A click opens the image viewer window; ⌘-click opens the link in the
+ browser, and the end of a resize drag does neither */
+_ICMInlineImagePrototype.prototype.imageClicked = function(event)
+{
+	if (InlineImageLiveResize.negateAnchorOpen() === false) {
+		return false;
+	}
+
+	if (event.metaKey) {
+		return true;
+	}
+
+	var anchor = event.currentTarget;
+
+	var image = anchor.querySelector("img");
+
+	if (!image || image.naturalWidth === 0) {
+		return true;
+	}
+
+	appPrivate.openImageViewer(image.src, anchor.href, image.naturalWidth, image.naturalHeight);
+
+	return false;
+};
+
 _ICMInlineImagePrototype.prototype.willShowMedia = function(mediaId, mediaElement) /* PUBLIC */
 {
 	/* Do not allow user to show the image if this attribute is set. */

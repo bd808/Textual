@@ -151,6 +151,12 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Action
 
+/* A page card for "see example.com" would be noise */
++ (BOOL)requiresAddressWithScheme
+{
+	return YES;
+}
+
 + (nullable SEL)actionForURL:(NSURL *)url
 {
 	if ([TPCPreferences inlineMediaWebPageCards] == NO) {

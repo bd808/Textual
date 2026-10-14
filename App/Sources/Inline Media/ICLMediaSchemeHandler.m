@@ -47,13 +47,6 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 /* Addresses handed out: the oldest are forgotten first */
 #define _maximumEntries			4000
 
-@interface ICLMediaSchemeEntry : NSObject
-@property (nonatomic, copy) NSURL *url;
-@property (nonatomic, strong) NSURLSession *session;
-@property (nonatomic, assign) ICLMediaType type;
-@property (nonatomic, assign) unsigned long long maximumLength;
-@end
-
 @implementation ICLMediaSchemeEntry
 @end
 
@@ -418,6 +411,19 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 	return [NSURL URLWithString:[NSString stringWithFormat:@"%@://media/%@", ICLMediaSchemeHandlerScheme, token]];
 }
 
+- (nullable ICLMediaSchemeEntry *)entryForMediaURL:(NSURL *)mediaURL
+{
+	NSParameterAssert(mediaURL != nil);
+
+	if ([mediaURL.scheme isEqualToString:ICLMediaSchemeHandlerScheme] == NO ||
+		[mediaURL.host isEqualToString:@"media"] == NO)
+	{
+		return nil;
+	}
+
+	return self.entries[mediaURL.lastPathComponent];
+}
+
 #pragma mark -
 #pragma mark URL Scheme Handler
 
@@ -425,13 +431,9 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 {
 	NSURL *requestURL = urlSchemeTask.request.URL;
 
-	ICLMediaSchemeEntry *entry = nil;
+	ICLMediaSchemeEntry *entry = ((requestURL) ? [self entryForMediaURL:requestURL] : nil);
 
-	if ([requestURL.host isEqualToString:@"media"]) {
-		entry = self.entries[requestURL.lastPathComponent];
-	}
-
-	if (requestURL == nil || entry == nil) {
+	if (entry == nil) {
 		[urlSchemeTask didFailWithError:[NSError errorWithDomain:ICLMediaFetchErrorDomain code:ICLMediaFetchErrorCodeNotAllowed userInfo:nil]];
 
 		return;

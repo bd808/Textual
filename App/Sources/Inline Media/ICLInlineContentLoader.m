@@ -135,7 +135,7 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 #pragma mark -
 #pragma mark Processing
 
-- (void)processURL:(NSURL *)url withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index inView:(NSString *)viewIdentifier session:(NSURLSession *)session
+- (void)processURL:(NSURL *)url withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index inView:(NSString *)viewIdentifier session:(NSURLSession *)session addressHasScheme:(BOOL)addressHasScheme
 {
 	NSParameterAssert(url != nil);
 	NSParameterAssert(uniqueIdentifier != nil);
@@ -181,7 +181,7 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 									inView:viewIdentifier
 								   session:session];
 
-	if ([self _processPayload:payload withModulesForDomain:urlHost]) {
+	if ([self _processPayload:payload withModulesForDomain:urlHost addressHasScheme:addressHasScheme]) {
 		return;
 	}
 
@@ -192,22 +192,27 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 	for (NSUInteger firstLabel = 1; (firstLabel + 1) < hostLabels.count; firstLabel++) {
 		NSString *parentDomain = [[hostLabels subarrayWithRange:NSMakeRange(firstLabel, (hostLabels.count - firstLabel))] componentsJoinedByString:@"."];
 
-		if ([self _processPayload:payload withModulesForDomain:[@"*." stringByAppendingString:parentDomain]]) {
+		if ([self _processPayload:payload withModulesForDomain:[@"*." stringByAppendingString:parentDomain] addressHasScheme:addressHasScheme]) {
 			return;
 		}
 	}
 
 	/* If no module accepted responsibility for the urlHost,
 	 then we try modules that do not map to a specific domain. */
-	(void)[self _processPayload:payload withModulesForDomain:@"*"];
+	(void)[self _processPayload:payload withModulesForDomain:@"*" addressHasScheme:addressHasScheme];
 }
 
-- (BOOL)_processPayload:(ICLPayloadMutable *)payload withModulesForDomain:(NSString *)domain
+- (BOOL)_processPayload:(ICLPayloadMutable *)payload withModulesForDomain:(NSString *)domain addressHasScheme:(BOOL)addressHasScheme
 {
 	NSParameterAssert(payload != nil);
 	NSParameterAssert(domain != nil);
 
 	for (Class module in self.modules[domain]) {
+		/* "see example.com" in a message is not a link to preview as a page */
+		if (addressHasScheme == NO && [module requiresAddressWithScheme]) {
+			continue;
+		}
+
 		if ([self _processPayload:payload usingModule:module]) {
 			return YES;
 		}

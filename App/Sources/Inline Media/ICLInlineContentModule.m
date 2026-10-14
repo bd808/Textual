@@ -181,6 +181,11 @@ NS_ASSUME_NONNULL_BEGIN
 	return NO;
 }
 
++ (BOOL)requiresAddressWithScheme
+{
+	return NO;
+}
+
 @end
 
 #pragma mark -

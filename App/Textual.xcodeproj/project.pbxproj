@@ -582,6 +582,8 @@
 		4C348BA32A19CF37839DF90F /* ICLPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C76D92C615E42A35336F97F /* ICLPayload.m */; };
 		4C4F5343473CA19CA4619F05 /* ICLURLSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C72D08DEC2DBD9290660F94 /* ICLURLSession.m */; };
 		4C545872D07285844E21D5DA /* ICLMediaSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8F5036906C310B4032202C /* ICLMediaSchemeHandler.m */; };
+		4C89A000E42E1ACB13529C83 /* ICLMediaViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */; };
+		4CE82CE3AF30E3F4C26ACFCA /* ICLImageViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA01D5513FD4215069513BB /* ICLImageViewer.m */; };
 		4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */; };
 		4C84AA1C38E0C57C911973F8 /* ICMAssessedMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00B576CC9A61B6A0FDAD79 /* ICMAssessedMedia.m */; };
 		4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C18A25932EB1EB261EAA2FA /* ICMCommonInlineImages.m */; };
@@ -1424,6 +1426,10 @@
 		4C76D92C615E42A35336F97F /* ICLPayload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLPayload.m; sourceTree = "<group>"; };
 		4C72D08DEC2DBD9290660F94 /* ICLURLSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLURLSession.m; sourceTree = "<group>"; };
 		4C8F5036906C310B4032202C /* ICLMediaSchemeHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaSchemeHandler.m; sourceTree = "<group>"; };
+		4C1A9604746D193B9C386E7D /* ICLMediaViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLMediaViewer.h; sourceTree = "<group>"; };
+		4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaViewer.m; sourceTree = "<group>"; };
+		4CA0EE75DC9655506C5CEFAC /* ICLImageViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLImageViewer.h; sourceTree = "<group>"; };
+		4CA01D5513FD4215069513BB /* ICLImageViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLImageViewer.m; sourceTree = "<group>"; };
 		4C705795DB60F25E1ADCEEAF /* ICLMediaSchemeHandlerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLMediaSchemeHandlerPrivate.h; sourceTree = "<group>"; };
 		4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICPCoreMedia.m; sourceTree = "<group>"; };
 		4C827C6117D480FF1C9FA2DC /* ICMAssessedMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMAssessedMedia.h; sourceTree = "<group>"; };
@@ -2117,10 +2123,22 @@
 			path = Modules;
 			sourceTree = "<group>";
 		};
+		4C21DA671070E00BDA66110C /* Viewer */ = {
+			isa = PBXGroup;
+			children = (
+				4CA0EE75DC9655506C5CEFAC /* ICLImageViewer.h */,
+				4CA01D5513FD4215069513BB /* ICLImageViewer.m */,
+				4C1A9604746D193B9C386E7D /* ICLMediaViewer.h */,
+				4CD7ACA4DBC498A952D034C2 /* ICLMediaViewer.m */,
+			);
+			path = Viewer;
+			sourceTree = "<group>";
+		};
 		4C5D94929A0EEE39E7C819D3 /* Inline Media */ = {
 			isa = PBXGroup;
 			children = (
 				4C9A9B69D3346F799340A7D2 /* Modules */,
+				4C21DA671070E00BDA66110C /* Viewer */,
 				4C361D5F1E05A17D6BD5CFC1 /* ICLHelpers.h */,
 				4C7A0118381FEF1688C409E8 /* ICLHelpers.m */,
 				4C67F83C1490F0916EA47C93 /* ICLInlineContentLoader.m */,
@@ -3860,6 +3878,8 @@
 				4C348BA32A19CF37839DF90F /* ICLPayload.m */,
 				4C4F5343473CA19CA4619F05 /* ICLURLSession.m */,
 				4C545872D07285844E21D5DA /* ICLMediaSchemeHandler.m */,
+				4C89A000E42E1ACB13529C83 /* ICLMediaViewer.m */,
+				4CE82CE3AF30E3F4C26ACFCA /* ICLImageViewer.m */,
 				4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m */,
 				4C84AA1C38E0C57C911973F8 /* ICMAssessedMedia.m */,
 				4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m */,

@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
   withUniqueIdentifier:(NSString *)uniqueIdentifier
 		  atLineNumber:(NSString *)lineNumber
 				 index:(NSUInteger)index
+	  addressHasScheme:(BOOL)addressHasScheme
 			   forItem:(IRCTreeItem *)item;
 
 - (void)prepareForApplicationTermination;

@@ -96,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 			@"copySelectionWhenPermitted" : @"",
 			@"loadInlineMedia" : @"sssn+",
 			@"nicknameDoubleClicked" : @"",
+			@"openImageViewer" : @"ssnn",
 			@"sendPluginPayload" : @"s*+",
 			@"setChannelName" : @"S+",
 			@"setNickname" : @"S+",

@@ -148,6 +148,13 @@ typedef void (^ICLInlineContentModuleActionBlock)(ICLInlineContentModule *module
  */
 @property (readonly, class) BOOL contentNotSafeForWork;
 
+/**
+ Whether the module only handles addresses written with their scheme
+ ("https://example.com"), not ones the link scanner completed ("see
+ example.com"). Default NO.
+ */
+@property (readonly, class) BOOL requiresAddressWithScheme;
+
 #pragma mark -
 #pragma mark Resources
 

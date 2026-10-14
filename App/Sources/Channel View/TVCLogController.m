@@ -1196,11 +1196,12 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 		[self processInlineMediaAtAddress:link.stringValue
 					 withUniqueIdentifier:link.uniqueIdentifier
 							 atLineNumber:lineNumber
-									index:index];
+									index:index
+						 addressHasScheme:link.strictMatch];
 	}];
 }
 
-- (void)processInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index
+- (void)processInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index addressHasScheme:(BOOL)addressHasScheme
 {
 	NSParameterAssert(address != nil);
 	NSParameterAssert(uniqueIdentifier != nil);
@@ -1213,6 +1214,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	   withUniqueIdentifier:uniqueIdentifier
 			   atLineNumber:lineNumber
 					  index:index
+		   addressHasScheme:addressHasScheme
 					forItem:associatedItem];
 }
 
@@ -1233,7 +1235,8 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 			return;
 		}
 
-		[self processInlineMediaAtAddress:address withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index];
+		/* Asked for: as if typed in full */
+		[self processInlineMediaAtAddress:address withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index addressHasScheme:YES];
 	};
 
 	/* Not saved yet: still in memory */

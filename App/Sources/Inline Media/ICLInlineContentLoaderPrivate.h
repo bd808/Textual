@@ -53,7 +53,8 @@ withUniqueIdentifier:(NSString *)uniqueIdentifier
 	  atLineNumber:(NSString *)lineNumber
 			 index:(NSUInteger)index
 			inView:(NSString *)viewIdentifier
-		   session:(NSURLSession *)session;
+		   session:(NSURLSession *)session
+  addressHasScheme:(BOOL)addressHasScheme; // NO: modules that need it (+requiresAddressWithScheme) are skipped
 
 /* Cancels the requests in progress and refuses new ones */
 - (void)prepareForApplicationTermination;

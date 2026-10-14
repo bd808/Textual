@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Public API
 
-- (void)processAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index forItem:(IRCTreeItem *)item
+- (void)processAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index addressHasScheme:(BOOL)addressHasScheme forItem:(IRCTreeItem *)item
 {
 	NSParameterAssert(address != nil);
 	NSParameterAssert(uniqueIdentifier != nil);
@@ -89,10 +89,10 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 
-	[self processURL:url withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index forItem:item];
+	[self processURL:url withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index addressHasScheme:addressHasScheme forItem:item];
 }
 
-- (void)processURL:(NSURL *)url withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index forItem:(IRCTreeItem *)item
+- (void)processURL:(NSURL *)url withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index addressHasScheme:(BOOL)addressHasScheme forItem:(IRCTreeItem *)item
 {
 	NSParameterAssert(url != nil);
 	NSParameterAssert(uniqueIdentifier != nil);
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	/* The loader and its modules run on the main thread */
 	XRPerformBlockAsynchronouslyOnMainQueue(^{
-		[[ICLInlineContentLoader sharedLoader] processURL:url withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index inView:viewIdentifier session:session];
+		[[ICLInlineContentLoader sharedLoader] processURL:url withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index inView:viewIdentifier session:session addressHasScheme:addressHasScheme];
 	});
 }
 

@@ -2,7 +2,7 @@
 <span class="inlineImage {{classAttribute}}" id="inlineMedia-{{uniqueIdentifier}}" style="display: none;">
 	<span class="closeButton" href="#" onclick="_ICMInlineImage.hideOnClick('{{uniqueIdentifier}}');">×</span>
 
-	<a href="{{anchorLink}}" onclick="return InlineImageLiveResize.negateAnchorOpen()">
+	<a href="{{anchorLink}}" onclick="return _ICMInlineImage.imageClicked(event)">
 		<img src="{{imageURL}}" class="content" style="max-width: {{preferredMaximumWidth}}px;" data-maximum-width="{{maximumWidth}}" data-maximum-height="{{maximumHeight}}"{{#hoverText}} title="{{hoverText}}"{{/hoverText}} />
 	</a>
 {{#caption}}

@@ -86,7 +86,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)notifyHistoricLogWillDeleteLines:(NSArray<NSString *> *)lineNumbers;
 
-- (void)processInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index;
+/* addressHasScheme: the message had the address with its scheme ("https://…"),
+ not a bare "example.com" (no web page card for those) */
+- (void)processInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index addressHasScheme:(BOOL)addressHasScheme;
 
 /* A shift-click on a link: as above, unless the address book says not to
  preview the sender's links */

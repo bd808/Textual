@@ -37,6 +37,7 @@
 #import <XCTest/XCTest.h>
 
 #import "ICLHelpers.h"
+#import "ICLImageViewer.h"
 #import "ICMPreviewCard.h"
 #import "ICMTweet.h"
 #import "ICMWebPage.h"
@@ -138,7 +139,26 @@ NS_ASSUME_NONNULL_BEGIN
 	XCTAssertEqualObjects(card.details, @[@"Example"]);
 
 	/* No title: no card */
-	XCTAssertNil([ICMWebPage cardForPageMetadata:@{@"og:description" : @"Text", @"og:image" : @"https://example.com/a.jpg"} atURL:pageURL linkURL:linkURL]);
+	card = [ICMWebPage cardForPageMetadata:@{@"og:description" : @"Text", @"og:image" : @"https://example.com/a.jpg"} atURL:pageURL linkURL:linkURL];
+
+	XCTAssertNil(card);
+}
+
+/* A saved image opens as what it is: its content type's extension is added
+ unless it has one of that type's, and it can't be hidden */
+- (void)testSavedImageFileName
+{
+	NSString * (^fileName)(NSString *, NSString * _Nullable) = ^NSString *(NSString *address, NSString * _Nullable contentType) {
+		return [ICLImageViewer fileNameForImageAtURL:[NSURL URLWithString:address] contentType:contentType];
+	};
+
+	XCTAssertEqualObjects(fileName(@"https://i.example.com/cat.jpg", @"image/jpeg"), @"cat.jpg");
+	XCTAssertEqualObjects(fileName(@"https://example.com/photo.JPEG", @"image/jpeg"), @"photo.JPEG");
+	XCTAssertEqualObjects(fileName(@"https://example.com/id/237/600/400", @"image/jpeg"), @"400.jpeg");
+	XCTAssertEqualObjects(fileName(@"https://example.com/evil.command", @"image/png"), @"evil.command.png");
+	XCTAssertEqualObjects(fileName(@"https://example.com/.hidden.png", @"image/png"), @"hidden.png");
+	XCTAssertEqualObjects(fileName(@"https://example.com/", @"image/webp"), @"image.webp");
+	XCTAssertEqualObjects(fileName(@"https://example.com/x.png", nil), @"x.png");
 }
 
 - (void)testDurations

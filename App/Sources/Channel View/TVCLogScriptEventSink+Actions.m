@@ -58,6 +58,8 @@
 #import "TVCLogViewPrivate.h"
 #import "TVCLogViewInternalWK2.h"
 #import "TVCLogScriptEventSinkInternal.h"
+#import "ICLHelpers.h"
+#import "ICLImageViewer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -135,6 +137,29 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_nicknameDoubleClicked:(TVCLogScriptEventSinkContext *)context
 {
 	[context.webViewPolicy nicknameDoubleClicked];
+}
+
+/* Clicking an inline image (E2.5): its textual-media: address, the link it
+ came from and its size. Only an image Textual fetched can be opened. */
+- (void)_openImageViewer:(TVCLogScriptEventSinkContext *)context
+{
+	NSArray *arguments = context.arguments;
+
+	NSURL *mediaURL = [NSURL URLWithString:arguments[0]];
+
+	NSURL *linkURL = [ICLHelpers URLWithString:arguments[1]];
+
+	if (mediaURL == nil || linkURL == nil) {
+		[self.class throwJavaScriptException:@"Not an image address and a link"
+								   forCaller:context.caller
+								   inWebView:context.webView];
+
+		return;
+	}
+
+	NSSize imageSize = NSMakeSize([arguments[2] doubleValue], [arguments[3] doubleValue]);
+
+	[ICLImageViewer showImageAtMediaURL:mediaURL linkURL:linkURL imageSize:imageSize];
 }
 
 - (void)_sendPluginPayload:(TVCLogScriptEventSinkContext *)context

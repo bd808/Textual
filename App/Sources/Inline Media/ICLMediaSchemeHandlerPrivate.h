@@ -82,12 +82,23 @@ typedef NS_ENUM(NSInteger, ICLMediaFetchErrorCode) {
 + (NSArray<NSString *> *)contentTypesForMediaType:(ICLMediaType)type;
 @end
 
+/* What a textual-media: address stands for */
+@interface ICLMediaSchemeEntry : NSObject
+@property (nonatomic, copy) NSURL *url;
+@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, assign) ICLMediaType type;
+@property (nonatomic, assign) unsigned long long maximumLength;
+@end
+
 @interface ICLMediaSchemeHandler : NSObject <WKURLSchemeHandler>
 @property (readonly, class) ICLMediaSchemeHandler *sharedHandler;
 
 /* The address the chat view loads instead of url. Images and GIF-style
  clips use the image size limit; video you play has none (0). */
 - (NSURL *)URLForMediaAtURL:(NSURL *)url session:(NSURLSession *)session type:(ICLMediaType)type maximumLength:(unsigned long long)maximumLength;
+
+/* nil for an address this handler didn't hand out (or has forgotten) */
+- (nullable ICLMediaSchemeEntry *)entryForMediaURL:(NSURL *)mediaURL;
 @end
 
 NS_ASSUME_NONNULL_END
