@@ -635,6 +635,7 @@
 		4C147CF76755EE65F9968056 /* IRCClient+DCC.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE674DD25A2D5BB4C4B3148 /* IRCClient+DCC.m */; };
 		4C22A369CAA361AA45326A28 /* IRCClient+Dialogs.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAE2EF09C84E9BAF84B0F36 /* IRCClient+Dialogs.m */; };
 		4CD46A0D7EE26060A10C3CD6 /* IRCClient+LocalCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE463C51C0505BFA546FC3 /* IRCClient+LocalCommands.m */; };
+		4C51A3C6B9C1A0CA8E392CB6 /* IRCAlias.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8120B1F0E10DDE9110DB2B /* IRCAlias.m */; };
 		4C51948837887EF31CC77FD8 /* IRCClient+Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6825E2F8692444C9454926 /* IRCClient+Logging.m */; };
 		4CFA99AFBF846E69A4D25559 /* IRCClient+Notifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C36EF0454FCB2F6048C3F85 /* IRCClient+Notifications.m */; };
 		4C1599D03F4FD33E9BBFE271 /* IRCClient+Numerics.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD61A48B42935899BFFC4F2 /* IRCClient+Numerics.m */; };
@@ -711,6 +712,7 @@
 		4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */; };
 		4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */; };
 		4CE9F00465BB5D17F16D8988 /* TVCInputMarkdownTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */; };
+		4C03ABFF9E2EFDF00767BBCD /* IRCAliasTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C870CA064CDF0587168CD01 /* IRCAliasTests.m */; };
 		4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */; };
 /* End PBXBuildFile section */
 
@@ -1514,6 +1516,8 @@
 		4CE674DD25A2D5BB4C4B3148 /* IRCClient+DCC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCClient+DCC.m"; sourceTree = "<group>"; };
 		4CAE2EF09C84E9BAF84B0F36 /* IRCClient+Dialogs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCClient+Dialogs.m"; sourceTree = "<group>"; };
 		4CBE463C51C0505BFA546FC3 /* IRCClient+LocalCommands.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCClient+LocalCommands.m"; sourceTree = "<group>"; };
+		4C8120B1F0E10DDE9110DB2B /* IRCAlias.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCAlias.m; sourceTree = "<group>"; };
+		4C886BD64943E5BFE0F96D89 /* IRCAliasPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCAliasPrivate.h; sourceTree = "<group>"; };
 		4C6825E2F8692444C9454926 /* IRCClient+Logging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCClient+Logging.m"; sourceTree = "<group>"; };
 		4C36EF0454FCB2F6048C3F85 /* IRCClient+Notifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCClient+Notifications.m"; sourceTree = "<group>"; };
 		4CD61A48B42935899BFFC4F2 /* IRCClient+Numerics.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCClient+Numerics.m"; sourceTree = "<group>"; };
@@ -1612,6 +1616,7 @@
 		4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMPreviewCardTests.m; sourceTree = "<group>"; };
 		4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputCompletionTests.m; sourceTree = "<group>"; };
 		4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputMarkdownTests.m; sourceTree = "<group>"; };
+		4C870CA064CDF0587168CD01 /* IRCAliasTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCAliasTests.m; sourceTree = "<group>"; };
 		4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HLSHistoricLogManagerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2183,6 +2188,8 @@
 				4CE674DD25A2D5BB4C4B3148 /* IRCClient+DCC.m */,
 				4CAE2EF09C84E9BAF84B0F36 /* IRCClient+Dialogs.m */,
 				4CBE463C51C0505BFA546FC3 /* IRCClient+LocalCommands.m */,
+				4C8120B1F0E10DDE9110DB2B /* IRCAlias.m */,
+				4C886BD64943E5BFE0F96D89 /* IRCAliasPrivate.h */,
 				4C6825E2F8692444C9454926 /* IRCClient+Logging.m */,
 				4C36EF0454FCB2F6048C3F85 /* IRCClient+Notifications.m */,
 				4CD61A48B42935899BFFC4F2 /* IRCClient+Numerics.m */,
@@ -2986,6 +2993,7 @@
 				4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */,
 				4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */,
 				4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */,
+				4C870CA064CDF0587168CD01 /* IRCAliasTests.m */,
 				4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */,
 				4CCEEF3CE8E84E1B5AE9AC3C /* TVCLogViewSecurityTests.m */,
 			);
@@ -3685,6 +3693,7 @@
 				4C147CF76755EE65F9968056 /* IRCClient+DCC.m in Sources */,
 				4C22A369CAA361AA45326A28 /* IRCClient+Dialogs.m in Sources */,
 				4CD46A0D7EE26060A10C3CD6 /* IRCClient+LocalCommands.m in Sources */,
+				4C51A3C6B9C1A0CA8E392CB6 /* IRCAlias.m in Sources */,
 				4C51948837887EF31CC77FD8 /* IRCClient+Logging.m in Sources */,
 				4CFA99AFBF846E69A4D25559 /* IRCClient+Notifications.m in Sources */,
 				4C1599D03F4FD33E9BBFE271 /* IRCClient+Numerics.m in Sources */,
@@ -3935,6 +3944,7 @@
 				4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */,
 				4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */,
 				4CE9F00465BB5D17F16D8988 /* TVCInputMarkdownTests.m in Sources */,
+				4C03ABFF9E2EFDF00767BBCD /* IRCAliasTests.m in Sources */,
 				4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */,
 				4CACA1915D50ECEEE616CC47 /* TPCPreferencesTests.m in Sources */,
 				4CA4A4D412BC97120FEB0648 /* TVCLogRendererTests.m in Sources */,

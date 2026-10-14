@@ -5,7 +5,7 @@
 	<key>Reserved Information</key>
 	<dict>
 		<key>Next Index Value</key>
-		<real>5122</real>
+		<real>5124</real>
 	</dict>
 	<key>adchat</key>
 	<dict>
@@ -15,6 +15,15 @@
 		<integer>5001</integer>
 		<key>arguments</key>
 		<string>&lt;message&gt;</string>
+	</dict>
+	<key>alias</key>
+	<dict>
+		<key>developerModeOnly</key>
+		<false/>
+		<key>indexValue</key>
+		<integer>5122</integer>
+		<key>arguments</key>
+		<string>[name] [commands]</string>
 	</dict>
 	<key>ame</key>
 	<dict>
@@ -778,6 +787,15 @@
 		<integer>5071</integer>
 		<key>arguments</key>
 		<string>[flags] [arguments]</string>
+	</dict>
+	<key>unalias</key>
+	<dict>
+		<key>developerModeOnly</key>
+		<false/>
+		<key>indexValue</key>
+		<integer>5123</integer>
+		<key>arguments</key>
+		<string>&lt;name&gt;</string>
 	</dict>
 	<key>unban</key>
 	<dict>

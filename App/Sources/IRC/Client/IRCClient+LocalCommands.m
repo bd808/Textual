@@ -110,6 +110,7 @@
 #import "IRCStrictTransportSecurityPrivate.h"
 #import "IRCClientInternal.h"
 #import "TXWebsiteLinks.h"
+#import "IRCAliasPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -210,6 +211,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 	dispatch_once(&onceToken, ^{
 		handlers = @{
+			@(IRCLocalCommandAlias) : NSStringFromSelector(@selector(_handleLocalCommandAlias:)),
+			@(IRCLocalCommandUnalias) : NSStringFromSelector(@selector(_handleLocalCommandUnalias:)),
 			@(IRCLocalCommandAme) : NSStringFromSelector(@selector(_handleLocalCommandAmsg:)),
 			@(IRCLocalCommandAmsg) : NSStringFromSelector(@selector(_handleLocalCommandAmsg:)),
 			@(IRCLocalCommandAquote) : NSStringFromSelector(@selector(_handleLocalCommandAraw:)),
@@ -318,6 +321,168 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 #pragma mark Local Command Handlers
+
+/* ALIAS: list, show one, or set one */
+- (void)_handleLocalCommandAlias:(IRCLocalCommandContext *)context
+{
+	NSMutableAttributedString *stringIn = context.stringIn;
+
+	NSString *name = stringIn.tokenAsString;
+
+	if (name.length == 0) {
+		NSDictionary<NSString *, NSString *> *aliases = IRCAlias.aliases;
+
+		if (aliases.count == 0) {
+			[self printDebugInformation:TXTLS(@"IRC[als-l0]")];
+
+			return;
+		}
+
+		[self printDebugInformation:TXTLS(@"IRC[als-l1]")];
+
+		for (NSString *aliasName in [aliases.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
+			[self printDebugInformation:TXTLS(@"IRC[als-l2]", aliasName, aliases[aliasName])];
+		}
+
+		return;
+	}
+
+	if ([name hasPrefix:@"/"]) {
+		name = [name substringFromIndex:1];
+	}
+
+	name = name.lowercaseString;
+
+	NSString *commands = [stringIn.string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+	/* Show one */
+	if (commands.length == 0) {
+		NSString *existing = [IRCAlias commandsForAlias:name];
+
+		if (existing) {
+			[self printDebugInformation:TXTLS(@"IRC[als-l2]", name, existing)];
+		} else {
+			[self printDebugInformation:TXTLS(@"IRC[als-n1]", name)];
+		}
+
+		return;
+	}
+
+	if ([IRCAlias isValidAliasName:name] == NO) {
+		[self printDebugInformation:TXTLS(@"IRC[als-e1]", name)];
+
+		return;
+	}
+
+	/* Textual's own commands come first: such an alias would never run */
+	if ([IRCCommandIndex indexOfLocalCommand:name] != NSNotFound) {
+		[self printDebugInformation:TXTLS(@"IRC[als-e2]", name)];
+
+		return;
+	}
+
+	[IRCAlias setCommands:commands forAlias:name];
+
+	[self printDebugInformation:TXTLS(@"IRC[als-s1]", name, commands)];
+}
+
+/* UNALIAS */
+- (void)_handleLocalCommandUnalias:(IRCLocalCommandContext *)context
+{
+	NSString *name = context.stringIn.tokenAsString;
+
+	if (name.length == 0) {
+		[self printInvalidSyntaxMessageForCommand:context.command];
+
+		return;
+	}
+
+	if ([name hasPrefix:@"/"]) {
+		name = [name substringFromIndex:1];
+	}
+
+	name = name.lowercaseString;
+
+	if ([IRCAlias commandsForAlias:name] == nil) {
+		[self printDebugInformation:TXTLS(@"IRC[als-n1]", name)];
+
+		return;
+	}
+
+	[IRCAlias setCommands:nil forAlias:name];
+
+	[self printDebugInformation:TXTLS(@"IRC[als-r1]", name)];
+}
+
+/* How deep aliases are running each other (main thread) */
+static NSUInteger _aliasDepth = 0;
+
+/* An alias's lines: commands as typed commands, the rest as messages to
+ where the alias was used */
+- (void)_runAlias:(NSString *)name commands:(NSString *)commands arguments:(NSString *)arguments targetChannel:(nullable IRCChannel *)targetChannel
+{
+	if (_aliasDepth >= 5) {
+		[self printDebugInformation:TXTLS(@"IRC[als-e6]", name)];
+
+		return;
+	}
+
+	NSString *channelName = nil;
+
+	if (targetChannel && targetChannel.isUtility == NO) {
+		channelName = targetChannel.name;
+	}
+
+	IRCAliasError error = IRCAliasErrorNone;
+
+	NSUInteger requiredArguments = 0;
+
+	NSArray<NSString *> *lines =
+	[IRCAlias linesForCommands:commands
+					 arguments:arguments
+					  nickname:self.userNickname
+					   channel:channelName
+						server:self.serverAddress
+						 error:&error
+			 requiredArguments:&requiredArguments];
+
+	switch (error) {
+		case IRCAliasErrorNone:
+		{
+			break;
+		}
+		case IRCAliasErrorMissingArguments:
+		{
+			[self printDebugInformation:TXTLS(@"IRC[als-e3]", name, requiredArguments)];
+
+			return;
+		}
+		case IRCAliasErrorNoChannel:
+		{
+			[self printDebugInformation:TXTLS(@"IRC[als-e4]", name)];
+
+			return;
+		}
+		case IRCAliasErrorTooManyCommands:
+		{
+			[self printDebugInformation:TXTLS(@"IRC[als-e5]", name)];
+
+			return;
+		}
+	}
+
+	_aliasDepth += 1;
+
+	for (NSString *line in lines) {
+		if ([line hasPrefix:@"/"] && [line hasPrefix:@"//"] == NO) {
+			[self sendCommand:line completeTarget:YES target:channelName];
+		} else if (targetChannel) {
+			[self inputText:line asCommand:IRCRemoteCommandPrivmsg destination:targetChannel];
+		}
+	}
+
+	_aliasDepth -= 1;
+}
 
 /* AME / AMSG */
 - (void)_handleLocalCommandAmsg:(IRCLocalCommandContext *)context
@@ -2350,6 +2515,15 @@ NS_ASSUME_NONNULL_BEGIN
 	NSString *lowercaseCommand = context.lowercaseCommand;
 	NSString *uppercaseCommand = context.uppercaseCommand;
 	IRCChannel *targetChannel = context.targetChannel;
+
+	/* One of your aliases (after Textual's own commands, before addons) */
+	NSString *aliasCommands = [IRCAlias commandsForAlias:lowercaseCommand];
+
+	if (aliasCommands) {
+		[self _runAlias:lowercaseCommand commands:aliasCommands arguments:stringIn.string targetChannel:targetChannel];
+
+		return;
+	}
 
 	/* Find an addon responsible for this command. */
 	NSString *addonPath = nil;

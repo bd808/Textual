@@ -98,3 +98,12 @@ Click “Edit Style” to add your own style sheet rules. This feature can also 
 "icp-n1" = "↑ and ↓ choose, Tab or Return picks, Esc closes the list. A nickname is inserted without the @, with the autocomplete suffix at the start of a message. Tab completion works as before.";
 "imd-c1" = "Turn **bold**, _italic_, `code` and ||spoiler|| into formatting when sending";
 "imd-n1" = "Only at the start and end of words, so names like snake_case, file paths and links stay as typed. Option-Shift-Return (⌥⇧↩) sends one message exactly as typed. Spoilers are sent as black on black, the usual IRC spoiler.";
+
+/* Controls → Aliases (E3) */
+"als-t1" = "Aliases";
+"als-h1" = "Your own commands. Typing /name runs what is written next to it, on any server:";
+"als-c1" = "Name";
+"als-c2" = "Runs";
+"als-ad" = "Add Alias";
+"als-rm" = "Remove Alias";
+"als-n1" = "$1 to $9 are the words typed after the name, $1- is everything from the first word on; $nick is your nickname, $channel the current channel, $server the server. Separate several commands with ; (\\; for a semicolon). Textual’s own commands can’t be replaced. In a message, “/alias o /mode $channel +o $1” does the same.";

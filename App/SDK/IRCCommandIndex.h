@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 /* Local commands are client-local commands */
 typedef NS_ENUM(NSUInteger, IRCLocalCommand) {
 	IRCLocalCommandAdchat = 5001,
+	IRCLocalCommandAlias = 5122,
 	IRCLocalCommandAme = 5002,
 	IRCLocalCommandAmsg = 5003,
 	IRCLocalCommandAquote = 5095,
@@ -140,6 +141,7 @@ typedef NS_ENUM(NSUInteger, IRCLocalCommand) {
 	IRCLocalCommandWho = 5079,
 	IRCLocalCommandWhois = 5080,
 	IRCLocalCommandWhowas = 5081,
+	IRCLocalCommandUnalias = 5123,
 	IRCLocalCommandZline = 5082
 };
 

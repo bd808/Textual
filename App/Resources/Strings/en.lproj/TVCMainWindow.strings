@@ -99,3 +99,4 @@
 "icp-mc" = "%lu members";
 "icp-ex" = "From an extension";
 "icp-sc" = "Your script";
+"icp-al" = "Your alias: %@";

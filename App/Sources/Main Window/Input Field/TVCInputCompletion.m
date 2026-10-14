@@ -42,6 +42,7 @@
 #import "IRCChannel.h"
 #import "IRCChannelMemberList.h"
 #import "IRCChannelUser.h"
+#import "IRCAliasPrivate.h"
 #import "IRCCommandIndex.h"
 #import "IRCUser.h"
 #import "TLOKeyEventHandler.h"
@@ -542,6 +543,16 @@ NS_ASSUME_NONNULL_BEGIN
 					details[name] = [NSString stringWithFormat:@"%@ · %@", description, arguments];
 				} else {
 					details[name] = (description ?: arguments);
+				}
+			}
+
+			NSDictionary<NSString *, NSString *> *aliases = IRCAlias.aliases;
+
+			for (NSString *name in aliases) {
+				if ([commands containsObject:name] == NO) {
+					[commands addObject:name];
+
+					details[name] = TXTLS(@"TVCMainWindow[icp-al]", aliases[name]);
 				}
 			}
 

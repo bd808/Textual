@@ -363,6 +363,7 @@ The identifier for a timer can be found using “/timer list”";
 "js3-9v" = "Cannot use nickname “%@“ — Trying another…";
 
 /* One-line descriptions in the completion list after "/" (E3) */
+"cmd-alias" = "Make your own command, or list yours";
 "cmd-adchat" = "Send a message to the server admins’ channel";
 "cmd-ame" = "Send an action to every channel on this server";
 "cmd-amsg" = "Send a message to every channel on this server";
@@ -453,6 +454,7 @@ The identifier for a timer can be found using “/timer list”";
 "cmd-timer" = "Run a command later or repeatedly";
 "cmd-topic" = "Show or change the topic";
 "cmd-umode" = "Show or change your own modes";
+"cmd-unalias" = "Remove one of your own commands";
 "cmd-unban" = "Lift a ban";
 "cmd-unignore" = "Stop ignoring someone";
 "cmd-unmute" = "Turn sounds and notifications back on";
@@ -465,3 +467,17 @@ The identifier for a timer can be found using “/timer list”";
 "cmd-whois" = "Show information about someone";
 "cmd-whowas" = "Show information about someone who left";
 "cmd-zline" = "Ban an address from the server (Z:Line)";
+
+/* /alias and /unalias (E3) */
+"als-l0" = "You have no aliases. For example, “/alias o /mode $channel +o $1” makes “/o alice” give alice operator status.";
+"als-l1" = "Your aliases:";
+"als-l2" = "  /%1$@ → %2$@";
+"als-s1" = "/%1$@ now runs: %2$@";
+"als-n1" = "There is no alias /%@";
+"als-r1" = "Removed the alias /%@";
+"als-e1" = "“%@” can’t be an alias name: use letters, digits, - and _";
+"als-e2" = "/%@ is one of Textual’s own commands, so an alias with that name would never run";
+"als-e3" = "/%1$@ needs %2$lu word(s) after it";
+"als-e4" = "/%1$@ uses $channel, but this isn’t a channel or private message";
+"als-e5" = "/%@ runs more than 10 commands";
+"als-e6" = "Aliases call each other more than 5 deep: stopped at /%@";

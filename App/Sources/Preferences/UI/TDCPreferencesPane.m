@@ -44,6 +44,9 @@
 #import "TPCPreferencesReload.h"
 #import "TVCMainWindowPrivate.h"
 #import "TLOLocalization.h"
+#import "TPCPreferencesUserDefaults.h"
+#import "IRCAliasPrivate.h"
+#import "IRCCommandIndex.h"
 #import "TPCSecurityScopedFolderPrivate.h"
 #import "TDCPreferencesPanePrivate.h"
 
@@ -293,7 +296,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 #pragma mark Controls
 
-@interface TDCPreferencesControlsPane ()
+@interface TDCPreferencesControlsPane () <NSTableViewDataSource, NSTableViewDelegate>
+@property (nonatomic, strong) NSTableView *aliasTable;
+@property (nonatomic, strong) NSSegmentedControl *aliasButtons;
+@property (nonatomic, strong) NSMutableArray<NSMutableArray<NSString *> *> *aliasRows; // [name, commands]
 - (IBAction)onChangedInputHistoryScheme:(nullable id)sender;
 - (IBAction)onChangedMainInputTextViewFontSize:(nullable id)sender;
 - (IBAction)onChangedMainWindowSegmentedController:(nullable id)sender;
@@ -316,6 +322,216 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[tabView addTabViewItem:[self _suggestionsTabViewItem]];
+
+	[tabView addTabViewItem:[self _aliasesTabViewItem]];
+}
+
+#pragma mark -
+#pragma mark Aliases
+
+/* Your own commands (E3): a name and what it runs; /alias does the same */
+- (NSTabViewItem *)_aliasesTabViewItem
+{
+	self.aliasRows = [NSMutableArray array];
+
+	NSDictionary<NSString *, NSString *> *aliases = IRCAlias.aliases;
+
+	for (NSString *name in [aliases.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
+		[self.aliasRows addObject:[@[name, aliases[name]] mutableCopy]];
+	}
+
+	NSTextField *heading = [NSTextField wrappingLabelWithString:TXTLS(@"TDCPreferencesController[als-h1]")];
+
+	NSTableView *table = [NSTableView new];
+
+	NSTableColumn *nameColumn = [[NSTableColumn alloc] initWithIdentifier:@"name"];
+
+	nameColumn.title = TXTLS(@"TDCPreferencesController[als-c1]");
+	nameColumn.width = 110;
+
+	NSTableColumn *commandsColumn = [[NSTableColumn alloc] initWithIdentifier:@"commands"];
+
+	commandsColumn.title = TXTLS(@"TDCPreferencesController[als-c2]");
+	commandsColumn.width = 400;
+
+	[table addTableColumn:nameColumn];
+	[table addTableColumn:commandsColumn];
+
+	table.usesAlternatingRowBackgroundColors = YES;
+	table.style = NSTableViewStyleFullWidth;
+	table.columnAutoresizingStyle = NSTableViewLastColumnOnlyAutoresizingStyle;
+	table.dataSource = self;
+	table.delegate = self;
+
+	self.aliasTable = table;
+
+	NSScrollView *scrollView = [NSScrollView new];
+
+	scrollView.documentView = table;
+	scrollView.hasVerticalScroller = YES;
+	scrollView.borderType = NSBezelBorder;
+
+	[scrollView.widthAnchor constraintEqualToConstant:540].active = YES;
+	[scrollView.heightAnchor constraintEqualToConstant:200].active = YES;
+
+	NSImage *addImage = [NSImage imageWithSystemSymbolName:@"plus" accessibilityDescription:TXTLS(@"TDCPreferencesController[als-ad]")];
+	NSImage *removeImage = [NSImage imageWithSystemSymbolName:@"minus" accessibilityDescription:TXTLS(@"TDCPreferencesController[als-rm]")];
+
+	NSSegmentedControl *buttons = [NSSegmentedControl segmentedControlWithImages:@[addImage, removeImage] trackingMode:NSSegmentSwitchTrackingMomentary target:self action:@selector(onAliasButton:)];
+
+	buttons.segmentStyle = NSSegmentStyleSmallSquare;
+
+	[buttons setEnabled:NO forSegment:1];
+
+	self.aliasButtons = buttons;
+
+	NSTextField *note = [NSTextField wrappingLabelWithString:TXTLS(@"TDCPreferencesController[als-n1]")];
+
+	note.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
+	note.textColor = [NSColor secondaryLabelColor];
+
+	NSStackView *column = [NSStackView stackViewWithViews:@[heading, scrollView, buttons, note]];
+
+	column.orientation = NSUserInterfaceLayoutOrientationVertical;
+	column.alignment = NSLayoutAttributeLeading;
+	column.spacing = 0;
+	column.translatesAutoresizingMaskIntoConstraints = NO;
+
+	[column setCustomSpacing:10 afterView:heading];
+	[column setCustomSpacing:12 afterView:buttons];
+
+	[heading.widthAnchor constraintLessThanOrEqualToConstant:540].active = YES;
+	[note.widthAnchor constraintLessThanOrEqualToConstant:540].active = YES;
+
+	NSView *itemView = [NSView new];
+
+	[itemView addSubview:column];
+
+	[NSLayoutConstraint activateConstraints:@[
+		[column.leadingAnchor constraintEqualToAnchor:itemView.leadingAnchor constant:40],
+		[column.topAnchor constraintEqualToAnchor:itemView.topAnchor constant:24]
+	]];
+
+	NSTabViewItem *item = [NSTabViewItem new];
+
+	item.label = TXTLS(@"TDCPreferencesController[als-t1]");
+	item.view = itemView;
+
+	return item;
+}
+
+- (void)_saveAliases
+{
+	NSMutableDictionary<NSString *, NSString *> *aliases = [NSMutableDictionary dictionary];
+
+	for (NSArray<NSString *> *row in self.aliasRows) {
+		NSString *name = row[0].lowercaseString;
+		NSString *commands = [row[1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+		if ([IRCAlias isValidAliasName:name] == NO || commands.length == 0 || [IRCCommandIndex indexOfLocalCommand:name] != NSNotFound) {
+			continue;
+		}
+
+		aliases[name] = commands;
+	}
+
+	[RZUserDefaults() setObject:[aliases copy] forKey:@"Input -> Aliases"];
+}
+
+- (void)onAliasButton:(NSSegmentedControl *)sender
+{
+	NSTableView *table = self.aliasTable;
+
+	if (sender.selectedSegment == 0) {
+		[self.aliasRows addObject:[@[@"", @""] mutableCopy]];
+
+		NSInteger row = (self.aliasRows.count - 1);
+
+		[table reloadData];
+
+		[table selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+
+		[table editColumn:0 row:row withEvent:nil select:YES];
+
+		return;
+	}
+
+	NSInteger row = table.selectedRow;
+
+	if (row < 0) {
+		return;
+	}
+
+	[self.aliasRows removeObjectAtIndex:row];
+
+	[table reloadData];
+
+	[self _saveAliases];
+
+	[self.aliasButtons setEnabled:NO forSegment:1];
+}
+
+- (void)onAliasEdited:(NSTextField *)sender
+{
+	NSTableView *table = self.aliasTable;
+
+	NSInteger row = [table rowForView:sender];
+	NSInteger column = [table columnForView:sender];
+
+	if (row < 0 || row >= (NSInteger)self.aliasRows.count || column < 0) {
+		return;
+	}
+
+	NSString *value = [sender.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+	if (column == 0) {
+		if ([value hasPrefix:@"/"]) {
+			value = [value substringFromIndex:1];
+		}
+
+		value = value.lowercaseString;
+	}
+
+	self.aliasRows[row][column] = value;
+
+	[self _saveAliases];
+}
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
+{
+	return self.aliasRows.count;
+}
+
+- (nullable NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
+{
+	NSString *identifier = tableColumn.identifier;
+
+	NSTextField *field = [tableView makeViewWithIdentifier:identifier owner:self];
+
+	if (field == nil) {
+		field = [NSTextField textFieldWithString:@""];
+
+		field.identifier = identifier;
+		field.bordered = NO;
+		field.drawsBackground = NO;
+		field.editable = YES;
+		field.target = self;
+		field.action = @selector(onAliasEdited:);
+		field.cell.sendsActionOnEndEditing = YES;
+		/* Examples of what is typed, not words to translate */
+		field.placeholderString = TXLocalizationNotNeeded(([identifier isEqualToString:@"name"]) ? @"o" : @"/mode $channel +o $1");
+	}
+
+	NSArray<NSString *> *values = self.aliasRows[row];
+
+	field.stringValue = (([identifier isEqualToString:@"name"]) ? values[0] : values[1]);
+
+	return field;
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification
+{
+	[self.aliasButtons setEnabled:(self.aliasTable.selectedRow >= 0) forSegment:1];
 }
 
 /* Typing (E3): a suggestion switch per kind and Markdown, built in code */
