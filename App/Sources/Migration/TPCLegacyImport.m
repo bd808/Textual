@@ -592,6 +592,9 @@ NS_ASSUME_NONNULL_BEGIN
 		[RZUserDefaults() _migrateObject:@(NO) forKey:key];
 	}
 
+	/* Markdown when sending is new too: off for Textual 7 users (decided 2026-10-13) */
+	[RZUserDefaults() _migrateObject:@(NO) forKey:TPCPreferencesInputMarkdownDefaultsKey];
+
 	/* Textual 7 showed no previews unless turned on; Textual 8 does (D-E2.14),
 	 which is offered on purpose too (10.6) */
 	if (preferences[TPCPreferencesShowInlineMediaDefaultsKey] == nil) {

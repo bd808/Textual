@@ -318,7 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[tabView addTabViewItem:[self _suggestionsTabViewItem]];
 }
 
-/* Suggestions while typing (E3): a switch per kind, built in code */
+/* Typing (E3): a suggestion switch per kind and Markdown, built in code */
 - (NSTabViewItem *)_suggestionsTabViewItem
 {
 	NSTextField *heading = [NSTextField labelWithString:TXTLS(@"TDCPreferencesController[icp-h1]")];
@@ -347,6 +347,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[rows addObject:note];
 
+	/* Markdown when sending */
+	NSButton *markdownButton = [NSButton checkboxWithTitle:TXTLS(@"TDCPreferencesController[imd-c1]") target:self action:@selector(onChangedInputMarkdown:)];
+
+	markdownButton.state = [TPCPreferences inputMarkdownEnabled];
+
+	NSTextField *markdownNote = [NSTextField wrappingLabelWithString:TXTLS(@"TDCPreferencesController[imd-n1]")];
+
+	markdownNote.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
+	markdownNote.textColor = [NSColor secondaryLabelColor];
+
+	NSBox *separator = [NSBox new];
+
+	separator.boxType = NSBoxSeparator;
+
+	[rows addObject:separator];
+	[rows addObject:markdownButton];
+	[rows addObject:markdownNote];
+
 	NSStackView *column = [NSStackView stackViewWithViews:rows];
 
 	column.orientation = NSUserInterfaceLayoutOrientationVertical;
@@ -356,8 +374,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[column setCustomSpacing:12 afterView:heading];
 	[column setCustomSpacing:16 afterView:rows[4]];
+	[column setCustomSpacing:18 afterView:note];
+	[column setCustomSpacing:18 afterView:separator];
 
 	[note.widthAnchor constraintLessThanOrEqualToConstant:520].active = YES;
+	[markdownNote.widthAnchor constraintLessThanOrEqualToConstant:520].active = YES;
+	[separator.widthAnchor constraintEqualToConstant:520].active = YES;
 
 	NSView *itemView = [NSView new];
 
@@ -375,6 +397,11 @@ NS_ASSUME_NONNULL_BEGIN
 	item.view = itemView;
 
 	return item;
+}
+
+- (void)onChangedInputMarkdown:(NSButton *)sender
+{
+	TPCPreferences.inputMarkdownEnabled = (sender.state == NSControlStateValueOn);
 }
 
 - (void)onChangedInputCompletion:(NSButton *)sender

@@ -77,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL reloadingTheme;
 @property (nonatomic, assign) BOOL inputDraftBeingRestored;
 - (void)inputTextAsCommand:(IRCRemoteCommand)command;
+- (void)inputTextAsCommand:(IRCRemoteCommand)command applyingMarkdown:(BOOL)applyMarkdown;
 @end
 
 @interface TVCMainWindow (ServerListInternal)

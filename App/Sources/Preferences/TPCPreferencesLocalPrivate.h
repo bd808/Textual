@@ -51,6 +51,8 @@ TEXTUAL_EXTERN NSString * const TPCPreferencesShowInlineMediaDefaultsKey;
  nicknames, channels, commands, emoji */
 TEXTUAL_EXTERN NSArray<NSString *> *TPCPreferencesInputCompletionDefaultsKeys(void);
 
+TEXTUAL_EXTERN NSString * const TPCPreferencesInputMarkdownDefaultsKey; // Markdown when sending
+
 typedef NS_ENUM(NSUInteger, TXInlineMediaDomainRuleMode) {
 	TXInlineMediaDomainRuleModeExcept = 0, // links from every site except those listed
 	TXInlineMediaDomainRuleModeOnly = 1 // links only from the sites listed
@@ -100,6 +102,8 @@ typedef NS_ENUM(NSUInteger, TXInlineMediaDomainRuleMode) {
 + (void)setScrollbackVisibleLimit:(NSUInteger)scrollbackVisibleLimit;
 
 + (void)setShowInlineMedia:(BOOL)showInlineMedia;
+
+@property (class) BOOL inputMarkdownEnabled;
 
 + (BOOL)inputCompletionEnabledForKind:(NSUInteger)kind;
 + (void)setInputCompletion:(BOOL)enabled forKind:(NSUInteger)kind;

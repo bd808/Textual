@@ -207,6 +207,7 @@
 		4C06E6A220EC55B90055D09A /* TLONotificationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31514920EB673E00448776 /* TLONotificationController.m */; };
 		4C06E6A320EC55B90055D09A /* TLOInputHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515420EB673E00448776 /* TLOInputHistory.m */; };
 		4C461703899F86E9A1CDD3F8 /* TVCInputCompletion.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC3E57AC7861D0E229F24C0 /* TVCInputCompletion.m */; };
+		4CCA973F0F44D80FEB1E8123 /* TVCInputMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEF6329148D9E644FDB0D8B /* TVCInputMarkdown.m */; };
 		4C06E6A420EC55B90055D09A /* TLOInternetAddressLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515620EB673E00448776 /* TLOInternetAddressLookup.m */; };
 		4C06E6A420EC55B90055D0A1 /* TLOKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515620EB673E004487A1 /* TLOKeychain.m */; };
 		4C06E6A520EC55B90055D09A /* TLOKeyEventHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31514B20EB673E00448776 /* TLOKeyEventHandler.m */; };
@@ -709,6 +710,7 @@
 		4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */; };
 		4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */; };
 		4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */; };
+		4CE9F00465BB5D17F16D8988 /* TVCInputMarkdownTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */; };
 		4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */; };
 /* End PBXBuildFile section */
 
@@ -995,7 +997,9 @@
 		4C31515020EB673E00448776 /* TLOLicenseManagerDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOLicenseManagerDownloader.m; sourceTree = "<group>"; };
 		4C31515420EB673E00448776 /* TLOInputHistory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOInputHistory.m; sourceTree = "<group>"; };
 		4CC3E57AC7861D0E229F24C0 /* TVCInputCompletion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputCompletion.m; sourceTree = "<group>"; };
+		4CEF6329148D9E644FDB0D8B /* TVCInputMarkdown.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputMarkdown.m; sourceTree = "<group>"; };
 		4C681E8BDAA0BF760194D9D1 /* TVCInputCompletionPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCInputCompletionPrivate.h; sourceTree = "<group>"; };
+		4C2C5810BA5563BFC2E650E0 /* TVCInputMarkdownPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCInputMarkdownPrivate.h; sourceTree = "<group>"; };
 		4C31515520EB673E00448776 /* TLOLinkParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TLOLinkParser.swift; sourceTree = "<group>"; };
 		4C31515620EB673E00448776 /* TLOInternetAddressLookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOInternetAddressLookup.m; sourceTree = "<group>"; };
 		4C31515620EB673E004487A1 /* TLOKeychain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOKeychain.m; sourceTree = "<group>"; };
@@ -1607,6 +1611,7 @@
 		4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaFetchTests.m; sourceTree = "<group>"; };
 		4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMPreviewCardTests.m; sourceTree = "<group>"; };
 		4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputCompletionTests.m; sourceTree = "<group>"; };
+		4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputMarkdownTests.m; sourceTree = "<group>"; };
 		4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HLSHistoricLogManagerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2369,7 +2374,9 @@
 			children = (
 				4C31515420EB673E00448776 /* TLOInputHistory.m */,
 				4CC3E57AC7861D0E229F24C0 /* TVCInputCompletion.m */,
+				4CEF6329148D9E644FDB0D8B /* TVCInputMarkdown.m */,
 				4C681E8BDAA0BF760194D9D1 /* TVCInputCompletionPrivate.h */,
+				4C2C5810BA5563BFC2E650E0 /* TVCInputMarkdownPrivate.h */,
 				4C3151DA20EB673E00448776 /* TLOInputHistoryPrivate.h */,
 				4C31514B20EB673E00448776 /* TLOKeyEventHandler.m */,
 				4C31515C20EB673E00448776 /* TLONicknameCompletionStatus.m */,
@@ -2978,6 +2985,7 @@
 				4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */,
 				4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */,
 				4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */,
+				4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */,
 				4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */,
 				4CCEEF3CE8E84E1B5AE9AC3C /* TVCLogViewSecurityTests.m */,
 			);
@@ -3799,6 +3807,7 @@
 				4C06E6A220EC55B90055D09A /* TLONotificationController.m in Sources */,
 				4C06E6A320EC55B90055D09A /* TLOInputHistory.m in Sources */,
 				4C461703899F86E9A1CDD3F8 /* TVCInputCompletion.m in Sources */,
+				4CCA973F0F44D80FEB1E8123 /* TVCInputMarkdown.m in Sources */,
 				4C06E6A420EC55B90055D09A /* TLOInternetAddressLookup.m in Sources */,
 				4C06E6A420EC55B90055D0A1 /* TLOKeychain.m in Sources */,
 				4C06E6A520EC55B90055D09A /* TLOKeyEventHandler.m in Sources */,
@@ -3925,6 +3934,7 @@
 				4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */,
 				4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */,
 				4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */,
+				4CE9F00465BB5D17F16D8988 /* TVCInputMarkdownTests.m in Sources */,
 				4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */,
 				4CACA1915D50ECEEE616CC47 /* TPCPreferencesTests.m in Sources */,
 				4CA4A4D412BC97120FEB0648 /* TVCLogRendererTests.m in Sources */,

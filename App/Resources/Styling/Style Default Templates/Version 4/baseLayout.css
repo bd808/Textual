@@ -249,13 +249,17 @@ body[data-selected="false"] #topicBar {
 	display: none;
 }
 
-/* Spoilers */
-/* !importmant must be used in this context because
- when we have hex colors, those are set using the
- style attribute which we must overpower. */
-.effect[data-is-spoiler='true']:hover {
+/* Spoilers (text in its own background colour) show on a click, not when
+ the pointer passes over them. !important: hex colours are set with the
+ style attribute, which this must overpower. */
+.effect[data-is-spoiler='true'] {
+	cursor: pointer;
+}
+
+.effect[data-is-spoiler='true'][data-revealed='true'] {
 	color: inherit !important;
 	background-color: transparent !important;
+	cursor: auto;
 }
 
 /* Typing indicator: zero specificity (:where), so any style's own rules win */

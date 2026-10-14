@@ -62,6 +62,8 @@ NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey = @"DisplayEventI
 
 NSString * const TPCPreferencesShowInlineMediaDefaultsKey = @"DisplayEventInLogView -> Inline Media";
 
+NSString * const TPCPreferencesInputMarkdownDefaultsKey = @"Input -> Markdown Formatting";
+
 NSArray<NSString *> *TPCPreferencesInputCompletionDefaultsKeys(void)
 {
 	return @[@"Input Completion -> Nicknames",
@@ -390,6 +392,16 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 + (BOOL)showInlineMedia
 {
 	return [RZUserDefaults() boolForKey:TPCPreferencesShowInlineMediaDefaultsKey];
+}
+
++ (BOOL)inputMarkdownEnabled
+{
+	return [RZUserDefaults() boolForKey:TPCPreferencesInputMarkdownDefaultsKey];
+}
+
++ (void)setInputMarkdownEnabled:(BOOL)inputMarkdownEnabled
+{
+	[RZUserDefaults() setBool:inputMarkdownEnabled forKey:TPCPreferencesInputMarkdownDefaultsKey];
 }
 
 + (BOOL)inputCompletionEnabledForKind:(NSUInteger)kind

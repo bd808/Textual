@@ -77,7 +77,9 @@
 #import "TLONotificationControllerPrivate.h"
 #import "TLOSpeechSynthesizerPrivate.h"
 #import "TDCLicenseManagerDialogPrivate.h"
+#import "TPCPreferencesLocalPrivate.h"
 #import "TVCInputCompletionPrivate.h"
+#import "TVCInputMarkdownPrivate.h"
 #import "TVCMainWindowInternal.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -703,7 +705,14 @@ NSString * const TVCMainWindowSelectionChangedNotification = @"TVCMainWindowSele
 
 - (void)inputTextAsCommand:(IRCRemoteCommand)command
 {
+	[self inputTextAsCommand:command applyingMarkdown:[TPCPreferences inputMarkdownEnabled]];
+}
+
+- (void)inputTextAsCommand:(IRCRemoteCommand)command applyingMarkdown:(BOOL)applyMarkdown
+{
 	[self.nicknameCompletionStatus clear];
+
+	[self.inputCompletion close];
 
 	NSAttributedString *stringValue = self.inputTextField.attributedStringValue;
 
@@ -721,7 +730,12 @@ NSString * const TVCMainWindowSelectionChangedNotification = @"TVCMainWindowSele
 
 	self.inputTextField.attributedStringValue = [NSAttributedString attributedString];
 
+	/* History keeps what was typed */
 	[self.inputHistoryManager add:stringValue];
+
+	if (applyMarkdown) {
+		stringValue = [TVCInputMarkdown attributedStringByApplyingMarkdown:stringValue];
+	}
 
 	[self inputText:stringValue asCommand:command];
 }

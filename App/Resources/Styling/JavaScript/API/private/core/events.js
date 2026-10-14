@@ -244,3 +244,34 @@ _Textual._mouseUpEventCallback = function() /* PRIVATE */
 
 /* Bind to events */
 document.addEventListener("mouseup", _Textual._mouseUpEventCallback, false);
+
+/* A click shows a spoiler (and hides it again) */
+_Textual._spoilerClickCallback = function(event)
+{
+	var target = event.target;
+
+	if (!target || !target.closest) {
+		return;
+	}
+
+	var spoiler = target.closest(".effect[data-is-spoiler='true']");
+
+	if (!spoiler) {
+		return;
+	}
+
+	/* Selecting text isn't a click */
+	var selection = window.getSelection();
+
+	if (selection && selection.toString().length > 0 && spoiler.dataset.revealed !== "true") {
+		return;
+	}
+
+	if (spoiler.dataset.revealed === "true") {
+		delete spoiler.dataset.revealed;
+	} else {
+		spoiler.dataset.revealed = "true";
+	}
+};
+
+document.addEventListener("click", _Textual._spoilerClickCallback, false);

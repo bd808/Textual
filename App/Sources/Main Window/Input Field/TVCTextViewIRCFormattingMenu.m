@@ -513,8 +513,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[self applyEffectToTextBox:IRCTextFormatterEffectSpoiler withValue:@(YES) inRange:selectedTextRange];
 
-	[self applyEffectToTextBox:IRCTextFormatterEffectForegroundColor withValue:@(14) inRange:selectedTextRange];
-	[self applyEffectToTextBox:IRCTextFormatterEffectBackgroundColor withValue:@(14) inRange:selectedTextRange];
+	/* The classic IRC spoiler, as Markdown's ||spoiler|| sends it: black on black */
+	[self applyEffectToTextBox:IRCTextFormatterEffectForegroundColor withValue:@(1) inRange:selectedTextRange];
+	[self applyEffectToTextBox:IRCTextFormatterEffectBackgroundColor withValue:@(1) inRange:selectedTextRange];
 }
 
 #pragma mark -

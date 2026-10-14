@@ -197,6 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
 	/* Text field keyboard shortcuts */
 	[self registerInputSelector:@selector(sendControlEnterMessageMaybe:) key:TXKeyEnterCode modifiers:NSEventModifierFlagControl];
 
+	[self registerInputSelector:@selector(sendMessageAsTyped:) key:TXKeyReturnCode modifiers:(NSEventModifierFlagOption | NSEventModifierFlagShift)];
+	[self registerInputSelector:@selector(sendMessageAsTyped:) key:TXKeyEnterCode modifiers:(NSEventModifierFlagOption | NSEventModifierFlagShift)];
+
 	[self registerInputSelector:@selector(sendMessageAsAction:) key:TXKeyReturnCode modifiers:NSEventModifierFlagCommand];
 	[self registerInputSelector:@selector(sendMessageAsAction:) key:TXKeyEnterCode modifiers:NSEventModifierFlagCommand];
 
@@ -248,6 +251,12 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[self.inputTextField keyDownToSuper:e];
+}
+
+/* ⌥⇧↩: this message without Markdown (D-E3.5) */
+- (void)sendMessageAsTyped:(NSEvent *)e
+{
+	[self inputTextAsCommand:IRCRemoteCommandPrivmsg applyingMarkdown:NO];
 }
 
 - (void)sendMessageAsAction:(NSEvent *)e

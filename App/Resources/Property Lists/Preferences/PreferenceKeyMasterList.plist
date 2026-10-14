@@ -118,6 +118,8 @@
 	<integer>0</integer>
 	<key>IRCopDefaultLocalizaiton -&gt; Shun Reason</key>
 	<integer>0</integer>
+	<key>Input -&gt; Markdown Formatting</key>
+	<integer>0</integer>
 	<key>Input Completion -&gt; Channels</key>
 	<integer>0</integer>
 	<key>Input Completion -&gt; Commands</key>
