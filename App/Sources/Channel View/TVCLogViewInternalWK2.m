@@ -51,6 +51,7 @@
 #import "TVCLogViewPrivate.h"
 #import "TVCLogViewInternalWK2.h"
 #import "TDCFileTransferDialogPrivate.h"
+#import "ICLMediaSchemeHandlerPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -68,6 +69,14 @@ static TVCLogScriptEventSink *_sharedWebViewScriptSink = nil;
 /* Server identifier → that server's configuration. Each server has its own
  website data store so its views load inline media through its proxy. */
 static NSMutableDictionary<NSString *, WKWebViewConfiguration *> *_clientWebViewConfigurations = nil;
+
+/* Nothing in the chat view loads from the internet itself (E2, D-E2.2): media
+ comes through textual-media: (ICLMediaSchemeHandler), everything else from
+ the style and the app bundle. Pages wait until the rule list is in place. */
+static NSString * const _remoteLoadsRuleListIdentifier = @"TextualChatViewRemoteLoads-1";
+
+static BOOL _contentRulesReady = NO;
+static NSMutableArray<dispatch_block_t> *_loadsWaitingForContentRules = nil;
 
 #pragma mark -
 #pragma mark Factory
@@ -96,7 +105,45 @@ static NSMutableDictionary<NSString *, WKWebViewConfiguration *> *_clientWebView
 		_sharedWebPolicy = [TVCLogPolicy new];
 
 		_clientWebViewConfigurations = [NSMutableDictionary dictionary];
+
+		_loadsWaitingForContentRules = [NSMutableArray array];
+
+		[self _t_addRemoteLoadsRuleList];
 	});
+}
+
+/* Every http(s) and ws(s) load is blocked: scripts, frames, images, media,
+ fonts, style sheets and requests. Content rule regular expressions have no
+ alternation, hence two rules. */
++ (void)_t_addRemoteLoadsRuleList
+{
+	NSString *rules =
+	@"["
+	@"{\"trigger\":{\"url-filter\":\"^https?://\"},\"action\":{\"type\":\"block\"}},"
+	@"{\"trigger\":{\"url-filter\":\"^wss?://\"},\"action\":{\"type\":\"block\"}}"
+	@"]";
+
+	[[WKContentRuleListStore defaultStore]
+	 compileContentRuleListForIdentifier:_remoteLoadsRuleListIdentifier
+				  encodedContentRuleList:rules
+					   completionHandler:^(WKContentRuleList *ruleList, NSError *error) {
+		 /* Called on the main thread */
+		 if (ruleList) {
+			 [_sharedUserContentController addContentRuleList:ruleList];
+		 } else {
+			 LogToConsoleError("Failed to compile the chat view's content rules: %{public}@", error.localizedDescription);
+		 }
+
+		 _contentRulesReady = YES;
+
+		 NSArray<dispatch_block_t> *loads = [_loadsWaitingForContentRules copy];
+
+		 [_loadsWaitingForContentRules removeAllObjects];
+
+		 for (dispatch_block_t load in loads) {
+			 load();
+		 }
+	 }];
 }
 
 + (WKWebViewConfiguration *)_t_configurationForClient:(nullable IRCClient *)client
@@ -113,6 +160,9 @@ static NSMutableDictionary<NSString *, WKWebViewConfiguration *> *_clientWebView
 		configuration = [_sharedWebViewConfiguration copy];
 
 		configuration.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
+
+		/* Inline media of a server's views: fetched by Textual through its previews' session */
+		[configuration setURLSchemeHandler:[ICLMediaSchemeHandler sharedHandler] forURLScheme:ICLMediaSchemeHandlerScheme];
 
 		[IRCConnectionProxy applyClientConfig:client.config toWebsiteDataStore:configuration.websiteDataStore];
 
@@ -296,14 +346,44 @@ static NSMutableDictionary<NSString *, WKWebViewConfiguration *> *_clientWebView
 {
 	[self startObservingLoadingProperty];
 
+	if (_contentRulesReady == NO) {
+		__weak typeof(self) weakSelf = self;
+
+		[_loadsWaitingForContentRules addObject:^{
+			[weakSelf _t_loadFileURL:URL allowingReadAccessToURL:readAccessURL];
+		}];
+
+		return nil;
+	}
+
 	return [super loadFileURL:URL allowingReadAccessToURL:readAccessURL];
+}
+
+- (void)_t_loadFileURL:(NSURL *)URL allowingReadAccessToURL:(NSURL *)readAccessURL
+{
+	(void)[super loadFileURL:URL allowingReadAccessToURL:readAccessURL];
 }
 
 - (nullable WKNavigation *)loadHTMLString:(NSString *)string baseURL:(nullable NSURL *)baseURL
 {
 	[self startObservingLoadingProperty];
 
+	if (_contentRulesReady == NO) {
+		__weak typeof(self) weakSelf = self;
+
+		[_loadsWaitingForContentRules addObject:^{
+			[weakSelf _t_loadHTMLString:string baseURL:baseURL];
+		}];
+
+		return nil;
+	}
+
 	return [super loadHTMLString:string baseURL:baseURL];
+}
+
+- (void)_t_loadHTMLString:(NSString *)string baseURL:(nullable NSURL *)baseURL
+{
+	(void)[super loadHTMLString:string baseURL:baseURL];
 }
 
 - (void)stopLoading

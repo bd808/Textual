@@ -286,7 +286,7 @@ NSString * const ICLInlineContentErrorDomain = @"ICLInlineContentErrorDomain";
 			NSLocalizedDescriptionKey : @"-[ICLPayload html] and -[ICLPayload entrypoint] cannot both be empty"
 		}];
 	}
-	else if ([ICLURLSession URLIsAllowed:payload.urlToInline] == NO)
+	else if ([ICLURLSession URLIsAllowed:payload.urlToInline withResolution:[ICLURLSession resolutionForSession:payload.session]] == NO)
 	{
 		/* Images and videos are checked before this point. This
 		 keeps any other route from inlining a local address. */

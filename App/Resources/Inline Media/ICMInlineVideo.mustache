@@ -6,6 +6,12 @@
 
 {{#videoAutoplayEnabled}}
 		autoplay
+		data-plays-by-itself="true"
+{{/videoAutoplayEnabled}}
+
+{{! A video you start yourself loads only its first frame and length until then }}
+{{^videoAutoplayEnabled}}
+		preload="metadata"
 {{/videoAutoplayEnabled}}
 
 {{#videoControlsEnabled}}
@@ -26,5 +32,6 @@
 		class="content"
 		style="max-width: {{preferredMaximumWidth}}px;"
 		onloadedmetadata="_ICMInlineVideo.metadataLoadedCallback()"
-		onloadeddata="_ICMInlineVideo.dataLoadedCallback()"></video>
+		onloadeddata="_ICMInlineVideo.dataLoadedCallback()"
+		onerror="_ICMInlineVideo.loadFailedCallback()"></video>
 </span>

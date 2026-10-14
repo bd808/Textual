@@ -53,8 +53,22 @@ Textual.initializeCore = function(resourcesPath)
 {
 };
 
+/* Only local files: a script or style sheet from the internet would run with the
+ chat view's access to the app (R1.8). The content rules block such loads too. */
+_Textual.resourceFileIsLocal = function(file)
+{
+	return (typeof file === "string" && /^[a-z][a-z0-9+.-]*:/i.test(file) === false && file.indexOf("//") !== 0) ||
+		   (typeof file === "string" && file.toLowerCase().indexOf("file:") === 0);
+};
+
 Textual.includeStyleResourceFile = function(file)
 {
+	if (_Textual.resourceFileIsLocal(file) === false) {
+		console.error("Refused a style sheet that is not a local file: " + file);
+
+		return;
+	}
+
 	if (/loaded|complete/.test(document.readyState)) {
 		var newFile = document.createElement("link");
 
@@ -72,6 +86,12 @@ Textual.includeStyleResourceFile = function(file)
 
 Textual.includeScriptResourceFile = function(file)
 {
+	if (_Textual.resourceFileIsLocal(file) === false) {
+		console.error("Refused a script that is not a local file: " + file);
+
+		return;
+	}
+
 	if (/loaded|complete/.test(document.readyState)) {
 		var newFile = document.createElement("script");
 

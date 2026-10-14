@@ -61,18 +61,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 	dispatch_once(&onceToken, ^{
 		/* Twitch (clips and live) was removed: its embeds require a
-		 parent= domain and Textual loads the chat view from file://. */
+		 parent= domain and Textual loads the chat view from file://.
+		 YouTube, Vimeo, Dailymotion and X embedded remote pages or scripts,
+		 which the chat view no longer loads (E2.1); they return as preview
+		 cards (E2.2). */
 		modules =
 		@[
-			[ICMDailymotion class],
 			[ICMGyazo class],
 			[ICMImgurGifv class],
-			[ICMPornhub class],
 			[ICMStreamable class],
-			[ICMTweet class],
-			[ICMVimeo class],
 			[ICMXkcd class],
-			[ICMYouTube class],
 
 			[ICMCommonInlineVideos class],
 			[ICMCommonInlineImages class],

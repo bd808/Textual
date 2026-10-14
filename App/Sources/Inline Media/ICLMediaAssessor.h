@@ -73,6 +73,10 @@ typedef void (^ICLMediaAssessorCompletionBlock)(ICLMediaAssessment * _Nullable a
 
 /* Logging */
 + (void)logError:(NSError *)error;
+
+/* The MIME types (lowercased, without parameters) shown as images and videos */
+@property (readonly, class, copy) NSArray<NSString *> *validImageContentTypes;
+@property (readonly, class, copy) NSArray<NSString *> *validVideoContentTypes;
 @end
 
 /* Error codes */

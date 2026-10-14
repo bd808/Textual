@@ -273,10 +273,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSString *basePath = [self _resourcesTemporaryLocation];
 
-	NSString *(^copyOperation)(NSURL *) = ^NSString *(NSURL *resourceURL)
+	NSString * _Nullable (^copyOperation)(NSURL *) = ^NSString * _Nullable (NSURL *resourceURL)
 	{
+		/* Only Textual's own files: never a script or style sheet from
+		 the internet in the chat view (R1.8) */
 		if (resourceURL.isFileURL == NO) {
-			return resourceURL.absoluteString;
+			LogToConsoleError("Refused a resource that is not a local file: %{public}@", resourceURL.absoluteString);
+
+			return nil;
 		}
 
 		NSString *resourcePath = resourceURL.relativePath;
@@ -311,7 +315,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 	for (NSURL *resourceURL in resources) {
 		@autoreleasepool {
-			[temporaryResources addObject:copyOperation(resourceURL)];
+			NSString *temporaryResource = copyOperation(resourceURL);
+
+			if (temporaryResource) {
+				[temporaryResources addObject:temporaryResource];
+			}
 		}
 	}
 

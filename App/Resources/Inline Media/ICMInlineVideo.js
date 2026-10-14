@@ -64,6 +64,47 @@ _ICMInlineVideo.metadataLoadedCallback = function()
 	if (playbackSpeed !== 1.0) {
 		video.playbackRate = playbackSpeed;
 	}
+
+	/* A clip that plays by itself (like a GIF) pauses while it is scrolled out of view */
+	if (video.dataset.playsByItself === "true") {
+		_ICMInlineVideo.clipVisibilityObserver().observe(video);
+	}
+};
+
+_ICMInlineVideo._clipVisibilityObserver = null;
+
+_ICMInlineVideo.clipVisibilityObserver = function()
+{
+	if (_ICMInlineVideo._clipVisibilityObserver === null) {
+		_ICMInlineVideo._clipVisibilityObserver = new IntersectionObserver(function(entries) {
+			entries.forEach(function(entry) {
+				var clip = entry.target;
+
+				if (entry.isIntersecting) {
+					clip.play().catch(function() {});
+				} else {
+					clip.pause();
+				}
+			});
+		});
+	}
+
+	return _ICMInlineVideo._clipVisibilityObserver;
+};
+
+/* Refused by Textual (too large, wrong type, a local address) or unplayable:
+ the empty player goes, the link stays */
+_ICMInlineVideo.loadFailedCallback = function()
+{
+	var video = event.target;
+
+	var media = video.closest(".inlineVideo");
+
+	if (media) {
+		media.prepareForMutation();
+
+		media.remove();
+	}
 };
 
 _ICMInlineVideo.dataLoadedCallback = function()

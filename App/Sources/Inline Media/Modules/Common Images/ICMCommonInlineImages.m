@@ -357,7 +357,9 @@ NS_ASSUME_NONNULL_BEGIN
 		  @"tif",
 		  @"tiff",
 		  @"svg",
-		  @"bmp"];
+		  @"bmp",
+		  @"webp",
+		  @"avif"];
 	});
 
 	return cachedValue;

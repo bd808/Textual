@@ -126,7 +126,7 @@ NSString * const ICLMediaAssessorErrorDomain = @"ICLMediaAssessorErrorDomain";
 
 	self.started = YES;
 
-	[ICLURLSession checkURL:self.url completionBlock:^(BOOL allowed) {
+	[ICLURLSession checkURL:self.url session:self.session completionBlock:^(BOOL allowed) {
 		/* -suspend was called */
 		if (self.completionBlock == nil) {
 			return;
@@ -330,11 +330,14 @@ NSString * const ICLMediaAssessorErrorDomain = @"ICLMediaAssessorErrorDomain";
 
 	dispatch_once(&onceToken, ^{
 		cachedValue =
-		@[@"image/gif",
+		@[@"image/avif",
+		  @"image/bmp",
+		  @"image/gif",
 		  @"image/jpeg",
 		  @"image/png",
 		  @"image/svg+xml",
 		  @"image/tiff",
+		  @"image/webp",
 		  @"image/x-ms-bmp"];
 	});
 
@@ -353,6 +356,7 @@ NSString * const ICLMediaAssessorErrorDomain = @"ICLMediaAssessorErrorDomain";
 		  @"video/3gpp2",
 		  @"video/mp4",
 		  @"video/quicktime",
+		  @"video/webm",
 		  @"video/x-m4v"];
 	});
 

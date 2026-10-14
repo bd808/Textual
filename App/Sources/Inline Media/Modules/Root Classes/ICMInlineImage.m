@@ -39,6 +39,7 @@
 #import "ICLHelpers.h"
 #import "ICLMediaAssessor.h"
 #import "ICMInlineImage.h"
+#import "ICLMediaSchemeHandlerPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -143,11 +144,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	ICLPayloadMutable *payload = self.payload;
 
+	/* WebKit loads it through Textual, which fetches it with every check (D-E2.1) */
+	NSURL *imageURL =
+	[[ICLMediaSchemeHandler sharedHandler] URLForMediaAtURL:payload.urlToInline
+													session:payload.session
+													   type:ICLMediaTypeImage
+											  maximumLength:[TPCPreferences inlineImagesMaxFilesize]];
+
 	NSDictionary *templateAttributes =
 	@{
 		@"anchorLink" : payload.address,
 		@"classAttribute" : payload.classAttribute,
-		@"imageURL" : payload.addressToInline,
+		@"imageURL" : imageURL.absoluteString,
 		@"maximumHeight" : @([TPCPreferences inlineMediaMaxHeight]),
 		@"maximumWidth" : @(_maximumImageWidth),
 		@"preferredMaximumWidth" : @([TPCPreferences inlineMediaMaxWidth]),

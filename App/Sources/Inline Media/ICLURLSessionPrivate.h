@@ -47,11 +47,28 @@ NS_ASSUME_NONNULL_BEGIN
  run on the main thread. Clicking a refused link still opens it. */
 @class IRCClient;
 
+/* How a session's host names are checked. Through a proxy the proxy looks
+ names up, so Textual must not (that would leak them past the proxy, and
+ .onion names only resolve in Tor): only literal addresses and local-looking
+ names are refused there. */
+typedef NS_ENUM(NSUInteger, ICLURLSessionResolution) {
+	ICLURLSessionResolutionLocal = 0, // no proxy: host names are looked up and refused if any address is local
+	ICLURLSessionResolutionProxy, // SOCKS or HTTP proxy: no lookup; .onion refused
+	ICLURLSessionResolutionTor // Tor: no lookup; .onion allowed
+};
+
 @interface ICLURLSession : NSObject
 @property (readonly, class) NSURLSession *sharedSession;
 
 /* The session for a server's previews: through its proxy when it has one */
 + (NSURLSession *)sessionForClient:(nullable IRCClient *)client;
+
+/* The same proxy and rules for media the chat view streams (video, audio):
+ requests still time out after 20 seconds without data, but the whole
+ download may take as long as the media plays */
++ (NSURLSession *)mediaSessionForSession:(NSURLSession *)session;
+
++ (ICLURLSessionResolution)resolutionForSession:(NSURLSession *)session;
 
 /* Every session, for cancelling their requests */
 @property (readonly, class) NSArray<NSURLSession *> *allSessions;
@@ -59,9 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
 /* YES for an HTTPS URL whose host is not a local address or name (App
  Transport Security refuses plain HTTP). Does not resolve the host name. */
 + (BOOL)URLIsAllowed:(NSURL *)url;
++ (BOOL)URLIsAllowed:(NSURL *)url withResolution:(ICLURLSessionResolution)resolution; // .onion only for Tor
 
-/* +URLIsAllowed: and, for host names, a lookup of their addresses */
+/* +URLIsAllowed: and, for host names without a proxy, a lookup of their addresses */
 + (void)checkURL:(NSURL *)url completionBlock:(void (^)(BOOL allowed))completionBlock;
++ (void)checkURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(BOOL allowed))completionBlock;
 
 /* GET with a response size limit. data is nil when the address is refused,
  the request fails, the status is not 200 or the body exceeds maximumLength. */

@@ -110,6 +110,23 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
+/* Through a proxy the proxy looks names up (D-E2.3): local addresses and names
+ are still refused, and .onion is only for Tor */
+- (void)testProxyResolutionRules
+{
+	NSURL *onion = [NSURL URLWithString:@"https://expyuzz4wqqyqhjn.onion/a.png"];
+
+	XCTAssertFalse([ICLURLSession URLIsAllowed:onion withResolution:ICLURLSessionResolutionLocal]);
+	XCTAssertFalse([ICLURLSession URLIsAllowed:onion withResolution:ICLURLSessionResolutionProxy]);
+	XCTAssertTrue([ICLURLSession URLIsAllowed:onion withResolution:ICLURLSessionResolutionTor]);
+
+	for (NSString *address in @[@"https://127.0.0.1/a.png", @"https://192.168.1.1/a.png", @"https://router/a.png", @"https://printer.local/a.png", @"http://example.com/a.png"]) {
+		XCTAssertFalse([ICLURLSession URLIsAllowed:[NSURL URLWithString:address] withResolution:ICLURLSessionResolutionTor], @"%@", address);
+	}
+
+	XCTAssertTrue([ICLURLSession URLIsAllowed:[NSURL URLWithString:@"https://example.com/a.png"] withResolution:ICLURLSessionResolutionProxy]);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

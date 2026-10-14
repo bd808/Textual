@@ -37,6 +37,7 @@
 #import <netdb.h>
 
 #import "IRCClient.h"
+#import "IRCClientConfig.h"
 #import "IRCConnectionProxyPrivate.h"
 #import "ICLURLSessionPrivate.h"
 
@@ -185,12 +186,26 @@ static BOOL ICLHostNameIsLocal(NSString *host)
 			[host hasSuffix:@".internal"]);
 }
 
+static BOOL ICLHostNameIsOnion(NSString *host)
+{
+	return [host hasSuffix:@".onion"];
+}
+
 #pragma mark -
 
 @implementation ICLURLSession
 
 /* Proxy identifier → session */
 static NSMutableDictionary<NSString *, NSURLSession *> *_proxySessions = nil;
+
+/* Session → how its host names are checked (ICLURLSessionResolution); absent: local */
+static NSMapTable<NSURLSession *, NSNumber *> *_sessionResolutions = nil;
+
+/* Session → its media session */
+static NSMapTable<NSURLSession *, NSURLSession *> *_mediaSessions = nil;
+
+/* Seconds a streamed media download may take in all */
+#define _mediaResourceTimeout			(6 * 60 * 60)
 
 + (NSURLSessionConfiguration *)_sessionConfiguration
 {
@@ -228,6 +243,10 @@ static NSMutableDictionary<NSString *, NSURLSession *> *_proxySessions = nil;
 		session = [self _sessionWithConfiguration:[self _sessionConfiguration]];
 
 		_proxySessions = [NSMutableDictionary dictionary];
+
+		_sessionResolutions = [NSMapTable weakToStrongObjectsMapTable];
+
+		_mediaSessions = [NSMapTable weakToStrongObjectsMapTable];
 	});
 
 	return session;
@@ -256,9 +275,54 @@ static NSMutableDictionary<NSString *, NSURLSession *> *_proxySessions = nil;
 			session = [self _sessionWithConfiguration:sessionConfig];
 
 			_proxySessions[proxyIdentifier] = session;
+
+			ICLURLSessionResolution resolution =
+			((config.proxyType == IRCConnectionProxyTypeTor) ? ICLURLSessionResolutionTor : ICLURLSessionResolutionProxy);
+
+			[_sessionResolutions setObject:@(resolution) forKey:session];
 		}
 
 		return session;
+	}
+}
+
++ (NSURLSession *)mediaSessionForSession:(NSURLSession *)session
+{
+	NSParameterAssert(session != nil);
+
+	(void)self.sharedSession;
+
+	@synchronized (_proxySessions) {
+		NSURLSession *mediaSession = [_mediaSessions objectForKey:session];
+
+		if (mediaSession == nil) {
+			NSURLSessionConfiguration *mediaConfig = [session.configuration copy];
+
+			mediaConfig.timeoutIntervalForResource = _mediaResourceTimeout;
+
+			mediaSession = [self _sessionWithConfiguration:mediaConfig];
+
+			[_mediaSessions setObject:mediaSession forKey:session];
+
+			NSNumber *resolution = [_sessionResolutions objectForKey:session];
+
+			if (resolution) {
+				[_sessionResolutions setObject:resolution forKey:mediaSession];
+			}
+		}
+
+		return mediaSession;
+	}
+}
+
++ (ICLURLSessionResolution)resolutionForSession:(NSURLSession *)session
+{
+	NSParameterAssert(session != nil);
+
+	(void)self.sharedSession;
+
+	@synchronized (_proxySessions) {
+		return (ICLURLSessionResolution)[_sessionResolutions objectForKey:session].unsignedIntegerValue;
 	}
 }
 
@@ -267,8 +331,55 @@ static NSMutableDictionary<NSString *, NSURLSession *> *_proxySessions = nil;
 	NSURLSession *sharedSession = self.sharedSession;
 
 	@synchronized (_proxySessions) {
-		return [@[sharedSession] arrayByAddingObjectsFromArray:_proxySessions.allValues];
+		NSMutableArray<NSURLSession *> *sessions = [NSMutableArray arrayWithObject:sharedSession];
+
+		[sessions addObjectsFromArray:_proxySessions.allValues];
+
+		for (NSURLSession *mediaSession in _mediaSessions.objectEnumerator) {
+			[sessions addObject:mediaSession];
+		}
+
+		return [sessions copy];
 	}
+}
+
++ (BOOL)URLIsAllowed:(NSURL *)url withResolution:(ICLURLSessionResolution)resolution
+{
+	NSParameterAssert(url != nil);
+
+	if ([self URLIsAllowed:url] == NO) {
+		return NO;
+	}
+
+	NSString *host = ICLHostForURL(url);
+
+	if (ICLHostNameIsOnion(host)) {
+		return (resolution == ICLURLSessionResolutionTor);
+	}
+
+	return YES;
+}
+
++ (void)checkURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(BOOL allowed))completionBlock
+{
+	NSParameterAssert(url != nil);
+	NSParameterAssert(session != nil);
+	NSParameterAssert(completionBlock != nil);
+
+	ICLURLSessionResolution resolution = [self resolutionForSession:session];
+
+	if (resolution == ICLURLSessionResolutionLocal) {
+		[self checkURL:url completionBlock:completionBlock];
+
+		return;
+	}
+
+	/* Through a proxy: no local lookup, the proxy resolves the name */
+	BOOL allowed = [self URLIsAllowed:url withResolution:resolution];
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		completionBlock(allowed);
+	});
 }
 
 + (BOOL)URLIsAllowed:(NSURL *)url
@@ -342,7 +453,7 @@ static NSMutableDictionary<NSString *, NSURLSession *> *_proxySessions = nil;
 	NSParameterAssert(maximumLength > 0);
 	NSParameterAssert(completionBlock != nil);
 
-	[self checkURL:url completionBlock:^(BOOL allowed) {
+	[self checkURL:url session:session completionBlock:^(BOOL allowed) {
 		if (allowed == NO) {
 			LogToConsoleDebug("Refused request to a local, unresolvable or plain HTTP address");
 
@@ -400,7 +511,7 @@ static NSMutableDictionary<NSString *, NSURLSession *> *_proxySessions = nil;
 		return;
 	}
 
-	[ICLURLSession checkURL:url completionBlock:^(BOOL allowed) {
+	[ICLURLSession checkURL:url session:session completionBlock:^(BOOL allowed) {
 		if (allowed == NO) {
 			LogToConsoleDebug("Refused redirect to a local or unresolvable address");
 		}

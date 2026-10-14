@@ -40,6 +40,7 @@
 #import "ICLInlineContentModulePrivate.h"
 #import "ICLMediaAssessor.h"
 #import "ICMInlineVideo.h"
+#import "ICLMediaSchemeHandlerPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -114,12 +115,21 @@ NS_ASSUME_NONNULL_BEGIN
 					 completionBlock:^(ICLMediaAssessment *assessment, NSError *error) {
 						 BOOL safeToLoad = (error == nil);
 
+						 /* A clip that plays by itself loads at once: the image size limit applies */
+						 if (safeToLoad && self.videoAutoplayEnabled &&
+							 (unsigned long long)assessment.contentLength > [TPCPreferences inlineImagesMaxFilesize])
+						 {
+							 safeToLoad = NO;
+						 }
+
 						 if (safeToLoad) {
 							 [self _safeToLoadVideo];
 						 } else {
 							 [self _unsafeToLoadVideo];
 
-							 [ICLMediaAssessor logError:error];
+							 if (error) {
+								 [ICLMediaAssessor logError:error];
+							 }
 						 }
 
 						 self.videoCheck = nil;
@@ -145,6 +155,16 @@ NS_ASSUME_NONNULL_BEGIN
 		playbackSpeed = 1.0;
 	}
 
+	/* WebKit loads it through Textual (D-E2.1). A clip that plays by itself
+	 follows the image size limit; a video you start yourself has none. */
+	BOOL playsByItself = self.videoAutoplayEnabled;
+
+	NSURL *videoURL =
+	[[ICLMediaSchemeHandler sharedHandler] URLForMediaAtURL:payload.urlToInline
+													session:payload.session
+													   type:((playsByItself) ? ICLMediaTypeVideoGif : ICLMediaTypeVideo)
+											  maximumLength:((playsByItself) ? [TPCPreferences inlineImagesMaxFilesize] : 0)];
+
 	NSDictionary *templateAttributes =
 	@{
 		@"anchorLink" : payload.address,
@@ -157,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
 		@"videoMuteEnabled" : @(self.videoMuteEnabled),
 		@"videoPlaybackSpeed" : @(playbackSpeed),
 		@"videoStartTime" : @(self.videoStartTime),
-		@"videoURL" : payload.addressToInline
+		@"videoURL" : ((playsByItself) ? videoURL.absoluteString : [videoURL.absoluteString stringByAppendingString:@"#t=0.1"]) // its first frame shows until played
 	};
 
 	NSError *templateRenderError = nil;

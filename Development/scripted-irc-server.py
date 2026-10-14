@@ -1643,6 +1643,43 @@ async def scenario_query_info(client):
 		pass
 
 
+async def scenario_media(client):
+	"""Real links for inline media (turn previews on; the VM needs internet):
+	#media gets a JPEG, a PNG, a WebP, an image behind a redirect, a plain-HTTP
+	image (never previewed), an MP4 video (first frame until played), an Imgur
+	clip (plays like a GIF), an xkcd comic and a YouTube link. Stays connected
+	(Ctrl-C to stop)."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+	channel = "#media"
+
+	await client.send(f":{me}!user@client.textual.test JOIN {channel}")
+	await client.send(f":{SERVER} 353 {me} = {channel} :{me} @alice bob")
+	await client.send(f":{SERVER} 366 {me} {channel} :End of /NAMES list.")
+	await client.collect(1)
+
+	links = [
+		("alice", "JPEG: https://www.textualapp.com/textual-light.jpg"),
+		("bob", "PNG with transparency: https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"),
+		("alice", "WebP: https://www.gstatic.com/webp/gallery/1.webp"),
+		("bob", "Behind a redirect: https://picsum.photos/600/400.jpg"),
+		("alice", "Plain HTTP, never previewed: http://www.gstatic.com/webp/gallery/2.webp"),
+		("bob", "Video, first frame until played: https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"),
+		("alice", "Clip, plays like a GIF: https://i.imgur.com/A61SaA1.gifv"),
+		("bob", "xkcd: https://xkcd.com/927/"),
+		("alice", "YouTube (a card from E2.2 on): https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+	]
+
+	for sender, text in links:
+		await client.send(f":{sender}!{sender[0]}@{sender}.test PRIVMSG {channel} :{text}")
+		await asyncio.sleep(0.5)
+
+	while await client.collect(3600):
+		pass
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1653,6 +1690,7 @@ SCENARIOS = {
 	"styles": scenario_styles,
 	"collapse": scenario_collapse,
 	"query-info": scenario_query_info,
+	"media": scenario_media,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -1694,7 +1732,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

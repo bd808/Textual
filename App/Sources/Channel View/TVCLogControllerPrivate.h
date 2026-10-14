@@ -88,6 +88,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)processInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index;
 
+/* A shift-click on a link: as above, unless the address book says not to
+ preview the sender's links */
+- (void)processRequestedInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index;
+
 - (void)processingInlineMediaPayloadSucceeded:(ICLPayload *)payload;
 - (void)processingInlineMediaPayload:(ICLPayload *)payload failedWithError:(NSError *)error;
 

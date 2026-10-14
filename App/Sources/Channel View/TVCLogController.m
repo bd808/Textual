@@ -1216,6 +1216,68 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 					forItem:associatedItem];
 }
 
+- (void)processRequestedInlineMediaAtAddress:(NSString *)address withUniqueIdentifier:(NSString *)uniqueIdentifier atLineNumber:(NSString *)lineNumber index:(NSUInteger)index
+{
+	NSParameterAssert(address != nil);
+	NSParameterAssert(uniqueIdentifier != nil);
+	NSParameterAssert(lineNumber != nil);
+
+	/* Main thread: the address book is read there */
+	void (^processForLine)(TVCLogLine * _Nullable) = ^(TVCLogLine * _Nullable logLine) {
+		NSString *nickname = logLine.nickname;
+
+		if (nickname.length > 0 &&
+			logLine.memberType != TVCLogLineMemberTypeLocalUser &&
+			[self.associatedClient ignoresInlineMediaFromNickname:nickname])
+		{
+			return;
+		}
+
+		[self processInlineMediaAtAddress:address withUniqueIdentifier:uniqueIdentifier atLineNumber:lineNumber index:index];
+	};
+
+	/* Not saved yet: still in memory */
+	TVCLogLine *unsavedLine = nil;
+
+	@synchronized (self.unsavedLogLines) {
+		for (TVCLogLine *logLine in self.unsavedLogLines) {
+			if ([logLine.uniqueIdentifier isEqualToString:lineNumber]) {
+				unsavedLine = logLine;
+
+				break;
+			}
+		}
+	}
+
+	if (unsavedLine) {
+		processForLine(unsavedLine);
+
+		return;
+	}
+
+	[sharedHistoricLog()
+	 fetchEntriesForItem:self.associatedItem
+	withUniqueIdentifier:lineNumber
+		beforeFetchLimit:0
+		 afterFetchLimit:0
+			 limitToDate:nil
+	 withCompletionBlock:^(NSArray<TVCLogLine *> *entries) {
+		 TVCLogLine *savedLine = nil;
+
+		 for (TVCLogLine *logLine in entries) {
+			 if ([logLine.uniqueIdentifier isEqualToString:lineNumber]) {
+				 savedLine = logLine;
+
+				 break;
+			 }
+		 }
+
+		 dispatch_async(dispatch_get_main_queue(), ^{
+			 processForLine(savedLine);
+		 });
+	 }];
+}
+
 #pragma mark -
 #pragma mark Manage Highlights
 

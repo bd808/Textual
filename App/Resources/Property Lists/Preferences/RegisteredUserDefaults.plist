@@ -115,7 +115,7 @@
 	<key>InlineMediaLimitUnsafeContent</key>
 	<true/>
 	<key>InlineMediaMaximumFilesize</key>
-	<integer>2</integer>
+	<integer>6</integer>
 	<key>InlineMediaMaximumHeight</key>
 	<integer>0</integer>
 	<key>InlineMediaScalingWidth</key>

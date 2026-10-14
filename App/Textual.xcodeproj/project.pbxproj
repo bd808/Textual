@@ -581,6 +581,7 @@
 		4CF7732D0F5EFB6D6D2B1DA4 /* ICLMediaAssessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1EB1E873F2BD8255853E2A /* ICLMediaAssessor.m */; };
 		4C348BA32A19CF37839DF90F /* ICLPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C76D92C615E42A35336F97F /* ICLPayload.m */; };
 		4C4F5343473CA19CA4619F05 /* ICLURLSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C72D08DEC2DBD9290660F94 /* ICLURLSession.m */; };
+		4C545872D07285844E21D5DA /* ICLMediaSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8F5036906C310B4032202C /* ICLMediaSchemeHandler.m */; };
 		4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */; };
 		4C84AA1C38E0C57C911973F8 /* ICMAssessedMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00B576CC9A61B6A0FDAD79 /* ICMAssessedMedia.m */; };
 		4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C18A25932EB1EB261EAA2FA /* ICMCommonInlineImages.m */; };
@@ -607,6 +608,7 @@
 		4C853886460B1BEDE6C89318 /* ICLPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C0F3BCFF692A2BF865F34A8 /* ICLPayload.h */; };
 		4C12936420E038BE9AFCDF77 /* ICLPayloadPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CFEA4853AD80610A340C1E6 /* ICLPayloadPrivate.h */; };
 		4C817D9727619F192634D823 /* ICLURLSessionPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C7A27C4B22D0F5DA12A5D29 /* ICLURLSessionPrivate.h */; };
+		4C72E85E884296B4587337CF /* ICLMediaSchemeHandlerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C705795DB60F25E1ADCEEAF /* ICLMediaSchemeHandlerPrivate.h */; };
 		4C7C6207E489D71A9E064179 /* ICPCoreMediaPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C01D5F0230FF4DA88B8CB19 /* ICPCoreMediaPrivate.h */; };
 		4C272AF654968393F0B03C9A /* Inline Media in Resources */ = {isa = PBXBuildFile; fileRef = 4C61C76C523B53681C98EBFA /* Inline Media */; };
 		4C7FE9B965386EBECD77C5E2 /* ICLURLSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C05431772A95CF291B102D1 /* ICLURLSessionTests.m */; };
@@ -689,6 +691,7 @@
 		4C8EC7F586E5E9F0727E6372 /* TVCLogScrollerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9638A2216C0BA7293B5F9 /* TVCLogScrollerTests.m */; };
 		4CB4FD75BFC57C3E9954EA12 /* TVCLogLayoutTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4161E3DA4393F5FDA6DD71 /* TVCLogLayoutTests.m */; };
 		4C1191A4A0FA7E9B1A150781 /* TVCLogEventGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */; };
+		4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */; };
 		4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */; };
 /* End PBXBuildFile section */
 
@@ -1408,6 +1411,8 @@
 		4C1EB1E873F2BD8255853E2A /* ICLMediaAssessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaAssessor.m; sourceTree = "<group>"; };
 		4C76D92C615E42A35336F97F /* ICLPayload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLPayload.m; sourceTree = "<group>"; };
 		4C72D08DEC2DBD9290660F94 /* ICLURLSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLURLSession.m; sourceTree = "<group>"; };
+		4C8F5036906C310B4032202C /* ICLMediaSchemeHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaSchemeHandler.m; sourceTree = "<group>"; };
+		4C705795DB60F25E1ADCEEAF /* ICLMediaSchemeHandlerPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICLMediaSchemeHandlerPrivate.h; sourceTree = "<group>"; };
 		4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICPCoreMedia.m; sourceTree = "<group>"; };
 		4C827C6117D480FF1C9FA2DC /* ICMAssessedMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMAssessedMedia.h; sourceTree = "<group>"; };
 		4C00B576CC9A61B6A0FDAD79 /* ICMAssessedMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMAssessedMedia.m; sourceTree = "<group>"; };
@@ -1553,6 +1558,7 @@
 		4CE9638A2216C0BA7293B5F9 /* TVCLogScrollerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogScrollerTests.m; sourceTree = "<group>"; };
 		4C4161E3DA4393F5FDA6DD71 /* TVCLogLayoutTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogLayoutTests.m; sourceTree = "<group>"; };
 		4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogEventGroupTests.m; sourceTree = "<group>"; };
+		4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaFetchTests.m; sourceTree = "<group>"; };
 		4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HLSHistoricLogManagerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2001,6 +2007,8 @@
 				4C0F3BCFF692A2BF865F34A8 /* ICLPayload.h */,
 				4C76D92C615E42A35336F97F /* ICLPayload.m */,
 				4CFEA4853AD80610A340C1E6 /* ICLPayloadPrivate.h */,
+				4C8F5036906C310B4032202C /* ICLMediaSchemeHandler.m */,
+				4C705795DB60F25E1ADCEEAF /* ICLMediaSchemeHandlerPrivate.h */,
 				4C72D08DEC2DBD9290660F94 /* ICLURLSession.m */,
 				4C7A27C4B22D0F5DA12A5D29 /* ICLURLSessionPrivate.h */,
 				4C96F0E8CB0AAB2801285C79 /* ICPCoreMedia.m */,
@@ -2818,6 +2826,7 @@
 				4CE9638A2216C0BA7293B5F9 /* TVCLogScrollerTests.m */,
 				4C4161E3DA4393F5FDA6DD71 /* TVCLogLayoutTests.m */,
 				4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */,
+				4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */,
 				4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */,
 				4CCEEF3CE8E84E1B5AE9AC3C /* TVCLogViewSecurityTests.m */,
 			);
@@ -3156,6 +3165,7 @@
 				4C853886460B1BEDE6C89318 /* ICLPayload.h */,
 				4C12936420E038BE9AFCDF77 /* ICLPayloadPrivate.h */,
 				4C817D9727619F192634D823 /* ICLURLSessionPrivate.h */,
+				4C72E85E884296B4587337CF /* ICLMediaSchemeHandlerPrivate.h */,
 				4C7C6207E489D71A9E064179 /* ICPCoreMediaPrivate.h */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3719,6 +3729,7 @@
 				4CF7732D0F5EFB6D6D2B1DA4 /* ICLMediaAssessor.m */,
 				4C348BA32A19CF37839DF90F /* ICLPayload.m */,
 				4C4F5343473CA19CA4619F05 /* ICLURLSession.m */,
+				4C545872D07285844E21D5DA /* ICLMediaSchemeHandler.m */,
 				4CDEB669EB4A0FE82D19751D /* ICPCoreMedia.m */,
 				4C84AA1C38E0C57C911973F8 /* ICMAssessedMedia.m */,
 				4CD2B222C19C70F272D00BFD /* ICMCommonInlineImages.m */,
@@ -3745,6 +3756,7 @@
 				4C8EC7F586E5E9F0727E6372 /* TVCLogScrollerTests.m in Sources */,
 				4CB4FD75BFC57C3E9954EA12 /* TVCLogLayoutTests.m in Sources */,
 				4C1191A4A0FA7E9B1A150781 /* TVCLogEventGroupTests.m in Sources */,
+				4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */,
 				4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */,
 				4CACA1915D50ECEEE616CC47 /* TPCPreferencesTests.m in Sources */,
 				4CA4A4D412BC97120FEB0648 /* TVCLogRendererTests.m in Sources */,

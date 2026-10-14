@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSNumber *index = [self.class objectValueToCommon:arguments[3]];
 
-	[context.viewController processInlineMediaAtAddress:address
+	[context.viewController processRequestedInlineMediaAtAddress:address
 								   withUniqueIdentifier:uniqueIdentifier
 										   atLineNumber:lineNumber
 												  index:index.unsignedIntegerValue];
