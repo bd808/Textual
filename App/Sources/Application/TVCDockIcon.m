@@ -36,8 +36,9 @@
  *********************************************************************** */
 
 #import "TXMasterController.h"
-#import "TPCPreferencesLocal.h"
+#import "TPCPreferencesLocalPrivate.h"
 #import "IRCClient.h"
+#import "IRCClientConfig.h"
 #import "IRCChannel.h"
 #import "IRCWorld.h"
 #import "TVCDockIconPrivate.h"
@@ -82,13 +83,23 @@ static NSInteger _cachedMessageCount = (-1);
 	NSUInteger highlightCount = 0;
 	NSUInteger messageCount = 0;
 
+	/* Muted conversations don't count (E3); their highlights do while
+	 they still notify */
+	BOOL highlightsNotifyWhenMuted = [TPCPreferences highlightsNotifyWhenMuted];
+
 	for (IRCClient *u in worldController().clientList) {
+		BOOL clientMuted = u.config.muted;
+
 		for (IRCChannel *c in u.channelList) {
-			if (c.config.pushNotifications) {
+			BOOL muted = (clientMuted || c.config.muted);
+
+			if (c.config.pushNotifications && muted == NO) {
 				messageCount += c.dockUnreadCount;
 			}
 
-			highlightCount += c.nicknameHighlightCount;
+			if (muted == NO || highlightsNotifyWhenMuted) {
+				highlightCount += c.nicknameHighlightCount;
+			}
 		}
 	}
 

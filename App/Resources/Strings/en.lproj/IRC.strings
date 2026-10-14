@@ -416,7 +416,7 @@ The identifier for a timer can be found using “/timer list”";
 "cmd-mode" = "Show or change modes";
 "cmd-monitor" = "Show whom you follow online and offline";
 "cmd-msg" = "Send a message to someone";
-"cmd-mute" = "Turn off every sound and notification";
+"cmd-mute" = "Mute this channel, private message or network (“all”: every sound)";
 "cmd-mylag" = "Show the delay to the server in this view";
 "cmd-myversion" = "Show which version of Textual you use";
 "cmd-nachat" = "Send a message to the network admins’ channel";
@@ -457,7 +457,7 @@ The identifier for a timer can be found using “/timer list”";
 "cmd-unalias" = "Remove one of your own commands";
 "cmd-unban" = "Lift a ban";
 "cmd-unignore" = "Stop ignoring someone";
-"cmd-unmute" = "Turn sounds and notifications back on";
+"cmd-unmute" = "Unmute this channel, private message or network (“all”: every sound)";
 "cmd-unquiet" = "Let someone speak again";
 "cmd-voice" = "Give voice (+v)";
 "cmd-wallops" = "Send a message to users with wallops on";
@@ -481,3 +481,10 @@ The identifier for a timer can be found using “/timer list”";
 "als-e4" = "/%1$@ uses $channel, but this isn’t a channel or private message";
 "als-e5" = "/%@ runs more than 10 commands";
 "als-e6" = "Aliases call each other more than 5 deep: stopped at /%@";
+
+/* /mute and /unmute where you are (E3) */
+"mut-m1" = "Muted %@: no notifications or sounds; highlights still get through. /unmute undoes it, /mute all mutes every sound.";
+"mut-m2" = "Muted %@: no notifications or sounds, highlights included. /unmute undoes it, /mute all mutes every sound.";
+"mut-u1" = "%@ is no longer muted";
+"mut-a1" = "%@ is already muted";
+"mut-a2" = "%@ isn’t muted";

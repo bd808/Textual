@@ -105,6 +105,9 @@ typedef NS_ENUM(NSUInteger, TXInlineMediaDomainRuleMode) {
 
 @property (class) BOOL inputMarkdownEnabled;
 
+/* Muted channels and networks still notify highlights (E3) */
+@property (class) BOOL highlightsNotifyWhenMuted;
+
 + (BOOL)inputCompletionEnabledForKind:(NSUInteger)kind;
 + (void)setInputCompletion:(BOOL)enabled forKind:(NSUInteger)kind;
 

@@ -128,6 +128,7 @@ enum
 	MTMMServerAddChannel = 512, // "Add Channel…"
 	MTMMServerAddChannelSeparator = 513, // "-"
 	MTMMServerServerProperties = 514, // "Server Properties…"
+	MTMMServerMuteNetwork = 515, // "Mute Network"
 
 	/* Main menu - Channel menu */
 	MTMMChannelJoinChannel = 600, // "Join Channel"
@@ -154,11 +155,13 @@ enum
 	MTMMChannelChannelProperties = 616, // "Channel Properties…"
 	MTMMChannelChannelPropertiesSeparator = 617, // "-"
 	MTMMChannelCopyUniqueIdentifier = 618, //
+	MTMMChannelMuteChannel = 650, // "Mute Channel"
 
 	/* Main menu - Query menu */
 	MTMMQueryCloseQuery = 1800, // "Close Query"
 	MTMMQueryCloseQuerySeparator = 1801, // "-"
 	MTMMQueryQueryLogs = 1802, // "Query Logs"
+	MTMMQueryMuteQuery = 1803, // "Mute Private Message"
 
 	/* Main menu - Navigation menu */
 	MTMMNavigationServersMenu = 700, // "Servers"
@@ -392,6 +395,7 @@ enum
 
 - (IBAction)joinChannel:(nullable id)sender;
 - (IBAction)leaveChannel:(nullable id)sender;
+- (IBAction)toggleMute:(nullable id)sender;
 
 - (IBAction)connect:(nullable id)sender;
 - (IBAction)connectBypassingProxy:(nullable id)sender;

@@ -457,6 +457,14 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 	}
 
+	/* Muted channel, query or network (E3): nothing, except highlights
+	 when "Highlights still notify in muted channels" is on */
+	if (self.config.muted || target.config.muted) {
+		if (eventType != TXNotificationTypeHighlight || [TPCPreferences highlightsNotifyWhenMuted] == NO) {
+			return YES;
+		}
+	}
+
 	IRCChannelConfig *targetConfig = nil;
 
 	if (target) {
@@ -715,6 +723,56 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[item.viewController evaluateFunction:@"Textual.handleEvent" withArguments:@[eventToken] onQueue:NO];
+}
+
+@end
+
+#pragma mark -
+
+@implementation IRCClient (MutePrivate)
+
+- (BOOL)isTreeItemMuted:(IRCTreeItem *)item
+{
+	NSParameterAssert(item != nil);
+
+	if (item.isClient) {
+		return self.config.muted;
+	}
+
+	return ((IRCChannel *)item).config.muted;
+}
+
+- (void)setMuted:(BOOL)muted forTreeItem:(IRCTreeItem *)item
+{
+	NSParameterAssert(item != nil);
+
+	if (item.isClient) {
+		IRCClientConfigMutable *config = [self.config mutableCopy];
+
+		config.muted = muted;
+
+		self.config = config;
+
+		[mainWindow() reloadTreeItem:self];
+
+		for (IRCChannel *channel in self.channelList) {
+			[mainWindow() reloadTreeItem:channel];
+		}
+	} else {
+		IRCChannel *channel = (IRCChannel *)item;
+
+		IRCChannelConfigMutable *config = [channel.config mutableCopy];
+
+		config.muted = muted;
+
+		[channel updateConfig:config];
+
+		[mainWindow() reloadTreeItem:channel];
+	}
+
+	[TVCDockIcon updateDockIcon];
+
+	[worldController() save];
 }
 
 @end

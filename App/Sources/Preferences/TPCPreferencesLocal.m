@@ -394,6 +394,16 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 	return [RZUserDefaults() boolForKey:TPCPreferencesShowInlineMediaDefaultsKey];
 }
 
++ (BOOL)highlightsNotifyWhenMuted
+{
+	return [RZUserDefaults() boolForKey:@"Notifications -> Highlights When Muted"];
+}
+
++ (void)setHighlightsNotifyWhenMuted:(BOOL)highlightsNotifyWhenMuted
+{
+	[RZUserDefaults() setBool:highlightsNotifyWhenMuted forKey:@"Notifications -> Highlights When Muted"];
+}
+
 + (BOOL)inputMarkdownEnabled
 {
 	return [RZUserDefaults() boolForKey:TPCPreferencesInputMarkdownDefaultsKey];

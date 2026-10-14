@@ -464,6 +464,8 @@
 		<false/>
 		<key>indexValue</key>
 		<integer>5044</integer>
+		<key>arguments</key>
+		<string>[all]</string>
 	</dict>
 	<key>mylag</key>
 	<dict>
@@ -821,6 +823,8 @@
 		<false/>
 		<key>indexValue</key>
 		<integer>5075</integer>
+		<key>arguments</key>
+		<string>[all]</string>
 	</dict>
 	<key>unquiet</key>
 	<dict>

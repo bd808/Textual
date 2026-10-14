@@ -1509,12 +1509,47 @@ static NSUInteger _aliasDepth = 0;
 /* MUTE */
 - (void)_handleLocalCommandMute:(IRCLocalCommandContext *)context
 {
-	if ([TPCPreferences soundIsMuted]) {
-		[self printDebugInformation:TXTLS(@"IRC[sdn-yr]")];
-	} else {
-		[self printDebugInformation:TXTLS(@"IRC[u48-aa]")];
+	[self _muteForContext:context muted:YES];
+}
 
-		[menuController() toggleMuteOnNotificationSoundsShortcutOn:YES];
+/* MUTE / UNMUTE (E3, D-E3.7): where you are — a channel, a query, or the
+ network in the server console; "all" mutes every sound as before */
+- (void)_muteForContext:(IRCLocalCommandContext *)context muted:(BOOL)muted
+{
+	NSString *argument = [context.stringIn.string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+	if ([argument isEqualToStringIgnoringCase:@"all"]) {
+		if ([TPCPreferences soundIsMuted] == muted) {
+			[self printDebugInformation:TXTLS((muted) ? @"IRC[sdn-yr]" : @"IRC[5rf-mj]")];
+		} else {
+			[self printDebugInformation:TXTLS((muted) ? @"IRC[u48-aa]" : @"IRC[190-f2]")];
+
+			[menuController() toggleMuteOnNotificationSoundsShortcutOn:muted];
+		}
+
+		return;
+	}
+
+	IRCChannel *targetChannel = context.targetChannel;
+
+	IRCTreeItem *item = ((targetChannel && targetChannel.isUtility == NO) ? targetChannel : self);
+
+	NSString *name = ((item == self) ? self.networkNameAlt : targetChannel.name);
+
+	if ([self isTreeItemMuted:item] == muted) {
+		[self printDebugInformation:TXTLS((muted) ? @"IRC[mut-a1]" : @"IRC[mut-a2]", name)];
+
+		return;
+	}
+
+	[self setMuted:muted forTreeItem:item];
+
+	if (muted == NO) {
+		[self printDebugInformation:TXTLS(@"IRC[mut-u1]", name)];
+	} else if ([TPCPreferences highlightsNotifyWhenMuted]) {
+		[self printDebugInformation:TXTLS(@"IRC[mut-m1]", name)];
+	} else {
+		[self printDebugInformation:TXTLS(@"IRC[mut-m2]", name)];
 	}
 }
 
@@ -2172,13 +2207,7 @@ static NSUInteger _aliasDepth = 0;
 /* UNMUTE */
 - (void)_handleLocalCommandUnmute:(IRCLocalCommandContext *)context
 {
-	if ([TPCPreferences soundIsMuted] == NO) {
-		[self printDebugInformation:TXTLS(@"IRC[5rf-mj]")];
-	} else {
-		[self printDebugInformation:TXTLS(@"IRC[190-f2]")];
-
-		[menuController() toggleMuteOnNotificationSoundsShortcutOn:NO];
-	}
+	[self _muteForContext:context muted:NO];
 }
 
 /* WALLOPS */

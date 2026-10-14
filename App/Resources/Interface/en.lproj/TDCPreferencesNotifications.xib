@@ -154,6 +154,17 @@
                                             <binding destination="G2Q-fc-ddg" name="value" keyPath="values.PostNotificationsWhileInFocus" id="POH-Gc-56W"/>
                                         </connections>
                                     </button>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="mUt-hL-n01">
+                                        <rect key="frame" x="40" y="63" width="286" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Highlights still notify in muted channels" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="mUt-hL-c01">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="onChangedDockIconBadges:" target="-2" id="mUt-hL-a01"/>
+                                            <binding destination="G2Q-fc-ddg" name="value" keyPath="values.Notifications -&gt; Highlights When Muted" id="mUt-hL-b01"/>
+                                        </connections>
+                                    </button>
                                     <box verticalHuggingPriority="750" alphaValue="0.5" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="AKo-pK-APa">
                                         <rect key="frame" x="40" y="124" width="550" height="5"/>
                                     </box>
@@ -166,6 +177,9 @@
                                     <constraint firstItem="AKo-pK-APa" firstAttribute="centerX" secondItem="k1L-3m-afM" secondAttribute="centerX" constant="3" id="dan-fM-VMm"/>
                                     <constraint firstItem="tno-Zq-S4W" firstAttribute="top" secondItem="k1L-3m-afM" secondAttribute="top" constant="30" id="fj5-R6-w9G"/>
                                     <constraint firstItem="5zM-ja-Fht" firstAttribute="leading" secondItem="k1L-3m-afM" secondAttribute="leading" constant="42" id="s0a-hp-YFg"/>
+                                    <constraint firstItem="mUt-hL-n01" firstAttribute="top" secondItem="5zM-ja-Fht" secondAttribute="bottom" constant="10" id="mUt-hL-k01"/>
+                                    <constraint firstItem="mUt-hL-n01" firstAttribute="leading" secondItem="k1L-3m-afM" secondAttribute="leading" constant="42" id="mUt-hL-k02"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="mUt-hL-n01" secondAttribute="trailing" id="mUt-hL-k03"/>
                                     <constraint firstItem="tno-Zq-S4W" firstAttribute="leading" secondItem="k1L-3m-afM" secondAttribute="leading" constant="42" id="wmB-fD-RqF"/>
                                 </constraints>
                             </view>

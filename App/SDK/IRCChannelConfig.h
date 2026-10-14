@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, IRCChannelType) {
 @property (readonly) BOOL ignoreHighlights;
 @property (readonly) BOOL inlineMediaDisabled;
 @property (readonly) BOOL inlineMediaEnabled;
+@property (readonly) BOOL muted; // no notifications or sounds (highlights depend on a preference)
 @property (readonly) BOOL pushNotifications;
 @property (readonly) BOOL showTreeBadgeCount;
 @property (readonly) IRCChannelType type;
@@ -94,6 +95,7 @@ typedef NS_ENUM(NSUInteger, IRCChannelType) {
 @property (nonatomic, assign, readwrite) BOOL ignoreHighlights;
 @property (nonatomic, assign, readwrite) BOOL inlineMediaDisabled;
 @property (nonatomic, assign, readwrite) BOOL inlineMediaEnabled;
+@property (nonatomic, assign, readwrite) BOOL muted;
 @property (nonatomic, assign, readwrite) BOOL pushNotifications;
 @property (nonatomic, assign, readwrite) BOOL showTreeBadgeCount;
 @property (nonatomic, copy, readwrite) NSString *channelName;

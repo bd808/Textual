@@ -132,6 +132,13 @@ enum {
 - (void)setIgnoresInlineMedia:(BOOL)ignoresInlineMedia fromNickname:(NSString *)nickname;
 @end
 
+@interface IRCClient (MutePrivate)
+/* A channel, query or (the client itself) the whole network (E3): no
+ notifications or sounds; highlights per a preference. Saved; the row dims. */
+- (BOOL)isTreeItemMuted:(IRCTreeItem *)item;
+- (void)setMuted:(BOOL)muted forTreeItem:(IRCTreeItem *)item;
+@end
+
 @interface IRCClient (SendingPrivate)
 - (void)inputText:(id)string destination:(IRCTreeItem *)destination;
 

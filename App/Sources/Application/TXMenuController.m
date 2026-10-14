@@ -308,6 +308,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSInteger tag = menuItem.tag;
 
+	/* Mute (E3): checked while muted */
+	if (menuItem.action == @selector(toggleMute:)) {
+		IRCTreeItem *item = [self _treeItemToMuteForMenuItem:menuItem];
+
+		menuItem.state = ((item) ? [item.associatedClient isTreeItemMuted:item] : NSControlStateValueOff);
+
+		return (item != nil);
+	}
+
 	if (tag < 100) {
 		return [self _validateMainMenuItem:menuItem];
 	}

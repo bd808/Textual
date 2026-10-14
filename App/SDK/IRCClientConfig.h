@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) BOOL autoReconnect;
 @property (readonly) BOOL autoSleepModeDisconnect;
 @property (readonly) BOOL autojoinWaitsForNickServ;
+@property (readonly) BOOL muted; // the whole network: no notifications or sounds (highlights depend on a preference)
 @property (readonly) BOOL hideAutojoinDelayedWarnings;
 @property (readonly) BOOL hideNetworkUnavailabilityNotices;
 @property (readonly) BOOL performDisconnectOnPongTimer;
@@ -113,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL autoReconnect;
 @property (nonatomic, assign, readwrite) BOOL autoSleepModeDisconnect;
 @property (nonatomic, assign, readwrite) BOOL autojoinWaitsForNickServ;
+@property (nonatomic, assign, readwrite) BOOL muted;
 @property (nonatomic, assign, readwrite) BOOL hideAutojoinDelayedWarnings;
 @property (nonatomic, assign, readwrite) BOOL hideNetworkUnavailabilityNotices;
 @property (nonatomic, assign, readwrite) BOOL performDisconnectOnPongTimer;

@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	XCTAssertEqualObjects(lines, expected);
 
-	lines = [self lines:@"/echo a\;b costs $$5, $nick on $server, $other" arguments:@"" channel:nil error:&error required:&required];
+	lines = [self lines:@"/echo a\\;b costs $$5, $nick on $server, $other" arguments:@"" channel:nil error:&error required:&required];
 
 	XCTAssertEqualObjects(lines, @[@"/echo a;b costs $5, me on irc.libera.chat, $other"]);
 }

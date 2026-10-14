@@ -51,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TXMenuController (ServerChannelPrivate)
 - (IBAction)joinChannelClicked:(nullable id)sender;
+
+/* The network, channel or private message a mute menu item acts on (E3) */
+- (nullable IRCTreeItem *)_treeItemToMuteForMenuItem:(NSMenuItem *)menuItem;
 @end
 
 @interface TXMenuController (MembersPrivate)

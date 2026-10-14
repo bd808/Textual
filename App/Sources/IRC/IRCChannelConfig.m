@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 	  @"ignoreHighlights" : @(NO),
 	  @"inlineMediaEnabled" : @(NO),
 	  @"inlineMediaDisabled" : @(NO),
+	  @"muted" : @(NO),
 	  @"pushNotifications" : @(YES),
 	  @"showTreeBadgeCount" : @(YES)
 	};
@@ -122,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[defaultsMutable addEntriesFromDictionary:dic];
 
+	[defaultsMutable assignBoolTo:&self->_muted forKey:@"muted"];
 	[defaultsMutable assignBoolTo:&self->_pushNotifications forKey:@"pushNotifications"];
 	[defaultsMutable assignBoolTo:&self->_showTreeBadgeCount forKey:@"showTreeBadgeCount"];
 
@@ -200,6 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSMutableDictionary<NSString *, id> *dic = [NSMutableDictionary dictionary];
 
+	[dic setBool:self.muted forKey:@"muted"];
 	[dic setBool:self.pushNotifications	forKey:@"pushNotifications"];
 	[dic setBool:self.showTreeBadgeCount forKey:@"showTreeBadgeCount"];
 
@@ -444,6 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 @dynamic ignoreHighlights;
 @dynamic inlineMediaDisabled;
 @dynamic inlineMediaEnabled;
+@dynamic muted;
 @dynamic pushNotifications;
 @dynamic secretKey;
 @dynamic showTreeBadgeCount;
@@ -497,6 +501,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (self->_inlineMediaEnabled != inlineMediaEnabled) {
 		self->_inlineMediaEnabled = inlineMediaEnabled;
+	}
+}
+
+- (void)setMuted:(BOOL)muted
+{
+	if (self->_muted != muted) {
+		self->_muted = muted;
 	}
 }
 

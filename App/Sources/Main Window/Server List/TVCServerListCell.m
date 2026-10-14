@@ -42,6 +42,8 @@
 #import "TPCPreferencesLocal.h"
 #import "IRCClient.h"
 #import "IRCChannel.h"
+#import "IRCClientConfig.h"
+#import "IRCChannelConfig.h"
 #import "TVCMainWindow.h"
 #import "TVCServerListAppearancePrivate.h"
 #import "TVCServerListPrivate.h"
@@ -222,6 +224,23 @@ NS_ASSUME_NONNULL_BEGIN
 	NSAttributedString *newValue = [self attributedTextFieldValueWithAppearance:appearance inContext:drawingContext];
 
 	self.cellTextField.attributedStringValue = newValue;
+
+	/* Muted (E3): dimmed, and so are the channels of a muted network.
+	 The views fade rather than the text color, which an inactive window
+	 drew at full strength. */
+	IRCTreeItem *mutedItem = self.cellItem;
+
+	BOOL isMuted = mutedItem.associatedClient.config.muted;
+
+	if (isGroupItem == NO && isMuted == NO) {
+		isMuted = ((IRCChannel *)mutedItem).config.muted;
+	}
+
+	CGFloat alphaValue = ((isMuted && isSelected == NO) ? 0.45 : 1.0);
+
+	self.cellTextField.alphaValue = alphaValue;
+
+	self.imageView.alphaValue = alphaValue;
 
 	if (isGroupItem == NO) {
 		[self populateMessageCountBadgeWithAppearance:appearance inContext:drawingContext];

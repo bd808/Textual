@@ -610,6 +610,12 @@ CA
                                     <action selector="showServerPropertiesSheet:" target="267" id="rk8-q9-syi"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Mute Network" tag="515" id="mTn-s1-a0k">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleMute:" target="267" id="mTn-a1-c9x"/>
+                                </connections>
+                            </menuItem>
                         </items>
                         <connections>
                             <outlet property="delegate" destination="267" id="pQH-ZC-X9q"/>
@@ -1184,6 +1190,12 @@ CA
                         <action selector="showChannelPropertiesSheet:" target="267" id="uB4-c9-8pW"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Mute Channel" tag="650" id="mTc-s2-b1l">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="toggleMute:" target="267" id="mTc-a2-d8y"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" tag="616" id="G83-kQ-M4p">
                     <connections>
                         <binding destination="TlT-Ik-3QP" name="hidden" keyPath="values.TextualDeveloperEnvironment" id="Oq2-DH-zfe">
@@ -1227,6 +1239,12 @@ CA
                 <menuItem title="Query Logs" tag="1802" keyEquivalent="L" id="HNx-8u-amC">
                     <connections>
                         <action selector="openChannelLogs:" target="267" id="Fgb-hr-F9e"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Mute Private Message" tag="1803" id="mTq-s3-c2m">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="toggleMute:" target="267" id="mTq-a3-e7z"/>
                     </connections>
                 </menuItem>
             </items>

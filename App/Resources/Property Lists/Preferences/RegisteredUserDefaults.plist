@@ -102,6 +102,8 @@
 	<string>Your behavior is not conducive to the desired environment.</string>
 	<key>IRCopDefaultLocalizaiton -&gt; Shun Reason</key>
 	<string>1d Shunned.</string>
+	<key>Notifications -&gt; Highlights When Muted</key>
+	<true/>
 	<key>Input -&gt; Aliases</key>
 	<dict/>
 	<key>Input -&gt; Markdown Formatting</key>

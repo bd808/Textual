@@ -504,6 +504,41 @@ NS_ASSUME_NONNULL_BEGIN
 	[u sendModes:modeSymbol withParameters:nil inChannel:c];
 }
 
+#pragma mark -
+#pragma mark Mute
+
+- (nullable IRCTreeItem *)_treeItemToMuteForMenuItem:(NSMenuItem *)menuItem
+{
+	if (menuItem.tag == MTMMServerMuteNetwork) {
+		return self.selectedClient;
+	}
+
+	IRCChannel *channel = self.selectedChannel;
+
+	if (channel.isUtility) {
+		return nil;
+	}
+
+	return channel;
+}
+
+- (void)toggleMute:(nullable id)sender
+{
+	if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
+		return;
+	}
+
+	IRCTreeItem *item = [self _treeItemToMuteForMenuItem:sender];
+
+	if (item == nil) {
+		return;
+	}
+
+	IRCClient *client = item.associatedClient;
+
+	[client setMuted:([client isTreeItemMuted:item] == NO) forTreeItem:item];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

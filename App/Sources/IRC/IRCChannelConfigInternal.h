@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 	BOOL _ignoreHighlights;
 	BOOL _inlineMediaDisabled;
 	BOOL _inlineMediaEnabled;
+	BOOL _muted;
 	BOOL _pushNotifications;
 	BOOL _showTreeBadgeCount;
 	IRCChannelType _type;

@@ -78,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 	defaults[@"addressType"] = @(IRCConnectionAddressTypeDefault);
 	defaults[@"autoConnect"] = @(NO);
 	defaults[@"autoReconnect"] = @(NO);
+	defaults[@"muted"] = @(NO);
 	defaults[@"autoSleepModeDisconnect"] = @(YES);
 	defaults[@"autojoinWaitsForNickServ"] = @(NO);
 	defaults[@"cachedLastServerTimeCapabilityReceivedAtTimestamp"] = @(0);
@@ -253,6 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	[defaultsMutable assignBoolTo:&self->_autoConnect forKey:@"autoConnect"];
 	[defaultsMutable assignBoolTo:&self->_autoReconnect forKey:@"autoReconnect"];
+	[defaultsMutable assignBoolTo:&self->_muted forKey:@"muted"];
 	[defaultsMutable assignBoolTo:&self->_autoSleepModeDisconnect forKey:@"autoSleepModeDisconnect"];
 	[defaultsMutable assignBoolTo:&self->_autojoinWaitsForNickServ forKey:@"autojoinWaitsForNickServ"];
 	[defaultsMutable assignBoolTo:&self->_hideAutojoinDelayedWarnings forKey:@"hideAutojoinDelayedWarnings"];
@@ -701,6 +703,7 @@ TEXTUAL_IGNORE_DEPRECATION_END
 
 	[dic setBool:self.autoConnect forKey:@"autoConnect"];
 	[dic setBool:self.autoReconnect forKey:@"autoReconnect"];
+	[dic setBool:self.muted forKey:@"muted"];
 	[dic setBool:self.autoSleepModeDisconnect forKey:@"autoSleepModeDisconnect"];
 	[dic setBool:self.autojoinWaitsForNickServ forKey:@"autojoinWaitsForNickServ"];
 	[dic setBool:self.hideAutojoinDelayedWarnings forKey:@"hideAutojoinDelayedWarnings"];
@@ -987,6 +990,7 @@ TEXTUAL_IGNORE_DEPRECATION_END
 @dynamic alternateNicknames;
 @dynamic autoConnect;
 @dynamic autoReconnect;
+@dynamic muted;
 @dynamic autoSleepModeDisconnect;
 @dynamic autojoinWaitsForNickServ;
 @dynamic awayNickname;
@@ -1054,6 +1058,13 @@ TEXTUAL_IGNORE_DEPRECATION_END
 {
 	if (self->_autoReconnect != autoReconnect) {
 		self->_autoReconnect = autoReconnect;
+	}
+}
+
+- (void)setMuted:(BOOL)muted
+{
+	if (self->_muted != muted) {
+		self->_muted = muted;
 	}
 }
 
