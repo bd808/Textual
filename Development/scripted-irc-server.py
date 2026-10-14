@@ -1944,6 +1944,42 @@ async def scenario_keywords(client):
 		await client.send(f":bob!b@bob.test PRIVMSG #one :{round}: build passed (no highlight)")
 
 
+async def scenario_mass(client):
+	"""Mass highlights (E3, 10.14): #one with alice, bob, carol, dave, eve and
+	frank. Saying "go" anywhere makes the server wait 5 seconds (time to switch
+	to another app), then send a line naming the client and 3 others (a
+	highlight), one naming the client and 4 others (5 people: not a highlight)
+	and a plain mention. Stays connected."""
+	if not await client.register_with_capabilities("server-time"):
+		return
+
+	me = client.nickname
+
+	await client.send(f":{me}!user@client.textual.test JOIN #one")
+	await client.send(f":{SERVER} 353 {me} = #one :{me} @alice bob carol dave eve frank")
+	await client.send(f":{SERVER} 366 {me} #one :End of /NAMES list.")
+
+	round = 0
+	seen = 0
+
+	while await client.collect(1):
+		said = [line for line in client.received[seen:] if line.upper().startswith("PRIVMSG ") and line.endswith(" :go")]
+		seen = len(client.received)
+
+		if not said:
+			continue
+
+		if not await client.collect(5):
+			return
+
+		seen = len(client.received)
+		round += 1
+
+		await client.send(f":alice!a@alice.test PRIVMSG #one :{round}: {me}, bob, carol, dave: lunch? (4 people: highlight)")
+		await client.send(f":frank!f@frank.test PRIVMSG #one :{round}: {me} bob carol dave eve free coins at example.test (5 people: no highlight)")
+		await client.send(f":bob!b@bob.test PRIVMSG #one :{round}: {me}: are you there? (highlight)")
+
+
 async def scenario_silent(client):
 	"""Accept the connection and never answer (not even a TLS handshake): connect
 	with ircs:// or irc:// and Textual Dev must give up after 30 seconds."""
@@ -1962,6 +1998,7 @@ SCENARIOS = {
 	"drafts": scenario_drafts,
 	"mute": scenario_mute,
 	"keywords": scenario_keywords,
+	"mass": scenario_mass,
 	"idle": scenario_idle,
 	"review-crashes": scenario_review_crashes,
 	"review-irc": scenario_review_irc,
@@ -2003,7 +2040,7 @@ SCENARIOS = {
 }
 
 # Scenarios that register the client themselves
-OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "previews", "previews-short", "drafts", "mute", "keywords", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
+OWN_REGISTRATION_SCENARIOS = {"styles", "collapse", "query-info", "media", "services", "pages", "previews", "previews-short", "drafts", "mute", "keywords", "mass", "znc-disconnect", "cap-ls", "protocol-fixes", "sasl-scram", "sasl-scram-fallback", "sasl-scram-badsig", "sasl-scram-noproof", "sasl-scram-badsig-success", "review-irc", "sasl-ecdsa", "sasl-ecdsa-wrongkey"}
 
 TLS_SCENARIOS = {"redirect-tls", "conn-tls"}
 

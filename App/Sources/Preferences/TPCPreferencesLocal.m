@@ -239,6 +239,18 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 	return [RZUserDefaults() boolForKey:@"AutomaticallyDetectHighlightSpam"];
 }
 
+/* Mass highlights (E3, 10.14): this many people named in one message, or more */
++ (NSUInteger)massHighlightThreshold
+{
+	NSInteger threshold = [RZUserDefaults() integerForKey:@"Highlights -> Mass Highlight Threshold"];
+
+	if (threshold < 2) {
+		return 2;
+	}
+
+	return threshold;
+}
+
 + (BOOL)disableNicknameColorHashing
 {
 	return [RZUserDefaults() boolForKey:@"DisableRemoteNicknameColorHashing"];

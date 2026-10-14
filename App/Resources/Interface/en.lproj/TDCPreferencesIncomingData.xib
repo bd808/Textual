@@ -13,7 +13,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="KpN-mD-prv" userLabel="Incoming Data">
-            <rect key="frame" x="0.0" y="0.0" width="670" height="259"/>
+            <rect key="frame" x="0.0" y="0.0" width="670" height="193"/>
             <userGuides>
                 <userLayoutGuide location="373" affinity="minY"/>
             </userGuides>
@@ -28,27 +28,6 @@
                         <binding destination="G2Q-fc-ddg" name="value" keyPath="values.ReplyUnignoredExternalCTCPRequests" id="F3h-Qb-l6T"/>
                     </connections>
                 </button>
-                <button translatesAutoresizingMaskIntoConstraints="NO" id="uSb-WR-Mph">
-                    <rect key="frame" x="151" y="182" width="243" height="18"/>
-                    <buttonCell key="cell" type="check" title="Automatically ignore highlight spam" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="9iB-R9-pX3">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <binding destination="G2Q-fc-ddg" name="value" keyPath="values.AutomaticallyDetectHighlightSpam" id="Frv-8s-0eY"/>
-                    </connections>
-                </button>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nyl-Dm-Tsm">
-                    <rect key="frame" x="169" y="145" width="350" height="30"/>
-                    <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Do not notify you of a highlight if 75% of a message consists of ten or more nicknames." id="34J-sn-YZe">
-                        <font key="font" metaFont="cellTitle"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                    <connections>
-                        <accessibilityConnection property="link" destination="uSb-WR-Mph" id="9gI-fO-CqF"/>
-                    </connections>
-                </textField>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="RP8-vi-u0X">
                     <rect key="frame" x="151" y="67" width="293" height="18"/>
                     <buttonCell key="cell" type="check" title="Replace Combining Diacritical Marks with �" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="nGd-LX-rxu">
@@ -68,7 +47,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <accessibilityConnection property="link" destination="uSb-WR-Mph" id="fxn-N4-SjE"/>
+                        <accessibilityConnection property="link" destination="RP8-vi-u0X" id="fxn-N4-SjE"/>
                     </connections>
                 </textField>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="McB-sS-fgg">
@@ -167,23 +146,17 @@
                 </scrollView>
             </subviews>
             <constraints>
-                <constraint firstItem="McB-sS-fgg" firstAttribute="leading" secondItem="uSb-WR-Mph" secondAttribute="leading" id="1x2-HM-kEI"/>
+                <constraint firstItem="McB-sS-fgg" firstAttribute="top" secondItem="qfG-DF-6ev" secondAttribute="bottom" constant="14" id="hSp-mv-k01"/>
+                <constraint firstItem="McB-sS-fgg" firstAttribute="leading" secondItem="qfG-DF-6ev" secondAttribute="leading" id="hSp-mv-k02"/>
                 <constraint firstItem="gPo-O3-udJ" firstAttribute="top" secondItem="RP8-vi-u0X" secondAttribute="bottom" constant="8" symbolic="YES" id="9cB-sH-O46"/>
                 <constraint firstItem="RP8-vi-u0X" firstAttribute="top" secondItem="ijO-xj-OPG" secondAttribute="bottom" constant="10" id="AlU-Yd-gwf"/>
-                <constraint firstItem="McB-sS-fgg" firstAttribute="top" secondItem="nyl-Dm-Tsm" secondAttribute="bottom" constant="10" id="Cec-nC-0GV"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="uSb-WR-Mph" secondAttribute="trailing" constant="20" id="DRH-Qr-ZKi"/>
-                <constraint firstItem="nyl-Dm-Tsm" firstAttribute="top" secondItem="uSb-WR-Mph" secondAttribute="bottom" constant="8" symbolic="YES" id="Dwk-WK-1Ly"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="gPo-O3-udJ" secondAttribute="trailing" constant="20" id="Fet-iz-KBi"/>
                 <constraint firstAttribute="bottom" secondItem="gPo-O3-udJ" secondAttribute="bottom" constant="30" id="GhK-Mq-yai"/>
                 <constraint firstItem="mqa-tv-bpf" firstAttribute="leading" secondItem="McB-sS-fgg" secondAttribute="leading" constant="14" id="LK5-Vm-NyA"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="nyl-Dm-Tsm" secondAttribute="trailing" constant="20" id="M20-XN-OzF"/>
                 <constraint firstItem="RP8-vi-u0X" firstAttribute="leading" secondItem="McB-sS-fgg" secondAttribute="leading" id="VKg-BW-Qhc"/>
                 <constraint firstItem="gPo-O3-udJ" firstAttribute="leading" secondItem="RP8-vi-u0X" secondAttribute="leading" constant="18" id="ZSy-lq-aUu"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="McB-sS-fgg" secondAttribute="trailing" constant="20" id="aBg-id-Ck2"/>
-                <constraint firstItem="uSb-WR-Mph" firstAttribute="top" secondItem="qfG-DF-6ev" secondAttribute="bottom" constant="14" id="awP-qH-37v"/>
                 <constraint firstItem="qfG-DF-6ev" firstAttribute="top" secondItem="KpN-mD-prv" secondAttribute="top" constant="30" id="hlP-eP-8Eb"/>
-                <constraint firstItem="uSb-WR-Mph" firstAttribute="leading" secondItem="qfG-DF-6ev" secondAttribute="leading" id="lc3-td-PS8"/>
-                <constraint firstItem="nyl-Dm-Tsm" firstAttribute="leading" secondItem="uSb-WR-Mph" secondAttribute="leading" constant="18" id="oFi-Xd-wUB"/>
                 <constraint firstItem="qfG-DF-6ev" firstAttribute="leading" secondItem="KpN-mD-prv" secondAttribute="leading" constant="153" id="rP5-8S-uRt"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RP8-vi-u0X" secondAttribute="trailing" constant="20" id="t00-Fc-yZC"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="mqa-tv-bpf" secondAttribute="trailing" constant="20" id="uBb-C4-Bb7"/>

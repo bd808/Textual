@@ -47,7 +47,7 @@
 #import "IRCISupportInfo.h"
 #import "IRCUser.h"
 #import "TPCNicknameColorStyleGeneratorPrivate.h"
-#import "TPCPreferencesLocal.h"
+#import "TPCPreferencesLocalPrivate.h"
 #import "TPCThemeController.h"
 #import "TPCTheme.h"
 #import "THOPluginDispatcherPrivate.h"
@@ -750,9 +750,6 @@ static BOOL _isNicknameSpecialCharacter(UniChar character)
 
 	IRCChannel *channel = self->_viewController.associatedChannel;
 
-	NSUInteger totalNicknameCount = 0;
-	NSUInteger totalNicknameLength = 0;
-
 	NSMutableSet<IRCChannelUser *> *userSet = [NSMutableSet set];
 
 	/* The words in the message that could be nicknames are looked up, instead of
@@ -773,24 +770,19 @@ static BOOL _isNicknameSpecialCharacter(UniChar character)
 		[self->_bodyWithAttributes addAttribute:TVCLogRendererFormattingConversationTrackingAttribute value:@(YES) range:range];
 
 		[userSet addObject:user];
-
-		if ([self->_bodyWithAttributes isAttributeSet:TVCLogRendererFormattingKeywordHighlightAttribute inRange:range] == NO) {
-			totalNicknameCount += 1;
-			totalNicknameLength += range.length;
-		}
 	}
 
-	/* Calculate how much of the message is just nicknames.
-	 This is used when trying to stop highlight spam.
-	 Textual counts anything above 75% spam. */
-	if ([TPCPreferences automaticallyDetectHighlightSpam]) {
-		double nicknamePercent = (((double)totalNicknameLength / bodyLength) * 100.0);
+	/* Mass highlights (E3, 10.14, D-E3.9): a message that names this many
+	 people in the channel or more is shown as an ordinary line */
+	if ([TPCPreferences automaticallyDetectHighlightSpam] &&
+		userSet.count >= [TPCPreferences massHighlightThreshold] &&
+		[self->_outputDictionary boolForKey:TVCLogRendererResultsKeywordMatchFoundAttribute])
+	{
+		self->_outputDictionary[TVCLogRendererResultsKeywordMatchFoundAttribute] = @(NO);
 
-		if ((nicknamePercent > 75.0 && totalNicknameCount > 10) ||
-			(nicknamePercent > 50.0 && totalNicknameCount > 20))
-		{
-			self->_outputDictionary[TVCLogRendererResultsKeywordMatchFoundAttribute] = @(NO);
-		}
+		[self->_outputDictionary removeObjectForKey:TVCLogRendererResultsMatchedKeywordAttribute];
+
+		[self->_bodyWithAttributes removeAttribute:TVCLogRendererFormattingKeywordHighlightAttribute range:NSMakeRange(0, bodyLength)];
 	}
 
 	self->_outputDictionary[TVCLogRendererResultsListOfUsersFoundAttribute] = [userSet copy];

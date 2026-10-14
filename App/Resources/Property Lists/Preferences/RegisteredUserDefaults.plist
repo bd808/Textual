@@ -104,6 +104,8 @@
 	<string>1d Shunned.</string>
 	<key>Notifications -&gt; Highlights When Muted</key>
 	<true/>
+	<key>Highlights -&gt; Mass Highlight Threshold</key>
+	<integer>5</integer>
 	<key>Input -&gt; Aliases</key>
 	<dict/>
 	<key>Input -&gt; Markdown Formatting</key>

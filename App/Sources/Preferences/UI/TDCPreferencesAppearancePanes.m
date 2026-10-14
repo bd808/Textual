@@ -71,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSTableView *excludeKeywordsTable;
 @property (nonatomic, weak) IBOutlet NSButton *highlightNicknameButton;
 @property (nonatomic, strong, nullable) TDCHighlightKeywordSheet *keywordSheet;
+@property (nonatomic, strong, nullable) NSUserDefaultsController *defaultsController; // the mass highlight row's bindings
 
 /* Bound in the nib; off while keywords are regular expressions */
 @property (nonatomic, assign) BOOL highlightCurrentNickname;
@@ -92,6 +93,52 @@ NS_ASSUME_NONNULL_BEGIN
 	/* A keyword's settings open in a sheet (E3, D-E3.8) */
 	[self setUpKeywordTable:self.highlightKeywordsTable arrayController:self.highlightKeywordsArrayController action:@selector(onEditHighlightKeyword:)];
 	[self setUpKeywordTable:self.excludeKeywordsTable arrayController:self.excludeKeywordsArrayController action:@selector(onEditExcludeKeyword:)];
+
+	[self addMassHighlightRow];
+}
+
+/* Mass highlights (E3, 10.14, D-E3.9): "Not when a message names [5] or
+ more people", under the other two checkboxes (moved from Incoming Data) */
+- (void)addMassHighlightRow
+{
+	NSStackView *checkboxes = (NSStackView *)self.highlightNicknameButton.superview;
+
+	if ([checkboxes isKindOfClass:[NSStackView class]] == NO) {
+		return;
+	}
+
+	NSUserDefaultsController *defaultsController = [TPCPreferencesUserDefaultsController new];
+
+	self.defaultsController = defaultsController;
+
+	NSButton *checkbox = [NSButton checkboxWithTitle:TXTLS(@"TDCPreferencesController[msh-c1]") target:nil action:nil];
+
+	[checkbox bind:NSValueBinding toObject:defaultsController withKeyPath:@"values.AutomaticallyDetectHighlightSpam" options:nil];
+
+	NSNumberFormatter *formatter = [NSNumberFormatter new];
+
+	formatter.allowsFloats = NO;
+	formatter.minimum = @(2);
+	formatter.maximum = @(99);
+
+	NSTextField *thresholdField = [NSTextField textFieldWithString:@""];
+
+	thresholdField.formatter = formatter;
+	thresholdField.alignment = NSTextAlignmentRight;
+
+	[thresholdField.widthAnchor constraintEqualToConstant:34].active = YES;
+
+	[thresholdField bind:NSValueBinding toObject:defaultsController withKeyPath:@"values.Highlights -> Mass Highlight Threshold" options:@{NSContinuouslyUpdatesValueBindingOption : @(YES)}];
+	[thresholdField bind:NSEnabledBinding toObject:defaultsController withKeyPath:@"values.AutomaticallyDetectHighlightSpam" options:nil];
+
+	NSTextField *label = [NSTextField labelWithString:TXTLS(@"TDCPreferencesController[msh-c2]")];
+
+	NSStackView *row = [NSStackView stackViewWithViews:@[checkbox, thresholdField, label]];
+
+	row.spacing = 4;
+	row.alignment = NSLayoutAttributeFirstBaseline;
+
+	[checkboxes addArrangedSubview:row];
 }
 
 /* Rows open the sheet instead of being edited in place, and an Edit button
