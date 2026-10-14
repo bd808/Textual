@@ -37,6 +37,8 @@
  *
  *********************************************************************** */
 
+#import <CoreText/CoreText.h>
+
 #import "NSViewHelperPrivate.h"
 #import "TVCListViewsPrivate.h"
 
@@ -128,7 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
 			  cornerRadius:(CGFloat)cornerRadius
 		   backgroundColor:(nullable NSColor *)backgroundColor
 					string:(nullable NSAttributedString *)string
-					offset:(NSPoint)offset
 {
 	return [NSImage imageWithSize:size flipped:NO drawingHandler:^BOOL(NSRect badgeFrame) {
 		if (backgroundColor) {
@@ -137,15 +138,30 @@ NS_ASSUME_NONNULL_BEGIN
 			[[NSBezierPath bezierPathWithRoundedRect:badgeFrame xRadius:cornerRadius yRadius:cornerRadius] fill];
 		}
 
-		if (string.length > 0) {
-			NSSize stringSize = string.size;
-
-			NSPoint stringPoint =
-			NSMakePoint((NSMidX(badgeFrame) - (stringSize.width / 2.0) + offset.x),
-						(NSMidY(badgeFrame) - (stringSize.height / 2.0) + offset.y));
-
-			[string drawAtPoint:stringPoint];
+		if (string.length == 0) {
+			return YES;
 		}
+
+		CGContextRef context = [NSGraphicsContext currentContext].CGContext;
+
+		CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)string);
+
+		/* The glyphs' ink, relative to the start of the baseline */
+		CGRect inkBounds = CTLineGetImageBounds(line, context);
+
+		CGFloat x = (NSMidX(badgeFrame) - CGRectGetMidX(inkBounds));
+		CGFloat y = (NSMidY(badgeFrame) - CGRectGetMidY(inkBounds));
+
+		CGContextSaveGState(context);
+
+		CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+		CGContextSetTextPosition(context, round(x), round(y));
+
+		CTLineDraw(line, context);
+
+		CGContextRestoreGState(context);
+
+		CFRelease(line);
 
 		return YES;
 	}];

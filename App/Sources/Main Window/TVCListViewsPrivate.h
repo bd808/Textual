@@ -56,13 +56,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* The count badge of the server list and the mode badge of the member list */
 @interface TVCListBadge : NSObject
-/* A rounded rectangle with the string centred on it, then moved by offset
- (points, upwards). Drawn whenever it is shown, so it is sharp on any screen. */
+/* A rounded rectangle with the string centred on it by the shape of its
+ glyphs (not its line height), so @, + and × sit in the middle without
+ per-symbol nudges. Drawn whenever it is shown, so it is sharp on any screen. */
 + (NSImage *)imageWithSize:(NSSize)size
 			  cornerRadius:(CGFloat)cornerRadius
 		   backgroundColor:(nullable NSColor *)backgroundColor
-					string:(nullable NSAttributedString *)string
-					offset:(NSPoint)offset;
+					string:(nullable NSAttributedString *)string;
 @end
 
 NS_ASSUME_NONNULL_END

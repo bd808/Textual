@@ -412,78 +412,17 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 	}
 
-	/* The mode string, centred, then nudged so each symbol looks centred */
+	/* The mode string, centred by its shape (TVCListBadge) */
 	NSAttributedString *badgeText = nil;
-
-	NSPoint badgeTextOffset = NSZeroPoint;
 
 	if (stringToDraw.length > 0) {
 		badgeText = [self markBadgeTextForModeSymbol:stringToDraw isSelected:isSelected withAppearance:appearance inContext:drawingContext];
-
-		if (appearance.isHighResolutionAppearance)
-		{
-			if ([stringToDraw isEqualToString:@"+"] ||
-				[stringToDraw isEqualToString:@"~"] ||
-				[stringToDraw isEqualToString:@"×"])
-			{
-				badgeTextOffset.y += 1.0;
-			}
-			else if ([stringToDraw isEqualToString:@"^"])
-			{
-				badgeTextOffset.y -= 2.0;
-			}
-			else if ([stringToDraw isEqualToString:@"*"])
-			{
-				badgeTextOffset.y -= 2.5;
-			}
-/*			else if ([stringToDraw isEqualToString:@"@"] ||
-					 [stringToDraw isEqualToString:@"!"] ||
-					 [stringToDraw isEqualToString:@"%"] ||
-					 [stringToDraw isEqualToString:@"&"] ||
-					 [stringToDraw isEqualToString:@"#"] ||
-					 [stringToDraw isEqualToString:@"?"] ||
-					 [stringToDraw isEqualToString:@"$"])
-			{
-				badgeTextOffset.y -= 0.0;
-			} */
-		}
-		else // isDrawingForRetina
-		{
-			if ([stringToDraw isEqualToString:@"+"] ||
-				[stringToDraw isEqualToString:@"~"] ||
-				[stringToDraw isEqualToString:@"×"])
-			{
-				badgeTextOffset.y += 2.0;
-			}
-			else if ([stringToDraw isEqualToString:@"@"] ||
-					 [stringToDraw isEqualToString:@"!"] ||
-					 [stringToDraw isEqualToString:@"%"] ||
-					 [stringToDraw isEqualToString:@"&"] ||
-					 [stringToDraw isEqualToString:@"#"] ||
-					 [stringToDraw isEqualToString:@"?"])
-			{
-				badgeTextOffset.y += 1.0;
-			}
-/*			else if ([stringToDraw isEqualToString:@"^"])
-			{
-				badgeTextOffset.y -= 0.0;
-			} */
-			else if ([stringToDraw isEqualToString:@"*"])
-			{
-				badgeTextOffset.y -= 1.0;
-			}
-			else if ([stringToDraw isEqualToString:@"$"])
-			{
-				badgeTextOffset.y += 1.0;
-			}
-		}
 	}
 
 	return [TVCListBadge imageWithSize:self.imageView.frame.size
 						  cornerRadius:4.0
 					   backgroundColor:backgroundColor
-								string:badgeText
-								offset:badgeTextOffset];
+								string:badgeText];
 }
 
 #pragma mark -

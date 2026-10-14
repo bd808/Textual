@@ -546,8 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[TVCListBadge imageWithSize:rectToDraw.size
 				   cornerRadius:7.0
 				backgroundColor:backgroundColor
-						 string:stringToDraw
-						 offset:NSZeroPoint];
+						 string:stringToDraw];
 }
 
 #pragma mark -
