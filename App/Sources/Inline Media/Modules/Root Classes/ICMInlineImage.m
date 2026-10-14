@@ -151,7 +151,12 @@ NS_ASSUME_NONNULL_BEGIN
 													   type:ICLMediaTypeImage
 											  maximumLength:[TPCPreferences inlineImagesMaxFilesize]];
 
-	NSDictionary *templateAttributes =
+	NSMutableDictionary *templateAttributes = [NSMutableDictionary dictionary];
+
+	templateAttributes[@"caption"] = self.caption.trim;
+	templateAttributes[@"hoverText"] = self.hoverText.trim;
+
+	[templateAttributes addEntriesFromDictionary:
 	@{
 		@"anchorLink" : payload.address,
 		@"classAttribute" : payload.classAttribute,
@@ -160,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
 		@"maximumWidth" : @(_maximumImageWidth),
 		@"preferredMaximumWidth" : @([TPCPreferences inlineMediaMaxWidth]),
 		@"uniqueIdentifier" : payload.uniqueIdentifier
-	};
+	}];
 
 	NSError *templateRenderError = nil;
 

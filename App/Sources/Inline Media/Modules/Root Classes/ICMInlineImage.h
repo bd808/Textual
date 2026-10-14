@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 /* ICMInlineImageFoundation does nothing.
  It exists for internal use. */
 @interface ICMInlineImageFoundation : ICLInlineContentModule
+@property (nonatomic, copy, nullable) NSString *caption; // shown under the image (xkcd's title)
+@property (nonatomic, copy, nullable) NSString *hoverText; // shown when pointed at (xkcd's alt text)
 @end
 
 /* Proper class to sublcass if that is your thing. */

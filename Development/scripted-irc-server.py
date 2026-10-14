@@ -1647,8 +1647,8 @@ async def scenario_media(client):
 	"""Real links for inline media (turn previews on; the VM needs internet):
 	#media gets a JPEG, a PNG, a WebP, an image behind a redirect, a plain-HTTP
 	image (never previewed), an MP4 video (first frame until played), an Imgur
-	clip (plays like a GIF), an xkcd comic and a YouTube link. Stays connected
-	(Ctrl-C to stop)."""
+	clip (plays like a GIF), an xkcd comic, and cards for YouTube, Vimeo,
+	Dailymotion and X. Stays connected (Ctrl-C to stop)."""
 	if not await client.register_with_capabilities("server-time"):
 		return
 
@@ -1669,7 +1669,12 @@ async def scenario_media(client):
 		("bob", "Video, first frame until played: https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"),
 		("alice", "Clip, plays like a GIF: https://i.imgur.com/A61SaA1.gifv"),
 		("bob", "xkcd: https://xkcd.com/927/"),
-		("alice", "YouTube (a card from E2.2 on): https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+		("alice", "YouTube: https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+		("bob", "YouTube short link with a start time: https://youtu.be/jNQXAC9IVRw?t=5"),
+		("alice", "Vimeo: https://vimeo.com/76979871"),
+		("bob", "Dailymotion: https://www.dailymotion.com/video/xbmufdm"),
+		("alice", "X post: https://x.com/jack/status/20"),
+		("bob", "Same on twitter.com: https://twitter.com/jack/status/20"),
 	]
 
 	for sender, text in links:

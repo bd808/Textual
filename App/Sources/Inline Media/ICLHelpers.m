@@ -44,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 /* JSON responses larger than this are refused */
 #define _maximumJSONLength			(1024 * 1024)
 
+/* Remembered answers: how long and how many */
+#define _JSONCacheLifetime			(30 * 60)
+#define _JSONCacheLimit				500
+
 NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 {
 	NSCParameterAssert(name != nil);
@@ -181,20 +185,71 @@ NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 	[self requestJSONObject:objectKey ofType:objectType inHierarchy:hierarchy fromURL:url session:session completionBlock:completionBlock];
 }
 
-+ (void)requestJSONDataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(BOOL success, NSDictionary<NSString *, id> * _Nullable data))completionBlock
+/* Main thread only: URL → @[date, value] */
+static NSMutableDictionary<NSString *, NSArray *> *_JSONCache = nil;
+
++ (nullable id)_cachedJSONForURL:(NSURL *)url
+{
+	NSArray *entry = _JSONCache[url.absoluteString];
+
+	if (entry == nil) {
+		return nil;
+	}
+
+	NSDate *date = entry[0];
+
+	if (date.timeIntervalSinceNow < -(_JSONCacheLifetime)) {
+		[_JSONCache removeObjectForKey:url.absoluteString];
+
+		return nil;
+	}
+
+	return entry[1];
+}
+
++ (void)_cacheJSON:(id)json forURL:(NSURL *)url
+{
+	if (_JSONCache == nil) {
+		_JSONCache = [NSMutableDictionary dictionary];
+	}
+
+	/* Full: the expired go, then the oldest */
+	if (_JSONCache.count >= _JSONCacheLimit) {
+		NSArray<NSString *> *keys = [_JSONCache keysSortedByValueUsingComparator:^NSComparisonResult(NSArray *entry1, NSArray *entry2) {
+			return [(NSDate *)entry1[0] compare:(NSDate *)entry2[0]];
+		}];
+
+		for (NSString *key in [keys subarrayWithRange:NSMakeRange(0, (keys.count / 4) + 1)]) {
+			[_JSONCache removeObjectForKey:key];
+		}
+	}
+
+	_JSONCache[url.absoluteString] = @[[NSDate date], json];
+}
+
++ (void)requestJSONFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(id _Nullable json))completionBlock
 {
 	NSParameterAssert(url != nil);
 	NSParameterAssert(completionBlock != nil);
 
+	id cachedJSON = [self _cachedJSONForURL:url];
+
+	if (cachedJSON) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			completionBlock(cachedJSON);
+		});
+
+		return;
+	}
+
 	[ICLURLSession requestDataFromURL:url session:session maximumLength:_maximumJSONLength completionBlock:^(NSData * _Nullable data) {
 		/* The session logs why a request failed */
 		if (data == nil) {
-			completionBlock(NO, nil);
+			completionBlock(nil);
 
 			return;
 		}
 
-		/* Decode JSON data */
 		NSError *decodedJsonError;
 
 		id decodedJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:&decodedJsonError];
@@ -203,19 +258,30 @@ NSURL * _Nullable ICLResourceURL(NSString *name, NSString *extension)
 			LogToConsoleError("Failed to decode response: %{public}@",
 				decodedJsonError.localizedDescription);
 
+			completionBlock(nil);
+
+			return;
+		}
+
+		[self _cacheJSON:decodedJson forURL:url];
+
+		completionBlock(decodedJson);
+	}];
+}
+
++ (void)requestJSONDataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(BOOL success, NSDictionary<NSString *, id> * _Nullable data))completionBlock
+{
+	NSParameterAssert(url != nil);
+	NSParameterAssert(completionBlock != nil);
+
+	[self requestJSONFromURL:url session:session completionBlock:^(id _Nullable json) {
+		if ([json isKindOfClass:[NSDictionary class]] == NO) {
 			completionBlock(NO, nil);
 
 			return;
 		}
 
-		if ([decodedJson isKindOfClass:[NSDictionary class]] == NO) {
-			completionBlock(NO, nil);
-
-			return;
-		}
-
-		/* Post JSON data */
-		completionBlock(YES, decodedJson);
+		completionBlock(YES, json);
 	}];
 }
 

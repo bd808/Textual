@@ -138,13 +138,12 @@ static NSString * _Nullable _lastRangeHeader = nil;
 
 	__block NSError *fetchError = nil;
 	__block NSUInteger receivedLength = 0;
+	__block NSInteger receivedStatusCode = 0;
+	__block NSDictionary *receivedHeaders = nil;
 
-	fetch.responseBlock = ^(NSInteger receivedStatusCode, NSDictionary<NSString *, NSString *> *headerFields) {
-		*statusCode = receivedStatusCode;
-
-		if (headers) {
-			*headers = headerFields;
-		}
+	fetch.responseBlock = ^(NSInteger responseStatusCode, NSDictionary<NSString *, NSString *> *headerFields) {
+		receivedStatusCode = responseStatusCode;
+		receivedHeaders = headerFields;
 	};
 
 	fetch.dataBlock = ^(NSData *data) {
@@ -162,6 +161,12 @@ static NSString * _Nullable _lastRangeHeader = nil;
 	[self waitForExpectations:@[finished] timeout:10];
 
 	*length = receivedLength;
+
+	*statusCode = receivedStatusCode;
+
+	if (headers) {
+		*headers = receivedHeaders;
+	}
 
 	return fetchError;
 }

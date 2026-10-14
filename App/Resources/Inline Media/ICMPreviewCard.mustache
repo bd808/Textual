@@ -1,0 +1,37 @@
+<span class="inlinePreviewCard {{classAttribute}}" id="inlineMedia-{{uniqueIdentifier}}" data-card-style="{{style}}"{{#dataAttributes}} data-{{name}}="{{value}}"{{/dataAttributes}}>
+	<span class="closeButton" onclick="_ICMPreviewCard.hideOnClick('{{uniqueIdentifier}}');">×</span>
+
+	<a class="previewCard" href="{{targetURL}}" data-card-style="{{style}}">
+{{#isVideo}}
+		<span class="previewCardThumbnail">
+			{{#imageURL}}<img src="{{imageURL}}" alt="" onerror="this.remove()">{{/imageURL}}
+			<span class="previewCardPlay"></span>
+			{{#duration}}<span class="previewCardDuration">{{duration}}</span>{{/duration}}
+		</span>
+		<span class="previewCardBody">
+			{{#title}}<span class="previewCardTitle">{{title}}</span>{{/title}}
+			{{#details}}<span class="previewCardDetails">{{details}}</span>{{/details}}
+		</span>
+{{/isVideo}}
+{{#isPost}}
+		<span class="previewCardBody">
+			<span class="previewCardAuthor">
+				{{#avatarURL}}<img class="previewCardAvatar" src="{{avatarURL}}" alt="" onerror="this.remove()">{{/avatarURL}}
+				{{#authorName}}<span class="previewCardAuthorName">{{authorName}}</span>{{/authorName}}
+				{{#authorHandle}}<span class="previewCardAuthorHandle">{{authorHandle}}</span>{{/authorHandle}}
+			</span>
+			{{#text}}<span class="previewCardText">{{text}}</span>{{/text}}
+			{{#imageURL}}<span class="previewCardImage"><img src="{{imageURL}}" alt="" onerror="this.parentNode.remove()"></span>{{/imageURL}}
+			{{#details}}<span class="previewCardDetails">{{details}}</span>{{/details}}
+		</span>
+{{/isPost}}
+{{#isPage}}
+		{{#imageURL}}<span class="previewCardPageImage"><img src="{{imageURL}}" alt="" onerror="this.parentNode.remove()"></span>{{/imageURL}}
+		<span class="previewCardBody">
+			{{#title}}<span class="previewCardTitle">{{title}}</span>{{/title}}
+			{{#text}}<span class="previewCardText">{{text}}</span>{{/text}}
+			{{#details}}<span class="previewCardDetails">{{details}}</span>{{/details}}
+		</span>
+{{/isPage}}
+	</a>
+</span>

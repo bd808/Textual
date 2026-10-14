@@ -35,11 +35,11 @@
  *
  *********************************************************************** */
 
-#import "ICMInlineVideo.h"
+#import "ICMPreviewCard.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ICMYouTube : ICMInlineVideoFoundation
+@interface ICMYouTube : ICMPreviewCard
 @end
 
 NS_ASSUME_NONNULL_END

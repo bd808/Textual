@@ -3,10 +3,9 @@
  *                 |_   _|____  _| |_ _   _  __ _| |
  *                   | |/ _ \ \/ / __| | | |/ _` | |
  *                   | |  __/>  <| |_| |_| | (_| | |
- *                   |_|\___/_/\_\\__|\__,_|\__,_|_|
+ *                   |_|\___/_/\_\__|\__,_|\__,_|_|
  *
- * Copyright (c) 2017, 2018 Codeux Software, LLC & respective contributors.
- *       Please see Acknowledgements.pdf for additional information.
+ * Copyright (c) 2026 Blendbyte GmbH & respective contributors.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,60 +34,44 @@
  *
  *********************************************************************** */
 
-window.twttr = (function() { /* cancer */
-	var t = window.twttr;
+#import <XCTest/XCTest.h>
 
-	if (t) {
-		return t;
-	}
+#import "ICMPreviewCard.h"
+#import "ICMTweet.h"
 
-	t = {};
+NS_ASSUME_NONNULL_BEGIN
 
-	t._e = [];
+@interface ICMPreviewCardTests : XCTestCase
+@end
 
-	t.ready = function(f) {
-		t._e.push(f);
-	};
+@implementation ICMPreviewCardTests
 
-	return t;
-}());
+/* X's oEmbed blockquote, as X sends it: the post's text (links and line breaks
+ inside), then the author and a dated link */
+- (void)testPostTextAndDateFromEmbedHTML
+{
+	NSString *html = @"<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">Fish &amp; chips<br>at <a href=\"https://t.co/x\">t.co/x</a> &#8212; &quot;yes&quot; &#x1F600;</p>&mdash; Jack (@jack) <a href=\"https://x.com/jack/status/20?ref_src=twsrc%5Etfw\">March 21, 2006</a></blockquote>\n";
 
-var _ICMTweetPrototypeParent = _ICMInlineHTMLPrototype;
+	NSDictionary<NSString *, NSString *> *post = [ICMTweet postFromEmbedHTML:html];
 
-var _ICMTweetPrototype = function() {
-	_ICMTweetPrototypeParent.call(this);
+	XCTAssertEqualObjects(post[@"text"], @"Fish & chips\nat t.co/x \u2014 \"yes\" \U0001F600");
+	XCTAssertEqualObjects(post[@"date"], @"March 21, 2006");
+
+	/* Not what X sends: nothing, rather than markup */
+	XCTAssertNil([ICMTweet postFromEmbedHTML:@"<div>no paragraph</div>"]);
+	XCTAssertNil([ICMTweet postFromEmbedHTML:@"<p>never closed"]);
+
+	/* Unknown or broken entities stay as they were */
+	XCTAssertEqualObjects([ICMTweet plainTextFromHTMLFragment:@"a &bogus; b &#xD800; c & d"], @"a &bogus; b &#xD800; c & d");
 }
 
-_ICMTweetPrototype.prototype = Object.create(_ICMInlineHTMLPrototype.prototype);
-_ICMTweetPrototype.prototype.constructor = _ICMTweetPrototype;
-_ICMTweetPrototype.prototype.superClass = _ICMTweetPrototypeParent.prototype;
-
-_ICMTweetPrototype.prototype.didLoadMedia = function(mediaId, mediaElement)
+- (void)testDurations
 {
-	/* We do not have enough context in the module itself to set 
-	the appearance of it, but we do once we reach the entrypoint. */
-	var themeAppearance = document.body.dataset.appearance;
+	XCTAssertEqualObjects([ICMPreviewCard formattedDuration:62], @"1:02");
+	XCTAssertEqualObjects([ICMPreviewCard formattedDuration:3723], @"1:02:03");
+	XCTAssertEqualObjects([ICMPreviewCard formattedDuration:9.6], @"0:10");
+}
 
-	if (themeAppearance === "dark") {
-		var tweet = mediaElement.querySelector("blockquote.twitter-tweet");
+@end
 
-		tweet.dataset.theme = "dark";
-	}
-
-	twttr.widgets.load(mediaElement);
-};
-
-_ICMTweetPrototype.prototype.tweetRendered = function(event)
-{
-	TextualScroller.restoreScrolledToBottom();
-};
-
-var _ICMTweet = null;
-
-twttr.ready(
-	function(twttr) {
-		_ICMTweet = new _ICMTweetPrototype();
-
-		twttr.events.bind("rendered", _ICMTweet.tweetRendered);
-	}
-);
+NS_ASSUME_NONNULL_END

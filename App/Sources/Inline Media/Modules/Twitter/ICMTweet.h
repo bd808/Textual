@@ -35,11 +35,18 @@
  *
  *********************************************************************** */
 
-#import "ICMInlineHTML.h"
+#import "ICMPreviewCard.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ICMTweet : ICMInlineHTML
+@interface ICMTweet : ICMPreviewCard
+@end
+
+/* The text, author and date of oEmbed's blockquote, found with a bounded string
+ search (no HTML parser): <p …>TEXT</p>&mdash; NAME (@handle) <a …>DATE</a> */
+@interface ICMTweet (Extraction)
++ (nullable NSDictionary<NSString *, NSString *> *)postFromEmbedHTML:(NSString *)html; // text, date
++ (NSString *)plainTextFromHTMLFragment:(NSString *)fragment; // tags removed, <br> as line breaks, entities decoded
 @end
 
 NS_ASSUME_NONNULL_END

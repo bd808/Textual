@@ -5,8 +5,7 @@
  *                   | |  __/>  <| |_| |_| | (_| | |
  *                   |_|\___/_/\_\\__|\__,_|\__,_|_|
  *
- * Copyright (c) 2017, 2018 Codeux Software, LLC & respective contributors.
- *       Please see Acknowledgements.pdf for additional information.
+ * Copyright (c) 2026 Blendbyte GmbH & respective contributors.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,11 +34,44 @@
  *
  *********************************************************************** */
 
-#import "ICMInlineVideo.h"
+#import "ICLInlineContentModule.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ICMPornhub : ICMInlineVideoFoundation
+/* What a preview card shows (E2.2, D-E2.4): a video (a large picture with
+ ▶, the title, details such as the channel and length), a post (author,
+ text, an image, details) or a page (a small picture, title, description,
+ details). Providers fill it from a service's metadata; nothing in it is
+ HTML: the card's own template escapes every value, and its pictures load
+ through Textual (ICLMediaSchemeHandler) like any image. */
+typedef NS_ENUM(NSUInteger, ICMPreviewCardStyle) {
+	ICMPreviewCardStyleVideo = 0,
+	ICMPreviewCardStylePost,
+	ICMPreviewCardStylePage
+};
+
+@interface ICMPreviewCardContent : NSObject
+@property (nonatomic, assign) ICMPreviewCardStyle style;
+@property (nonatomic, copy) NSURL *targetURL; // opened when the card is clicked
+@property (nonatomic, copy, nullable) NSString *title;
+@property (nonatomic, copy, nullable) NSString *text; // a post's text or a page's description
+@property (nonatomic, copy, nullable) NSString *authorName;
+@property (nonatomic, copy, nullable) NSString *authorHandle;
+@property (nonatomic, copy, nullable) NSURL *avatarURL;
+@property (nonatomic, copy, nullable) NSURL *imageURL; // thumbnail, post image or page image
+@property (nonatomic, copy, nullable) NSArray<NSString *> *details; // shown joined with " · "
+@property (nonatomic, assign) NSTimeInterval duration; // a video's length, 0 if unknown
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, NSString *> *dataAttributes; // data-… on the card, for its script (E2.7)
+@end
+
+/* The root class of card providers */
+@interface ICMPreviewCard : ICLInlineContentModule
+- (void)performActionForCard:(ICMPreviewCardContent *)card;
+
+- (void)notifyUnableToPresentCard;
+
+/* "4:12", "1:02:03" */
++ (NSString *)formattedDuration:(NSTimeInterval)duration;
 @end
 
 NS_ASSUME_NONNULL_END

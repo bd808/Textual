@@ -48,20 +48,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 	NSString *addressToRequest = [NSString stringWithFormat:@"https://xkcd.com/%@/info.0.json", comicIdentifier];
 
-	[ICLHelpers requestJSONObject:@"img"
-						   ofType:[NSString class]
-					  inHierarchy:nil
-					  fromAddress:addressToRequest
-						  session:self.payload.session
-				  completionBlock:^(id object)
+	[ICLHelpers requestJSONDataFromAddress:addressToRequest
+								   session:self.payload.session
+						   completionBlock:^(BOOL success, NSDictionary<NSString *, id> * _Nullable data)
 	 {
-		 if (object == nil) {
+		 NSString *imageAddress = [data stringForKey:@"img"];
+
+		 if (imageAddress == nil) {
 			 [self notifyUnsafeToLoadImage];
 
 			 return;
 		 }
 
-		 [self performActionForAddress:object];
+		 /* The comic with its title under it and its alt text when pointed at */
+		 self.caption = [data stringForKey:@"safe_title"];
+
+		 self.hoverText = [data stringForKey:@"alt"];
+
+		 [self performActionForAddress:imageAddress];
 	 }];
 }
 

@@ -40,79 +40,288 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/* The embed HTML is read up to this length */
+#define _maximumEmbedLength			(32 * 1024)
+
+/* A post card for X (twitter.com and x.com): author and text from X's official
+ oEmbed (D-E2.5), no image, no script. When oEmbed fails, a card built from the
+ address alone ("Post by @handle on X"). */
 @implementation ICMTweet
 
-- (void)_loadTweetContents
+- (void)_loadPostOfAccount:(NSString *)account
 {
-	NSString *tweetAddress = self.payload.address;
+	NSParameterAssert(account != nil);
 
-	NSURLComponents *requestComponents = [NSURLComponents componentsWithString:@"https://publish.twitter.com/oembed"];
+	NSURLComponents *addressComponents = [NSURLComponents componentsWithURL:self.payload.url resolvingAgainstBaseURL:NO];
+
+	addressComponents.scheme = @"https";
+	addressComponents.host = @"x.com";
+	addressComponents.query = nil;
+	addressComponents.fragment = nil;
+
+	NSURLComponents *requestComponents = [NSURLComponents componentsWithString:@"https://publish.x.com/oembed"];
 
 	requestComponents.queryItems =
 	@[
 	  [NSURLQueryItem queryItemWithName:@"dnt" value:@"true"], /* DO NOT TRACK */
-	  [NSURLQueryItem queryItemWithName:@"maxwidth" value:@"500"],
 	  [NSURLQueryItem queryItemWithName:@"omit_script" value:@"true"],
-	  [NSURLQueryItem queryItemWithName:@"url" value:tweetAddress]
+	  [NSURLQueryItem queryItemWithName:@"url" value:addressComponents.URL.absoluteString]
 	];
 
-	NSURL *requestURL = requestComponents.URL;
+	[ICLHelpers requestJSONDataFromURL:requestComponents.URL
+							   session:self.payload.session
+					   completionBlock:^(BOOL success, NSDictionary<NSString *, id> * _Nullable data) {
+		ICMPreviewCardContent *card = [ICMPreviewCardContent new];
 
-	[ICLHelpers requestJSONObject:@"html"
-						   ofType:[NSString class]
-					  inHierarchy:nil
-						  fromURL:requestURL
-						  session:self.payload.session
-				  completionBlock:^(id object) {
-				if (object == nil) {
-					[self notifyUnableToPresentHTML];
+		card.style = ICMPreviewCardStylePost;
 
-					return;
-				}
+		card.targetURL = self.payload.url;
 
-				[self performActionForHTML:object];
-			}];
+		card.authorHandle = [@"@" stringByAppendingString:account];
+
+		NSString *html = [data stringForKey:@"html"];
+
+		NSDictionary<NSString *, NSString *> *post = ((html) ? [self.class postFromEmbedHTML:html] : nil);
+
+		if (post) {
+			card.authorName = [data stringForKey:@"author_name"];
+
+			card.text = post[@"text"];
+
+			card.details = @[@"X", (post[@"date"] ?: @"")];
+		} else {
+			card.text = [NSString stringWithFormat:@"Post by @%@ on X", account];
+
+			card.details = @[@"X"];
+		}
+
+		[self performActionForCard:card];
+	}];
+}
+
+#pragma mark -
+#pragma mark Extraction
+
++ (nullable NSDictionary<NSString *, NSString *> *)postFromEmbedHTML:(NSString *)html
+{
+	NSParameterAssert(html != nil);
+
+	if (html.length > _maximumEmbedLength) {
+		html = [html substringToIndex:_maximumEmbedLength];
+	}
+
+	/* The text: inside the first <p …> … </p> */
+	NSRange paragraphStart = [html rangeOfString:@"<p" options:NSCaseInsensitiveSearch];
+
+	if (paragraphStart.location == NSNotFound) {
+		return nil;
+	}
+
+	NSRange tagEnd = [html rangeOfString:@">" options:0 range:NSMakeRange(NSMaxRange(paragraphStart), (html.length - NSMaxRange(paragraphStart)))];
+
+	if (tagEnd.location == NSNotFound) {
+		return nil;
+	}
+
+	NSUInteger textStart = NSMaxRange(tagEnd);
+
+	NSRange paragraphEnd = [html rangeOfString:@"</p>" options:NSCaseInsensitiveSearch range:NSMakeRange(textStart, (html.length - textStart))];
+
+	if (paragraphEnd.location == NSNotFound) {
+		return nil;
+	}
+
+	NSString *text = [self plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(textStart, (paragraphEnd.location - textStart))]];
+
+	if (text.length == 0) {
+		return nil;
+	}
+
+	NSMutableDictionary<NSString *, NSString *> *post = [NSMutableDictionary dictionary];
+
+	post[@"text"] = text;
+
+	/* The date: the last link's text before </blockquote> */
+	NSUInteger afterText = NSMaxRange(paragraphEnd);
+
+	NSRange lastLinkEnd = [html rangeOfString:@"</a>" options:(NSCaseInsensitiveSearch | NSBackwardsSearch) range:NSMakeRange(afterText, (html.length - afterText))];
+
+	if (lastLinkEnd.location != NSNotFound) {
+		NSRange lastLinkTagEnd = [html rangeOfString:@">" options:NSBackwardsSearch range:NSMakeRange(afterText, (lastLinkEnd.location - afterText))];
+
+		if (lastLinkTagEnd.location != NSNotFound) {
+			NSString *date = [self plainTextFromHTMLFragment:[html substringWithRange:NSMakeRange(NSMaxRange(lastLinkTagEnd), (lastLinkEnd.location - NSMaxRange(lastLinkTagEnd)))]];
+
+			if (date.length > 0 && date.length <= 40) {
+				post[@"date"] = date;
+			}
+		}
+	}
+
+	return [post copy];
+}
+
++ (NSString *)plainTextFromHTMLFragment:(NSString *)fragment
+{
+	NSParameterAssert(fragment != nil);
+
+	NSMutableString *text = [NSMutableString stringWithCapacity:fragment.length];
+
+	NSScanner *scanner = [NSScanner scannerWithString:fragment];
+
+	scanner.charactersToBeSkipped = nil;
+
+	while (scanner.isAtEnd == NO) {
+		NSString *chunk = nil;
+
+		if ([scanner scanUpToString:@"<" intoString:&chunk]) {
+			[text appendString:chunk];
+		}
+
+		if (scanner.isAtEnd) {
+			break;
+		}
+
+		NSString *tag = nil;
+
+		[scanner scanUpToString:@">" intoString:&tag];
+
+		if (scanner.isAtEnd == NO) {
+			scanner.scanLocation += 1;
+		}
+
+		/* <br> and <br/> become line breaks; other tags go */
+		if ([tag.lowercaseString hasPrefix:@"<br"]) {
+			[text appendString:@"\n"];
+		}
+	}
+
+	return [self _stringByDecodingEntities:text].trim;
+}
+
++ (NSString *)_stringByDecodingEntities:(NSString *)string
+{
+	if ([string containsString:@"&"] == NO) {
+		return string;
+	}
+
+	NSDictionary<NSString *, NSString *> *named =
+	@{
+	  @"amp" : @"&", @"lt" : @"<", @"gt" : @">", @"quot" : @"\"", @"apos" : @"'",
+	  @"nbsp" : @"\u00A0", @"mdash" : @"\u2014", @"ndash" : @"\u2013", @"hellip" : @"\u2026"
+	};
+
+	NSMutableString *result = [NSMutableString stringWithCapacity:string.length];
+
+	NSScanner *scanner = [NSScanner scannerWithString:string];
+
+	scanner.charactersToBeSkipped = nil;
+
+	while (scanner.isAtEnd == NO) {
+		NSString *chunk = nil;
+
+		if ([scanner scanUpToString:@"&" intoString:&chunk]) {
+			[result appendString:chunk];
+		}
+
+		if (scanner.isAtEnd) {
+			break;
+		}
+
+		NSUInteger entityStart = scanner.scanLocation;
+
+		NSRange semicolon = [string rangeOfString:@";" options:0 range:NSMakeRange(entityStart, MIN((NSUInteger)12, (string.length - entityStart)))];
+
+		if (semicolon.location == NSNotFound) {
+			[result appendString:@"&"];
+
+			scanner.scanLocation = (entityStart + 1);
+
+			continue;
+		}
+
+		NSString *entity = [string substringWithRange:NSMakeRange((entityStart + 1), (semicolon.location - entityStart - 1))];
+
+		NSString *decoded = named[entity];
+
+		if (decoded == nil && [entity hasPrefix:@"#"] && entity.length > 1) {
+			unsigned long long codePoint = 0;
+
+			BOOL hexadecimal = ([entity hasPrefix:@"#x"] || [entity hasPrefix:@"#X"]);
+
+			NSScanner *numberScanner = [NSScanner scannerWithString:[entity substringFromIndex:((hexadecimal) ? 2 : 1)]];
+
+			BOOL scanned = ((hexadecimal) ? [numberScanner scanHexLongLong:&codePoint] : [numberScanner scanUnsignedLongLong:&codePoint]);
+
+			if (scanned && numberScanner.isAtEnd && codePoint > 0 && codePoint <= 0x10FFFF && (codePoint < 0xD800 || codePoint > 0xDFFF)) {
+				UTF32Char character = (UTF32Char)codePoint;
+
+				decoded = [[NSString alloc] initWithBytes:&character length:sizeof(character) encoding:NSUTF32LittleEndianStringEncoding];
+			}
+		}
+
+		if (decoded) {
+			[result appendString:decoded];
+
+			scanner.scanLocation = NSMaxRange(semicolon);
+		} else {
+			[result appendString:@"&"];
+
+			scanner.scanLocation = (entityStart + 1);
+		}
+	}
+
+	return [result copy];
 }
 
 #pragma mark -
 #pragma mark Action Block
 
-+ (nullable SEL)actionForURL:(NSURL *)url
++ (nullable ICLInlineContentModuleActionBlock)actionBlockForURL:(NSURL *)url
 {
 	NSParameterAssert(url != nil);
 
-	if ([self _URLIsTweet:url] == NO) {
-		return NULL;
+	NSString *account = [self _accountOfPostAtURL:url];
+
+	if (account == nil) {
+		return nil;
 	}
 
-	return @selector(_loadTweetContents);
+	return [^(ICLInlineContentModule *module) {
+		__weak ICMTweet *moduleTyped = (id)module;
+
+		[moduleTyped _loadPostOfAccount:account];
+	} copy];
 }
 
-+ (BOOL)_URLIsTweet:(NSURL *)url
+/* /<account>/status/<number>: the account, or nil */
++ (nullable NSString *)_accountOfPostAtURL:(NSURL *)url
 {
 	NSString *urlPath = url.path.percentEncodedURLPath;
 
 	if (urlPath.length <= 1) {
-		return NO;
+		return nil;
 	}
 
-	urlPath = [urlPath substringFromIndex:1]; // "/"
-
-	NSArray<NSString *> *components = [urlPath componentsSeparatedByString:@"/"];
+	NSArray<NSString *> *components = [[urlPath substringFromIndex:1] componentsSeparatedByString:@"/"];
 
 	if (components.count < 3) {
-		return NO;
+		return nil;
 	}
 
-	if ([components[1] isEqualToString:@"status"] == NO) {
-		return NO;
+	if ([components[1] isEqualToString:@"status"] == NO || components[2].isNumericOnly == NO) {
+		return nil;
 	}
 
-	if (components[2].isNumericOnly == NO) {
-		return NO;
+	NSString *account = components[0];
+
+	if (account.length == 0 || account.length > 50 ||
+		[account onlyContainsCharactersFromCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"]] == NO)
+	{
+		return nil;
 	}
 
-	return YES;
+	return account;
 }
 
 + (nullable NSArray<NSString *> *)domains
@@ -126,34 +335,14 @@ NS_ASSUME_NONNULL_BEGIN
 		@[
 		  @"twitter.com",
 		  @"www.twitter.com",
-		  @"mobile.twitter.com"
+		  @"mobile.twitter.com",
+		  @"x.com",
+		  @"www.x.com",
+		  @"mobile.x.com"
 		];
 	});
 
 	return domains;
-}
-
-#pragma mark -
-#pragma mark Utilities
-
-- (nullable NSArray<NSURL *> *)scriptResources
-{
-	return
-	[[super scriptResources] arrayByAddingObjectsFromArray:
-	@[
-	  [NSURL URLWithString:@"https://platform.twitter.com/widgets.js"],
-	  ICLResourceURL(@"ICMTweet", @"js")
-	]];
-}
-
-- (nullable NSString *)entrypoint
-{
-	return @"_ICMTweet";
-}
-
-- (void)finalizePreflight
-{
-	self.payload.classAttribute = @"inlineTweet";
 }
 
 @end

@@ -367,3 +367,210 @@ body[data-selected="false"] #topicBar {
 :where(div.line.eventGroupSummary[data-expanded="true"] .message)::before {
 	transform: rotate(90deg);
 }
+
+/* Preview cards (ICMPreviewCard): a video (large picture), a post (author and
+ text) or a page (small picture). Neutral colours from the text colour, so
+ they suit light and dark styles. Zero specificity (:where), so any style's
+ own rules win */
+:where(.inlinePreviewCard) {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+	margin: 6px 0 8px;
+	white-space: normal;
+	text-indent: 0;
+}
+
+:where(.inlinePreviewCard .closeButton) {
+	cursor: pointer;
+	flex: 0 0 auto;
+	width: 16px;
+	height: 16px;
+	line-height: 14px;
+	font-size: 12px;
+	text-align: center;
+	border-radius: 50%;
+	border: 1px solid rgba(127, 127, 127, 0.4);
+	opacity: 0.7;
+}
+
+:where(.inlinePreviewCard .previewCard) {
+	display: flex;
+	overflow: hidden;
+	color: inherit;
+	text-decoration: none;
+	border: 1px solid rgba(127, 127, 127, 0.25);
+	border-radius: 8px;
+	background-color: rgba(127, 127, 127, 0.05);
+}
+
+:where(.inlinePreviewCard .previewCard:hover) {
+	border-color: rgba(127, 127, 127, 0.45);
+	background-color: rgba(127, 127, 127, 0.09);
+}
+
+/* A card is a link: styles' link colours, underlines and hover borders are
+ for links in text, not for the card (not :where, so these win over a plain
+ a or a:hover rule; a style can still restyle .previewCard more specifically) */
+.inlinePreviewCard a.previewCard,
+.inlinePreviewCard a.previewCard:hover {
+	color: inherit;
+	text-decoration: none;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.inlinePreviewCard a.previewCard {
+	border-bottom-color: rgba(127, 127, 127, 0.25);
+}
+
+.inlinePreviewCard a.previewCard:hover {
+	border-bottom-color: rgba(127, 127, 127, 0.45);
+}
+
+:where(.inlinePreviewCard .previewCardBody) {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	padding: 8px 10px;
+}
+
+:where(.inlinePreviewCard .previewCardTitle) {
+	font-weight: 600;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+:where(.inlinePreviewCard .previewCardText) {
+	white-space: pre-line;
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+:where(.inlinePreviewCard .previewCardDetails) {
+	font-size: 0.85em;
+	opacity: 0.65;
+}
+
+/* Video: a 16:9 picture with ▶ and the length, the title and details below */
+:where(.inlinePreviewCard .previewCard[data-card-style="video"]) {
+	flex-direction: column;
+	width: min(360px, 90vw);
+}
+
+:where(.inlinePreviewCard .previewCardThumbnail) {
+	position: relative;
+	display: block;
+	aspect-ratio: 16 / 9;
+	background-color: rgba(0, 0, 0, 0.75);
+}
+
+:where(.inlinePreviewCard .previewCardThumbnail img) {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+:where(.inlinePreviewCard .previewCardPlay) {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 48px;
+	height: 48px;
+	margin: -24px 0 0 -24px;
+	border-radius: 50%;
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
+:where(.inlinePreviewCard .previewCardPlay)::after {
+	content: "";
+	position: absolute;
+	left: 19px;
+	top: 14px;
+	border-style: solid;
+	border-width: 10px 0 10px 16px;
+	border-color: transparent transparent transparent #fff;
+}
+
+:where(.inlinePreviewCard .previewCardDuration) {
+	position: absolute;
+	right: 6px;
+	bottom: 6px;
+	padding: 1px 5px;
+	border-radius: 4px;
+	font-size: 0.8em;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Post: author, text, the post's picture, details */
+:where(.inlinePreviewCard .previewCard[data-card-style="post"]) {
+	max-width: min(440px, 90vw);
+}
+
+:where(.inlinePreviewCard .previewCardAuthor) {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+:where(.inlinePreviewCard .previewCardAvatar) {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+:where(.inlinePreviewCard .previewCardAuthorName) {
+	font-weight: 600;
+}
+
+:where(.inlinePreviewCard .previewCardAuthorHandle) {
+	opacity: 0.65;
+}
+
+:where(.inlinePreviewCard .previewCardImage img) {
+	display: block;
+	max-width: 100%;
+	max-height: 240px;
+	margin-top: 4px;
+	border-radius: 6px;
+}
+
+/* Page: a small picture, title, description, site */
+:where(.inlinePreviewCard .previewCard[data-card-style="page"]) {
+	max-width: min(480px, 90vw);
+}
+
+:where(.inlinePreviewCard .previewCardPageImage) {
+	flex: 0 0 auto;
+	width: 80px;
+}
+
+:where(.inlinePreviewCard .previewCardPageImage img) {
+	display: block;
+	width: 80px;
+	height: 100%;
+	min-height: 80px;
+	object-fit: cover;
+}
+
+:where(.inlinePreviewCard .previewCard[data-card-style="page"] .previewCardText) {
+	-webkit-line-clamp: 2;
+}
+
+/* An image's caption (xkcd's title) */
+:where(.inlineImage .inlineImageCaption) {
+	display: block;
+	clear: both;
+	text-indent: 0; /* the Classic display's hanging indent */
+	margin: 4px 0 0 10px;
+	font-size: 0.85em;
+	opacity: 0.7;
+}

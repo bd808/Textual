@@ -42,25 +42,57 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ICMDailymotion
 
+/* A video card from Dailymotion's API: title, owner, thumbnail and length */
 - (void)_performActionForVideo:(NSString *)videoIdentifier
 {
 	NSParameterAssert(videoIdentifier != nil);
 
-	ICLPayloadMutable *payload = self.payload;
+	NSURLComponents *requestComponents = [NSURLComponents componentsWithString:@"https://api.dailymotion.com/video/"];
 
-	NSDictionary *templateAttributes =
-	@{
-	  @"uniqueIdentifier" : payload.uniqueIdentifier,
-	  @"videoIdentifier" : videoIdentifier
-	};
+	requestComponents.path = [requestComponents.path stringByAppendingString:videoIdentifier];
 
-	NSError *templateRenderError = nil;
+	requestComponents.queryItems =
+	@[
+	  [NSURLQueryItem queryItemWithName:@"fields" value:@"title,owner.screenname,thumbnail_480_url,duration"]
+	];
 
-	NSString *html = [self.template renderObject:templateAttributes error:&templateRenderError];
+	[ICLHelpers requestJSONDataFromURL:requestComponents.URL
+							   session:self.payload.session
+					   completionBlock:^(BOOL success, NSDictionary<NSString *, id> * _Nullable data) {
+		if (success == NO || [data stringForKey:@"title"] == nil) {
+			[self notifyUnableToPresentCard];
 
-	payload.html = html;
+			return;
+		}
 
-	[self finalizeWithError:templateRenderError];
+		ICMPreviewCardContent *card = [ICMPreviewCardContent new];
+
+		card.style = ICMPreviewCardStyleVideo;
+
+		card.targetURL = self.payload.url;
+
+		card.title = [data stringForKey:@"title"];
+
+		NSString *thumbnail = [data stringForKey:@"thumbnail_480_url"];
+
+		if (thumbnail) {
+			card.imageURL = [ICLHelpers URLWithString:thumbnail];
+		}
+
+		card.duration = [data doubleForKey:@"duration"];
+
+		NSMutableArray<NSString *> *details = [NSMutableArray arrayWithObject:@"Dailymotion"];
+
+		NSString *owner = [data stringForKey:@"owner.screenname"];
+
+		if (owner) {
+			[details addObject:owner];
+		}
+
+		card.details = details;
+
+		[self performActionForCard:card];
+	}];
 }
 
 #pragma mark -
@@ -128,14 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 
 	return domains;
-}
-
-#pragma mark -
-#pragma mark Utilities
-
-- (nullable NSURL *)templateURL
-{
-	return ICLResourceURL(@"ICMDailymotion", @"mustache");
 }
 
 @end

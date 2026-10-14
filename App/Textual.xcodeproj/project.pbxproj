@@ -589,8 +589,8 @@
 		4C0F3D08A76F1B319FC1BA04 /* ICMDailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE67423BB267BA07605E197 /* ICMDailymotion.m */; };
 		4C393DC4CC49ADA712A27C1A /* ICMGyazo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6C6702992F6B99C3F06B9D /* ICMGyazo.m */; };
 		4CA06DF7B436103B77377CFD /* ICMImgurGifv.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C12019EE303B756900ABB5D /* ICMImgurGifv.m */; };
-		4C08DB2D6B08B7A7626C08BB /* ICMPornhub.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9ABD12C25AEFCC50535329 /* ICMPornhub.m */; };
 		4CE1A54953EAFB8BCA43FAF4 /* ICMInlineHTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF01EE542F4AD537AE0715 /* ICMInlineHTML.m */; };
+		4CC3AD4A0D7CB9FF5C3361F8 /* ICMPreviewCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5A93C5C79F48BAEC8D946C /* ICMPreviewCard.m */; };
 		4CE4FA966B02F0469946B6C6 /* ICMInlineImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C04D45C7182C9433368C14B /* ICMInlineImage.m */; };
 		4C45B3D666CB1892FDBD5318 /* ICMInlineVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBCE092DEC024410CA7AB3D /* ICMInlineVideo.m */; };
 		4CA473AEA07E0018554D0EB9 /* ICMStreamable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C40FD631E9A43320E8EC0F7 /* ICMStreamable.m */; };
@@ -692,6 +692,7 @@
 		4CB4FD75BFC57C3E9954EA12 /* TVCLogLayoutTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4161E3DA4393F5FDA6DD71 /* TVCLogLayoutTests.m */; };
 		4C1191A4A0FA7E9B1A150781 /* TVCLogEventGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */; };
 		4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */; };
+		4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */; };
 		4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */; };
 /* End PBXBuildFile section */
 
@@ -1426,10 +1427,10 @@
 		4C6C6702992F6B99C3F06B9D /* ICMGyazo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMGyazo.m; sourceTree = "<group>"; };
 		4C5330E282610D940E98866A /* ICMImgurGifv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMImgurGifv.h; sourceTree = "<group>"; };
 		4C12019EE303B756900ABB5D /* ICMImgurGifv.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMImgurGifv.m; sourceTree = "<group>"; };
-		4C1EA082A4B748C2E381E7B6 /* ICMPornhub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMPornhub.h; sourceTree = "<group>"; };
-		4C9ABD12C25AEFCC50535329 /* ICMPornhub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMPornhub.m; sourceTree = "<group>"; };
 		4C55AA11FB04B6C6C33CEEB3 /* ICMInlineHTML.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMInlineHTML.h; sourceTree = "<group>"; };
 		4CFF01EE542F4AD537AE0715 /* ICMInlineHTML.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMInlineHTML.m; sourceTree = "<group>"; };
+		4C61CB8A366E18B4F519C192 /* ICMPreviewCard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMPreviewCard.h; sourceTree = "<group>"; };
+		4C5A93C5C79F48BAEC8D946C /* ICMPreviewCard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMPreviewCard.m; sourceTree = "<group>"; };
 		4CD880CED5FB3E78B5557596 /* ICMInlineImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMInlineImage.h; sourceTree = "<group>"; };
 		4C04D45C7182C9433368C14B /* ICMInlineImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMInlineImage.m; sourceTree = "<group>"; };
 		4CBA57B47CCDD2CBACA8D78F /* ICMInlineVideo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICMInlineVideo.h; sourceTree = "<group>"; };
@@ -1559,6 +1560,7 @@
 		4C4161E3DA4393F5FDA6DD71 /* TVCLogLayoutTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogLayoutTests.m; sourceTree = "<group>"; };
 		4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogEventGroupTests.m; sourceTree = "<group>"; };
 		4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaFetchTests.m; sourceTree = "<group>"; };
+		4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMPreviewCardTests.m; sourceTree = "<group>"; };
 		4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HLSHistoricLogManagerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1901,20 +1903,13 @@
 			path = "Imgur .gifv";
 			sourceTree = "<group>";
 		};
-		4C7BCB2814D9C332C741A547 /* Pornhub */ = {
-			isa = PBXGroup;
-			children = (
-				4C1EA082A4B748C2E381E7B6 /* ICMPornhub.h */,
-				4C9ABD12C25AEFCC50535329 /* ICMPornhub.m */,
-			);
-			path = Pornhub;
-			sourceTree = "<group>";
-		};
 		4C7BBB3DA4D6F18C1554247F /* Root Classes */ = {
 			isa = PBXGroup;
 			children = (
 				4C55AA11FB04B6C6C33CEEB3 /* ICMInlineHTML.h */,
 				4CFF01EE542F4AD537AE0715 /* ICMInlineHTML.m */,
+				4C61CB8A366E18B4F519C192 /* ICMPreviewCard.h */,
+				4C5A93C5C79F48BAEC8D946C /* ICMPreviewCard.m */,
 				4CD880CED5FB3E78B5557596 /* ICMInlineImage.h */,
 				4C04D45C7182C9433368C14B /* ICMInlineImage.m */,
 				4CBA57B47CCDD2CBACA8D78F /* ICMInlineVideo.h */,
@@ -1977,7 +1972,6 @@
 				4C151F885EFDCD7523EDAD23 /* Dailymotion */,
 				4C76224661805BCE40995F25 /* Gyazo */,
 				4CBA765935B55DEE17DD9D28 /* Imgur .gifv */,
-				4C7BCB2814D9C332C741A547 /* Pornhub */,
 				4C7BBB3DA4D6F18C1554247F /* Root Classes */,
 				4C3103D58B1AE09FECAE0119 /* Streamable */,
 				4C3504DF7E7FDAEFAA1E7EB8 /* Twitter */,
@@ -2827,6 +2821,7 @@
 				4C4161E3DA4393F5FDA6DD71 /* TVCLogLayoutTests.m */,
 				4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */,
 				4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */,
+				4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */,
 				4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */,
 				4CCEEF3CE8E84E1B5AE9AC3C /* TVCLogViewSecurityTests.m */,
 			);
@@ -3737,8 +3732,8 @@
 				4C0F3D08A76F1B319FC1BA04 /* ICMDailymotion.m */,
 				4C393DC4CC49ADA712A27C1A /* ICMGyazo.m */,
 				4CA06DF7B436103B77377CFD /* ICMImgurGifv.m */,
-				4C08DB2D6B08B7A7626C08BB /* ICMPornhub.m */,
 				4CE1A54953EAFB8BCA43FAF4 /* ICMInlineHTML.m */,
+				4CC3AD4A0D7CB9FF5C3361F8 /* ICMPreviewCard.m */,
 				4CE4FA966B02F0469946B6C6 /* ICMInlineImage.m */,
 				4C45B3D666CB1892FDBD5318 /* ICMInlineVideo.m */,
 				4CA473AEA07E0018554D0EB9 /* ICMStreamable.m */,
@@ -3757,6 +3752,7 @@
 				4CB4FD75BFC57C3E9954EA12 /* TVCLogLayoutTests.m in Sources */,
 				4C1191A4A0FA7E9B1A150781 /* TVCLogEventGroupTests.m in Sources */,
 				4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */,
+				4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */,
 				4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */,
 				4CACA1915D50ECEEE616CC47 /* TPCPreferencesTests.m in Sources */,
 				4CA4A4D412BC97120FEB0648 /* TVCLogRendererTests.m in Sources */,

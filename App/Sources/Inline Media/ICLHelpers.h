@@ -50,6 +50,11 @@ FOUNDATION_EXPORT NSURL * _Nullable ICLResourceURL(NSString *name, NSString *ext
  local addresses are refused and responses are capped at 1 MB.
  Completion blocks are called on the main thread. */
 @interface ICLHelpers (JSON)
+/* Any JSON value (dictionary, array, ...); check its class before use.
+ Answers are remembered for 30 minutes (at most 500), so a re-rendered line
+ (scrollback, style change) doesn't fetch again. */
++ (void)requestJSONFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(id _Nullable json))completionBlock;
+
 /* session is the payload's (-[ICLPayload session]) */
 + (void)requestJSONDataFromURL:(NSURL *)url session:(NSURLSession *)session completionBlock:(void (^)(BOOL success, NSDictionary<NSString *, id> * _Nullable data))completionBlock;
 + (void)requestJSONDataFromAddress:(NSString *)address session:(NSURLSession *)session completionBlock:(void (^)(BOOL success, NSDictionary<NSString *, id> * _Nullable data))completionBlock;

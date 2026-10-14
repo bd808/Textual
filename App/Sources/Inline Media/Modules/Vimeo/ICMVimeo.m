@@ -42,25 +42,55 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ICMVimeo
 
+/* A video card from Vimeo's v2 API (its oEmbed endpoint is gone): title,
+ owner, thumbnail and length */
 - (void)_performActionForVideo:(NSString *)videoIdentifier
 {
 	NSParameterAssert(videoIdentifier != nil);
 
-	ICLPayloadMutable *payload = self.payload;
+	NSURL *requestURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://vimeo.com/api/v2/video/%@.json", videoIdentifier]];
 
-	NSDictionary *templateAttributes =
-	@{
-	  @"uniqueIdentifier" : payload.uniqueIdentifier,
-	  @"videoIdentifier" : videoIdentifier
-	};
+	[ICLHelpers requestJSONFromURL:requestURL session:self.payload.session completionBlock:^(id _Nullable json) {
+		NSDictionary *video = nil;
 
-	NSError *templateRenderError = nil;
+		if ([json isKindOfClass:[NSArray class]] && [json count] > 0 && [[json firstObject] isKindOfClass:[NSDictionary class]]) {
+			video = [json firstObject];
+		}
 
-	NSString *html = [self.template renderObject:templateAttributes error:&templateRenderError];
+		if (video == nil) {
+			[self notifyUnableToPresentCard];
 
-	payload.html = html;
+			return;
+		}
 
-	[self finalizeWithError:templateRenderError];
+		ICMPreviewCardContent *card = [ICMPreviewCardContent new];
+
+		card.style = ICMPreviewCardStyleVideo;
+
+		card.targetURL = self.payload.url;
+
+		card.title = [video stringForKey:@"title"];
+
+		NSString *thumbnail = [video stringForKey:@"thumbnail_large"];
+
+		if (thumbnail) {
+			card.imageURL = [ICLHelpers URLWithString:thumbnail];
+		}
+
+		card.duration = [video doubleForKey:@"duration"];
+
+		NSMutableArray<NSString *> *details = [NSMutableArray arrayWithObject:@"Vimeo"];
+
+		NSString *owner = [video stringForKey:@"user_name"];
+
+		if (owner) {
+			[details addObject:owner];
+		}
+
+		card.details = details;
+
+		[self performActionForCard:card];
+	}];
 }
 
 #pragma mark -
@@ -115,14 +145,6 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 
 	return domains;
-}
-
-#pragma mark -
-#pragma mark Utilities
-
-- (nullable NSURL *)templateURL
-{
-	return ICLResourceURL(@"ICMVimeo", @"mustache");
 }
 
 @end

@@ -67,6 +67,7 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 @property (nonatomic, copy, nullable) NSString *rangeHeader;
 @property (nonatomic, strong, nullable) NSURLSessionDataTask *task;
 @property (nonatomic, assign) unsigned long long receivedLength;
+@property (nonatomic, assign) BOOL receivedResponse;
 @property (nonatomic, assign) BOOL finished; // completed or cancelled: no more blocks
 @end
 
@@ -293,6 +294,8 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 		headerFields[@"Accept-Ranges"] = acceptRanges;
 	}
 
+	self.receivedResponse = YES;
+
 	if (self.responseBlock) {
 		self.responseBlock(statusCode, [headerFields copy]);
 	}
@@ -329,6 +332,13 @@ NSErrorDomain const ICLMediaFetchErrorDomain = @"ICLMediaFetchErrorDomain";
 
 	if (error) {
 		[self _finishWithErrorCode:ICLMediaFetchErrorCodeFailed description:error.localizedDescription];
+
+		return;
+	}
+
+	/* Ended without a response, e.g. a refused redirect */
+	if (self.receivedResponse == NO) {
+		[self _finishWithErrorCode:ICLMediaFetchErrorCodeUnexpectedResponse description:@"No response"];
 
 		return;
 	}

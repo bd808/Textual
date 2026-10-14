@@ -3,6 +3,9 @@
 	<span class="closeButton" href="#" onclick="_ICMInlineImage.hideOnClick('{{uniqueIdentifier}}');">×</span>
 
 	<a href="{{anchorLink}}" onclick="return InlineImageLiveResize.negateAnchorOpen()">
-		<img src="{{imageURL}}" class="content" style="max-width: {{preferredMaximumWidth}}px;" data-maximum-width="{{maximumWidth}}" data-maximum-height="{{maximumHeight}}" />
+		<img src="{{imageURL}}" class="content" style="max-width: {{preferredMaximumWidth}}px;" data-maximum-width="{{maximumWidth}}" data-maximum-height="{{maximumHeight}}"{{#hoverText}} title="{{hoverText}}"{{/hoverText}} />
 	</a>
+{{#caption}}
+	<span class="inlineImageCaption">{{caption}}</span>
+{{/caption}}
 </span>
