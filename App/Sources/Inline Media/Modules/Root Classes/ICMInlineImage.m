@@ -264,22 +264,6 @@ NS_ASSUME_NONNULL_BEGIN
 	return ICLResourceURL(@"ICMInlineImage", @"mustache");
 }
 
-- (nullable NSArray<NSURL *> *)styleResources
-{
-	static NSArray<NSURL *> *styleResources = nil;
-
-	static dispatch_once_t onceToken;
-
-	dispatch_once(&onceToken, ^{
-		styleResources =
-		@[
-		  ICLResourceURL(@"ICMInlineImage", @"css")
-		];
-	});
-
-	return styleResources;
-}
-
 - (nullable NSArray<NSURL *> *)scriptResources
 {
 	static NSArray<NSURL *> *scriptResources = nil;

@@ -1,8 +1,6 @@
 /* Lumen: the rules for both varieties. Each variety's design.css
  (Varieties/Light, Varieties/Dark) sets the colours they use. */
 
-@import "inlineMedia.css";
-
 /* ------------------------------------------------------------------ *
  * Basic Body Structure                                                *
  * ------------------------------------------------------------------ */

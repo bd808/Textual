@@ -283,32 +283,85 @@ body[data-selected="false"] #topicBar {
 	40% { opacity: 1; }
 }
 
-/* Inline media (images, videos, web previews) and their close button: zero
+/* Inline media: images, videos, clips, audio and preview cards share one look
+ (the inline media design pass, 2026-10-14). Each preview is a box at the
+ start of the line with rounded corners; its close button sits inside the
+ top-right corner and shows while the pointer is over the preview. Zero
  specificity (:where), so any style's own rules win */
-:where(.inlineImage .content, .inlineVideo .content, .inlineVideoService .content, .inlineHTML .content) {
-	display: inline-block;
-	float: left;
-	margin-right: 12px;
-	margin-left: 10px;
-	min-width: 40px;
-	max-width: 90%;
+:where(.inlineImage, .inlineVideo, .inlineVideoService, .inlineHTML, .inlinePreviewCard) {
+	position: relative;
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	margin: 6px 0 8px;
+	text-indent: 0; /* the Classic display's hanging indent */
+	white-space: normal;
 }
 
-:where(.inlineImage .closeButton, .inlineVideo .closeButton, .inlineVideoService .closeButton, .inlineHTML .closeButton) {
+:where(.inlineImage, .inlineVideo, .inlineVideoService, .inlineHTML) :where(.content) {
+	display: block;
+	min-width: 40px;
+	max-width: 100%;
+	border-radius: 8px;
+}
+
+:where(.inlineImage a) {
+	display: block;
+	border: 0;
+	text-decoration: none;
+}
+
+/* A picture is a link: styles' underlines and link borders are for links in
+ text (not :where, so this wins over a plain a or a:hover rule) */
+.inlineImage > a,
+.inlineImage > a:hover {
+	border: 0;
+	text-decoration: none;
+}
+
+/* A faint edge, so a picture on the same colour as the page still has one */
+:where(.inlineImage img.content) {
+	outline: 1px solid rgba(127, 127, 127, 0.15);
+	outline-offset: -1px;
+}
+
+:where(.inlineVideo video) {
+	background-color: #000;
+}
+
+:where(.inlineImage, .inlineVideo, .inlineVideoService, .inlineHTML, .inlinePreviewCard) > :where(.closeButton) {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 2;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	margin: 0;
+	padding: 0 0 1px;
+	border: 0;
+	border-radius: 50%;
+	float: none;
+	text-indent: 0;
+	font: 15px/1 -apple-system, system-ui, sans-serif;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.55);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
 	cursor: pointer;
-	border-radius: 5px;
-	border: 2px solid #a1a1a1;
-	color: #a1a1a1;
-	display: inline-block;
-	line-height: 14px;
-	font-size: 15px;
-	font-family: "Helvetica Neue";
-	text-indent: 7px;
-	width: 16px;
-	height: 16px;
-	float: left;
-	padding-right: 7px;
-	padding-left: 0px;
+	opacity: 0;
+	transition: opacity 0.12s ease, background-color 0.12s ease;
+}
+
+:where(.inlineImage, .inlineVideo, .inlineVideoService, .inlineHTML, .inlinePreviewCard):hover > :where(.closeButton) {
+	opacity: 1;
+}
+
+:where(.inlineImage, .inlineVideo, .inlineVideoService, .inlineHTML, .inlinePreviewCard) > :where(.closeButton):hover {
+	background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* The Chat display (newMessagePostedWithSender.mustache): the sender and time
@@ -369,31 +422,9 @@ body[data-selected="false"] #topicBar {
 }
 
 /* Preview cards (ICMPreviewCard): a video (large picture), a post (author and
- text) or a page (small picture). Neutral colours from the text colour, so
- they suit light and dark styles. Zero specificity (:where), so any style's
- own rules win */
-:where(.inlinePreviewCard) {
-	display: flex;
-	align-items: flex-start;
-	gap: 6px;
-	margin: 6px 0 8px;
-	white-space: normal;
-	text-indent: 0;
-}
-
-:where(.inlinePreviewCard .closeButton) {
-	cursor: pointer;
-	flex: 0 0 auto;
-	width: 16px;
-	height: 16px;
-	line-height: 14px;
-	font-size: 12px;
-	text-align: center;
-	border-radius: 50%;
-	border: 1px solid rgba(127, 127, 127, 0.4);
-	opacity: 0.7;
-}
-
+ text) or a page (small picture); the box and close button are above.
+ Neutral colours from the text colour, so they suit light and dark styles.
+ Zero specificity (:where), so any style's own rules win */
 :where(.inlinePreviewCard .previewCard) {
 	display: flex;
 	overflow: hidden;
@@ -416,16 +447,16 @@ body[data-selected="false"] #topicBar {
 .inlinePreviewCard a.previewCard:hover {
 	color: inherit;
 	text-decoration: none;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
+	border-width: 1px;
+	border-style: solid;
 }
 
 .inlinePreviewCard a.previewCard {
-	border-bottom-color: rgba(127, 127, 127, 0.25);
+	border-color: rgba(127, 127, 127, 0.25);
 }
 
 .inlinePreviewCard a.previewCard:hover {
-	border-bottom-color: rgba(127, 127, 127, 0.45);
+	border-color: rgba(127, 127, 127, 0.45);
 }
 
 :where(.inlinePreviewCard .previewCardBody) {
@@ -591,9 +622,7 @@ body[data-selected="false"] #topicBar {
 /* An image's caption (xkcd's title) */
 :where(.inlineImage .inlineImageCaption) {
 	display: block;
-	clear: both;
-	text-indent: 0; /* the Classic display's hanging indent */
-	margin: 4px 0 0 10px;
+	margin: 4px 2px 0;
 	font-size: 0.85em;
 	opacity: 0.7;
 }
