@@ -341,7 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 			if ([self isSafeToPostNotificationForMessage:m inChannel:channel]) {
 				if (isHighlight) {
-					postEvent = [self notifyPrintedText:TXNotificationTypeHighlight lineType:lineType target:channel nickname:sender text:text];
+					postEvent = [self notifyHighlightText:text lineType:lineType target:channel nickname:sender keyword:context.highlightKeyword];
 				} else {
 					postEvent = [self notifyPrintedText:TXNotificationTypeChannelMessage lineType:lineType target:channel nickname:sender text:text];
 				}
@@ -531,7 +531,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 			if ([self isSafeToPostNotificationForMessage:m inChannel:query]) {
 				if (isHighlight) {
-					postEvent = [self notifyPrintedText:TXNotificationTypeHighlight lineType:lineType target:query nickname:sender text:text];
+					postEvent = [self notifyHighlightText:text lineType:lineType target:query nickname:sender keyword:context.highlightKeyword];
 				} else {
 					if (newPrivateMessage) {
 						postEvent = [self notifyPrintedText:TXNotificationTypeNewPrivateMessage lineType:lineType target:query nickname:sender text:text];

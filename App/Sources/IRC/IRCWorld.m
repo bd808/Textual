@@ -119,6 +119,8 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 	 row height cache while ending a batch of many inserts (and warned) */
 	NSArray *clientList = [TPCPreferences clientList];
 
+	BOOL movedHighlightKeywords = NO;
+
 	for (NSDictionary *client in clientList) {
 		/* A damaged entry is skipped instead of crashing every launch */
 		if ([client isKindOfClass:[NSDictionary class]] == NO) {
@@ -129,10 +131,19 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 
 		IRCClientConfig *e = [[IRCClientConfig alloc] initWithDictionary:client];
 
+		if (e.highlightList.count > 0) {
+			movedHighlightKeywords = YES;
+		}
+
 		[self createClientWithConfig:e reload:YES];
 	}
 
 	self.isImportingConfiguration = NO;
+
+	/* Servers whose highlight keywords moved (D-E3.8) are saved without them */
+	if (movedHighlightKeywords) {
+		[self save];
+	}
 
 	[self setupOtherServices];
 }
@@ -547,6 +558,21 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 {
 	NSParameterAssert(config != nil);
 
+	/* A server's own highlight keywords join Preferences → Highlights (D-E3.8) */
+	BOOL movedHighlightKeywords = NO;
+
+	if (config.highlightList.count > 0) {
+		[TPCPreferences moveServerHighlightConditions:config.highlightList clientId:config.uniqueIdentifier];
+
+		IRCClientConfigMutable *configMutable = [config mutableCopy];
+
+		configMutable.highlightList = @[];
+
+		config = [configMutable copy];
+
+		movedHighlightKeywords = YES;
+	}
+
 	IRCClient *client = [[IRCClient alloc] initWithConfig:config];
 
 	client.viewController = [self createViewControllerWithClient:client channel:nil];
@@ -581,6 +607,10 @@ NSString * const IRCWorldWillDestroyChannelNotification = @"IRCWorldWillDestroyC
 	[menuController() populateNavigationChannelList];
 
 	[self postClientListWasModifiedNotification];
+
+	if (movedHighlightKeywords && self.isImportingConfiguration == NO) {
+		[self save];
+	}
 
 	return client;
 }

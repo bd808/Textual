@@ -40,9 +40,6 @@
 "b0g-0x" = "User Tracking";
 
 /* Server specific highlight entry things */
-"61f-6b" = "All Channels";
-"qcc-b4" = "Exclude";
-"tet-dk" = "Match";
 
 /* Server properties navigation menu */
 "lww-pc" = "Server Properties";
@@ -54,7 +51,6 @@
 "8ug-ka" = "Encoding";
 "ehx-4d" = "General";
 "8ik-qo" = "Identity";
-"jtx-hn" = "Highlights";
 "j34-yr" = "Messages";
 "fsj-7f" = "ZNC Bouncer";
 "ce7-kc" = "Client Certificate";

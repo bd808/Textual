@@ -82,6 +82,7 @@
 #import "IRCAddressBookMatchCachePrivate.h"
 #import "IRCAddressBookUserTrackingPrivate.h"
 #import "IRCChannelConfig.h"
+#import "IRCHighlightKeywordPrivate.h"
 #import "IRCChannelModePrivate.h"
 #import "IRCChannelUserPrivate.h"
 #import "IRCChannelPrivate.h"
@@ -433,6 +434,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)notifyEvent:(TXNotificationType)eventType lineType:(TVCLogLineType)lineType target:(null_unspecified IRCChannel *)target nickname:(null_unspecified NSString *)nickname text:(null_unspecified NSString *)text userInfo:(nullable NSDictionary<NSString *, id> *)userInfo checkOutputRules:(BOOL)checkOutputRules
 {
+	return [self notifyEvent:eventType lineType:lineType target:target nickname:nickname text:text userInfo:userInfo checkOutputRules:checkOutputRules highlightKeyword:nil];
+}
+
+- (BOOL)notifyHighlightText:(NSString *)text lineType:(TVCLogLineType)lineType target:(IRCChannel *)target nickname:(NSString *)nickname keyword:(nullable NSString *)keyword
+{
+	return [self notifyEvent:TXNotificationTypeHighlight lineType:lineType target:target nickname:nickname text:text userInfo:nil checkOutputRules:NO highlightKeyword:keyword];
+}
+
+/* The sound of the highlight keyword that matched, if it has one (E3) */
+- (nullable NSString *)soundForHighlightKeyword:(NSString *)keyword inChannel:(nullable IRCChannel *)channel
+{
+	NSParameterAssert(keyword != nil);
+
+	NSString *channelId = channel.uniqueIdentifier;
+	NSString *clientId = self.uniqueIdentifier;
+
+	for (IRCHighlightKeyword *e in [TPCPreferences highlightMatchKeywordEntries]) {
+		if (e.sound == nil || [e.keyword isEqualToString:keyword] == NO) {
+			continue;
+		}
+
+		if (channelId && [e appliesToChannelWithId:channelId clientId:clientId] == NO) {
+			continue;
+		}
+
+		return e.sound;
+	}
+
+	return nil;
+}
+
+- (BOOL)notifyEvent:(TXNotificationType)eventType lineType:(TVCLogLineType)lineType target:(null_unspecified IRCChannel *)target nickname:(null_unspecified NSString *)nickname text:(null_unspecified NSString *)text userInfo:(nullable NSDictionary<NSString *, id> *)userInfo checkOutputRules:(BOOL)checkOutputRules highlightKeyword:(nullable NSString *)highlightKeyword
+{
 	if (self.isTerminating) {
 		return NO;
 	}
@@ -504,7 +538,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 	if ([TPCPreferences soundIsMuted] == NO) {
 		if (onlySpeakEvent == NO) {
-			NSString *soundName = [sharedNotificationController() soundForEvent:eventType inChannel:target];
+			NSString *soundName = nil;
+
+			if (highlightKeyword) {
+				soundName = [self soundForHighlightKeyword:highlightKeyword inChannel:target];
+			}
+
+			if (soundName == nil) {
+				soundName = [sharedNotificationController() soundForEvent:eventType inChannel:target];
+			}
 
 			if (soundName) {
 				[TLOSoundPlayer playAlertSound:soundName];

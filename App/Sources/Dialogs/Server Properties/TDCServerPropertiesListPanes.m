@@ -39,12 +39,10 @@
 
 #import "IRCClientConfigPrivate.h"
 #import "IRCChannelConfig.h"
-#import "IRCHighlightMatchCondition.h"
 #import "TLOLocalization.h"
 #import "TVCBasicTableView.h"
 #import "TDCAddressBookSheetPrivate.h"
 #import "TDCChannelPropertiesSheetPrivate.h"
-#import "TDCHighlightEntrySheetPrivate.h"
 #import "TDCServerPropertiesPanePrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -243,83 +241,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	return secretKey;
-}
-
-@end
-
-#pragma mark -
-#pragma mark Highlights
-
-@interface TDCServerPropertiesHighlightsPane () <TDCHighlightEntrySheetDelegate>
-@end
-
-@implementation TDCServerPropertiesHighlightsPane
-
-- (void)loadFromConfig:(IRCClientConfig *)config
-{
-	[self.arrayController addObjects:config.highlightList];
-
-	[super loadFromConfig:config];
-}
-
-- (void)saveToConfig:(IRCClientConfigMutable *)config
-{
-	config.highlightList = self.items;
-}
-
-- (void)showSheetForItem:(nullable IRCHighlightMatchCondition *)item
-{
-	TDCHighlightEntrySheet *sheet = [[TDCHighlightEntrySheet alloc] initWithConfig:item];
-
-	sheet.delegate = self;
-
-	sheet.window = self.propertiesSheet.sheet;
-
-	[sheet startWithChannels:self.propertiesSheet.channelList];
-
-	self.childSheet = sheet;
-}
-
-- (void)highlightEntrySheet:(TDCHighlightEntrySheet *)sender onOk:(IRCHighlightMatchCondition *)config
-{
-	[self addOrReplaceItem:config];
-}
-
-- (void)highlightEntrySheetWillClose:(TDCHighlightEntrySheet *)sender
-{
-	self.childSheet = nil;
-}
-
-- (nullable id)valueForColumn:(NSString *)columnId ofItem:(IRCHighlightMatchCondition *)config
-{
-	if ([columnId isEqualToString:@"keyword"])
-	{
-		return config.matchKeyword;
-	}
-	else if ([columnId isEqualToString:@"channel"])
-	{
-		NSString *matchChannelId = config.matchChannelId;
-
-		if (matchChannelId) {
-			for (IRCChannelConfig *channel in self.propertiesSheet.channelList) {
-				if ([channel.uniqueIdentifier isEqualToString:matchChannelId]) {
-					return channel.channelName;
-				}
-			}
-		}
-
-		return TXTLS(@"TDCServerPropertiesSheet[61f-6b]");
-	}
-	else if ([columnId isEqualToString:@"type"])
-	{
-		if (config.matchIsExcluded) {
-			return TXTLS(@"TDCServerPropertiesSheet[qcc-b4]");
-		} else {
-			return TXTLS(@"TDCServerPropertiesSheet[tet-dk]");
-		}
-	}
-
-	return nil;
 }
 
 @end

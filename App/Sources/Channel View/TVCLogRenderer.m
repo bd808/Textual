@@ -97,6 +97,7 @@ NSString * const TVCLogRendererConfigurationAttributedStringPreferredFontColorAt
 NSString * const TVCLogRendererResultsListOfLinksInBodyAttribute = @"TVCLogRendererResultsListOfLinksInBodyAttribute";
 NSString * const TVCLogRendererResultsListOfLinksMappedInBodyAttribute = @"TVCLogRendererResultsListOfLinksMappedInBodyAttribute";
 NSString * const TVCLogRendererResultsKeywordMatchFoundAttribute = @"TVCLogRendererResultsKeywordMatchFoundAttribute";
+NSString * const TVCLogRendererResultsMatchedKeywordAttribute = @"TVCLogRendererResultsMatchedKeywordAttribute";
 NSString * const TVCLogRendererResultsListOfUsersFoundAttribute = @"TVCLogRendererResultsListOfUsersFoundAttribute";
 NSString * const TVCLogRendererResultsOriginalBodyWithoutEffectsAttribute = @"TVCLogRendererResultsOriginalBodyWithoutEffectsAttribute";
 
@@ -386,7 +387,7 @@ NSString * const TVCLogRendererResultsOriginalBodyWithoutEffectsAttribute = @"TV
 		} options:NSCaseInsensitiveSearch];
 	}
 
-	BOOL foundKeyword = NO;
+	NSString *foundKeyword = nil;
 
 	TXNicknameHighlightMatchType matchingMethod = [TPCPreferences highlightMatchingMethod];
 
@@ -406,10 +407,16 @@ NSString * const TVCLogRendererResultsOriginalBodyWithoutEffectsAttribute = @"TV
 		}
 	}
 
-	self->_outputDictionary[TVCLogRendererResultsKeywordMatchFoundAttribute] = @(foundKeyword);
+	self->_outputDictionary[TVCLogRendererResultsKeywordMatchFoundAttribute] = @(foundKeyword != nil);
+
+	/* Its sound, if it has one (E3) */
+	if (foundKeyword) {
+		self->_outputDictionary[TVCLogRendererResultsMatchedKeywordAttribute] = foundKeyword;
+	}
 }
 
-- (BOOL)matchKeywordsUsingNormalMatching:(NSArray<NSString *> *)keywords excludedRanges:(NSArray<NSValue *> *)excludedRanges exactMatching:(BOOL)exactMatching
+/* The keyword that matched, or nil */
+- (nullable NSString *)matchKeywordsUsingNormalMatching:(NSArray<NSString *> *)keywords excludedRanges:(NSArray<NSValue *> *)excludedRanges exactMatching:(BOOL)exactMatching
 {
 	NSParameterAssert(keywords != nil);
 	NSParameterAssert(excludedRanges != nil);
@@ -442,21 +449,20 @@ NSString * const TVCLogRendererResultsOriginalBodyWithoutEffectsAttribute = @"TV
 		} options:NSCaseInsensitiveSearch];
 
 		if (foundKeyword) {
-			break;
+			return keyword;
 		}
 	}
 
-	return foundKeyword;
+	return nil;
 }
 
-- (BOOL)matchKeywordsUsingRegularExpression:(NSArray<NSString *> *)keywords excludedRanges:(NSArray<NSValue *> *)excludedRanges
+/* The keyword that matched, or nil */
+- (nullable NSString *)matchKeywordsUsingRegularExpression:(NSArray<NSString *> *)keywords excludedRanges:(NSArray<NSValue *> *)excludedRanges
 {
 	NSParameterAssert(keywords != nil);
 	NSParameterAssert(excludedRanges != nil);
 
 	NSString *body = self->_body;
-
-	BOOL foundKeyword = NO;
 
 	for (NSString *keyword in keywords) {
 		NSRange range = [XRRegularExpression string:body rangeOfRegex:keyword withoutCase:YES];
@@ -482,13 +488,11 @@ NSString * const TVCLogRendererResultsOriginalBodyWithoutEffectsAttribute = @"TV
 		if ([self->_bodyWithAttributes isAttributeSet:TVCLogRendererFormattingURLAttribute inRange:range] == NO) {
 			[self->_bodyWithAttributes addAttribute:TVCLogRendererFormattingKeywordHighlightAttribute value:@(YES) range:range];
 
-			foundKeyword = YES;
-
-			break;
+			return keyword;
 		}
 	}
 
-	return foundKeyword;
+	return nil;
 }
 
 /* A channel name starts with one of the server's channel prefixes (CHANTYPES) and

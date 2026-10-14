@@ -47,6 +47,7 @@
 #import "TPCThemeController.h"
 #import "TPCTheme.h"
 #import "TPCPreferencesLocalPrivate.h"
+#import "IRCHighlightKeywordPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1343,60 +1344,51 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 
 static NSArray<NSString *> *_excludeKeywords = nil;
 static NSArray<NSString *> *_matchKeywords = nil;
+static NSArray<IRCHighlightKeyword *> *_excludeKeywordEntries = nil;
+static NSArray<IRCHighlightKeyword *> *_matchKeywordEntries = nil;
 
 + (void)_loadExcludeKeywords
 {
-	NSArray<NSDictionary *> *keywordArrayIn = [RZUserDefaults() arrayForKey:@"Highlight List -> Excluded Matches"];
+	NSArray *keywordArrayIn = [RZUserDefaults() arrayForKey:@"Highlight List -> Excluded Matches"];
 
-	NSMutableArray<NSString *> *keywordArrayOut = [NSMutableArray array];
+	_excludeKeywordEntries = [IRCHighlightKeyword keywordsWithDictionaries:keywordArrayIn];
 
-	for (NSDictionary<NSString *, NSString *> *keyword in keywordArrayIn) {
-		NSString *s = keyword[@"string"];
-
-		if (s && s.length > 0) {
-			[keywordArrayOut addObject:s];
-		}
-	}
-
-	_excludeKeywords = [keywordArrayOut copy];
+	_excludeKeywords = [_excludeKeywordEntries valueForKey:@"keyword"];
 }
 
 + (void)_loadMatchKeywords
 {
-	NSArray<NSDictionary *> *keywordArrayIn = [RZUserDefaults() arrayForKey:@"Highlight List -> Primary Matches"];
+	NSArray *keywordArrayIn = [RZUserDefaults() arrayForKey:@"Highlight List -> Primary Matches"];
 
-	NSMutableArray<NSString *> *keywordArrayOut = [NSMutableArray array];
+	_matchKeywordEntries = [IRCHighlightKeyword keywordsWithDictionaries:keywordArrayIn];
 
-	for (NSDictionary<NSString *, NSString *> *keyword in keywordArrayIn) {
-		NSString *s = keyword[@"string"];
-
-		if (s && s.length > 0) {
-			[keywordArrayOut addObject:s];
-		}
-	}
-
-	_matchKeywords = [keywordArrayOut copy];
+	_matchKeywords = [_matchKeywordEntries valueForKey:@"keyword"];
 }
 
+/* Empty rows go, the rest is sorted; a keyword's limits and sound stay */
 + (void)_cleanUpKeywords:(NSString *)key
 {
-	NSArray<NSDictionary *> *keywordArrayIn = [RZUserDefaults() arrayForKey:key];
+	NSArray *keywordArrayIn = [RZUserDefaults() arrayForKey:key];
 
-	NSMutableArray<NSString *> *keywordArrayOut = [NSMutableArray array];
+	NSMutableArray<NSDictionary *> *keywordArrayOut = [NSMutableArray array];
 
-	for (NSDictionary<NSString *, NSString *> *keyword in keywordArrayIn) {
-		NSString *s = keyword[@"string"];
+	for (NSDictionary *keyword in keywordArrayIn) {
+		if ([keyword isKindOfClass:[NSDictionary class]] == NO) {
+			continue;
+		}
 
-		if (s && s.length > 0) {
-			[keywordArrayOut addObject:s];
+		NSString *s = keyword[IRCHighlightKeywordStringKey];
+
+		if ([s isKindOfClass:[NSString class]] && s.length > 0) {
+			[keywordArrayOut addObject:[keyword mutableCopy]];
 		}
 	}
 
-	[keywordArrayOut sortUsingSelector:@selector(caseInsensitiveCompare:)];
+	[keywordArrayOut sortUsingComparator:^NSComparisonResult(NSDictionary *keyword1, NSDictionary *keyword2) {
+		return [keyword1[IRCHighlightKeywordStringKey] caseInsensitiveCompare:keyword2[IRCHighlightKeywordStringKey]];
+	}];
 
-	NSArray *arrayToSave = keywordArrayOut.stringArrayControllerObjects;
-
-	[RZUserDefaults() setObject:arrayToSave forKey:key];
+	[RZUserDefaults() setObject:keywordArrayOut forKey:key];
 }
 
 + (void)cleanUpHighlightKeywords
@@ -1414,6 +1406,39 @@ static NSArray<NSString *> *_matchKeywords = nil;
 + (nullable NSArray<NSString *> *)highlightExcludeKeywords
 {
 	return _excludeKeywords;
+}
+
++ (nullable NSArray<IRCHighlightKeyword *> *)highlightMatchKeywordEntries
+{
+	return _matchKeywordEntries;
+}
+
++ (nullable NSArray<IRCHighlightKeyword *> *)highlightExcludeKeywordEntries
+{
+	return _excludeKeywordEntries;
+}
+
+/* A server's own keywords (Textual 7, or a plugin) join the global lists
+ once; the caller saves the server's configuration without them (D-E3.8) */
++ (void)moveServerHighlightConditions:(NSArray<IRCHighlightMatchCondition *> *)conditions clientId:(NSString *)clientId
+{
+	NSParameterAssert(conditions != nil);
+	NSParameterAssert(clientId != nil);
+
+	if (conditions.count == 0) {
+		return;
+	}
+
+	NSArray *matchEntries = [RZUserDefaults() arrayForKey:@"Highlight List -> Primary Matches"];
+	NSArray *excludeEntries = [RZUserDefaults() arrayForKey:@"Highlight List -> Excluded Matches"];
+
+	matchEntries = [IRCHighlightKeyword entries:matchEntries mergingServerConditions:conditions excluded:NO clientId:clientId];
+	excludeEntries = [IRCHighlightKeyword entries:excludeEntries mergingServerConditions:conditions excluded:YES clientId:clientId];
+
+	[RZUserDefaults() setObject:matchEntries forKey:@"Highlight List -> Primary Matches"];
+	[RZUserDefaults() setObject:excludeEntries forKey:@"Highlight List -> Excluded Matches"];
+
+	[self cleanUpHighlightKeywords];
 }
 
 #pragma mark -

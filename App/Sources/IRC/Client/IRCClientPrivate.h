@@ -114,6 +114,9 @@ enum {
 
 /* For print completion blocks: the message was printed, so the output rules already passed */
 - (BOOL)notifyPrintedText:(TXNotificationType)eventType lineType:(TVCLogLineType)lineType target:(IRCChannel *)target nickname:(NSString *)nickname text:(NSString *)text;
+
+/* A highlight; the keyword that matched picks its own sound, if it has one (E3) */
+- (BOOL)notifyHighlightText:(NSString *)text lineType:(TVCLogLineType)lineType target:(IRCChannel *)target nickname:(NSString *)nickname keyword:(nullable NSString *)keyword;
 @end
 
 @interface IRCClient (UsersPrivate)

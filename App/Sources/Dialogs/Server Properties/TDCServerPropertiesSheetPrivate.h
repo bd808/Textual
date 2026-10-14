@@ -52,7 +52,6 @@ typedef NS_ENUM(NSUInteger, TDCServerPropertiesSheetSelection) {
 	TDCServerPropertiesSheetSelectionEncoding = 4,
 	TDCServerPropertiesSheetSelectionGeneral = 5,
 	TDCServerPropertiesSheetSelectionIdentity = 6,
-	TDCServerPropertiesSheetSelectionHighlights = 7,
 	TDCServerPropertiesSheetSelectionDisconnectMessages = 8,
 	TDCServerPropertiesSheetSelectionZncBouncer = 10,
 	TDCServerPropertiesSheetSelectionClientCertificate = 12,

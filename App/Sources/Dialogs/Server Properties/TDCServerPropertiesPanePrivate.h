@@ -114,9 +114,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TDCServerPropertiesChannelsPane : TDCServerPropertiesListPane
 @end
 
-@interface TDCServerPropertiesHighlightsPane : TDCServerPropertiesListPane
-@end
-
 @interface TDCServerPropertiesAddressBookPane : TDCServerPropertiesListPane
 @property (nonatomic, strong) IBOutlet NSMenu *addMenu;
 

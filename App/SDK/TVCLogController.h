@@ -98,6 +98,7 @@ TEXTUAL_EXTERN NSNotificationName const TVCLogControllerViewFinishedLoadingNotif
 @property (readonly, weak) IRCClient *client;
 @property (readonly, weak) IRCChannel *channel;
 @property (readonly, getter=isHighlight) BOOL highlight;
+@property (readonly, copy, nullable) NSString *highlightKeyword; // the keyword that matched
 @property (readonly, copy) TVCLogLine *logLine;
 @property (readonly, copy) NSString *lineNumber;
 @end

@@ -13,7 +13,6 @@
                 <outlet property="okButton" destination="1455" id="1464"/>
                 <outlet property="sheet" destination="5" id="1059"/>
                 <outlet property="channelsPane" destination="db5-T1-d1T" id="af2-bd-5a6"/>
-                <outlet property="highlightsPane" destination="4Tf-76-487" id="T42-7f-b12"/>
                 <outlet property="addressBookPane" destination="473-1d-e92" id="5ca-66-e42"/>
                 <outlet property="generalPane" destination="1IM-En-yWX" id="HkH-K5-tq2"/>
                 <outlet property="identityPane" destination="JRG-6L-tpz" id="DNn-0S-uff"/>
@@ -37,17 +36,6 @@
                 <outlet property="propertiesSheet" destination="-2" id="aaa-39-332"/>
                 <outlet property="table" destination="1805" id="ec8-d2-312"/>
                 <outlet property="view" destination="1738" id="47e-a9-T71"/>
-            </connections>
-        </customObject>
-        <customObject id="4Tf-76-487" customClass="TDCServerPropertiesHighlightsPane">
-            <connections>
-                <outlet property="addButton" destination="2449" id="98a-1T-26f"/>
-                <outlet property="arrayController" destination="XVW-tl-Aro" id="799-fd-cf1"/>
-                <outlet property="deleteButton" destination="2447" id="36f-5b-5cd"/>
-                <outlet property="editButton" destination="2448" id="e52-df-365"/>
-                <outlet property="propertiesSheet" destination="-2" id="T28-3c-2d9"/>
-                <outlet property="table" destination="2454" id="T3T-66-a59"/>
-                <outlet property="view" destination="2445" id="928-53-T11"/>
             </connections>
         </customObject>
         <customObject id="473-1d-e92" customClass="TDCServerPropertiesAddressBookPane">
@@ -1313,143 +1301,6 @@ Gw
             </constraints>
             <point key="canvasLocation" x="535" y="2825"/>
         </customView>
-        <customView translatesAutoresizingMaskIntoConstraints="NO" id="2445" userLabel="Highlights View">
-            <rect key="frame" x="0.0" y="0.0" width="520" height="300"/>
-            <subviews>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2449">
-                    <rect key="frame" x="54" y="24" width="30" height="23"/>
-                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2461">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="21" id="GCR-iJ-hff"/>
-                        <constraint firstAttribute="width" constant="30" id="iT9-DQ-Ye7"/>
-                    </constraints>
-                    <accessibility description="Add Highlight Match"/>
-                    <connections>
-                        <action selector="addItem:" target="4Tf-76-487" id="2481"/>
-                    </connections>
-                </button>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2447">
-                    <rect key="frame" x="85" y="24" width="30" height="23"/>
-                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2463">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <accessibility description="Remove Selected Highlight Match"/>
-                    <connections>
-                        <action selector="deleteItem:" target="4Tf-76-487" id="2483"/>
-                    </connections>
-                </button>
-                <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2450">
-                    <rect key="frame" x="54" y="54" width="412" height="220"/>
-                    <clipView key="contentView" id="txe-Gd-Uvj">
-                        <rect key="frame" x="1" y="1" width="410" height="218"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" headerView="Gzo-0n-LCU" id="2454" customClass="TVCBasicTableView">
-                                <rect key="frame" x="0.0" y="0.0" width="410" height="190"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <size key="intercellSpacing" width="3" height="2"/>
-                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
-                                <tableColumns>
-                                    <tableColumn identifier="keyword" editable="NO" width="151" minWidth="40" maxWidth="1000" id="2456">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Keyword">
-                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
-                                        </tableHeaderCell>
-                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="2459">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            <accessibility description="Highlight Keyword"/>
-                                        </textFieldCell>
-                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                    </tableColumn>
-                                    <tableColumn identifier="type" editable="NO" width="80" minWidth="10" maxWidth="1000" id="2457" userLabel="Table Column - Entry Type">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Entry Type">
-                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
-                                        </tableHeaderCell>
-                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="2458">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            <accessibility description="Highlight Match Type"/>
-                                        </textFieldCell>
-                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                    </tableColumn>
-                                    <tableColumn identifier="channel" editable="NO" width="132" minWidth="10" maxWidth="1000" id="2455">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Channel">
-                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
-                                        </tableHeaderCell>
-                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="2460">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            <accessibility description="Channel Highlight Match is Restricted To"/>
-                                        </textFieldCell>
-                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                    </tableColumn>
-                                </tableColumns>
-                                <connections>
-                                    <binding destination="XVW-tl-Aro" name="content" keyPath="arrangedObjects" id="Qdv-Df-SW6"/>
-                                    <outlet property="dataSource" destination="4Tf-76-487" id="2469"/>
-                                    <outlet property="delegate" destination="4Tf-76-487" id="2468"/>
-                                </connections>
-                            </tableView>
-                        </subviews>
-                    </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="2452">
-                        <rect key="frame" x="1" y="203" width="410" height="16"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="2453">
-                        <rect key="frame" x="405" y="17" width="15" height="154"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                    <tableHeaderView key="headerView" wantsLayer="YES" id="Gzo-0n-LCU">
-                        <rect key="frame" x="0.0" y="0.0" width="410" height="28"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </tableHeaderView>
-                    <accessibility description="Highlight Match Table"/>
-                </scrollView>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2448">
-                    <rect key="frame" x="416" y="24" width="50" height="23"/>
-                    <buttonCell key="cell" type="smallSquare" title="Edit" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2462">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <constraints>
-                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="MuU-HJ-RlZ"/>
-                        <constraint firstAttribute="height" constant="21" id="TKi-UE-9Bc"/>
-                    </constraints>
-                    <accessibility description="Edit Selected Highlight Match"/>
-                    <connections>
-                        <action selector="editItem:" target="4Tf-76-487" id="2482"/>
-                    </connections>
-                </button>
-            </subviews>
-            <constraints>
-                <constraint firstItem="2448" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="2447" secondAttribute="trailing" constant="20" id="0ku-ns-r90"/>
-                <constraint firstItem="2449" firstAttribute="leading" secondItem="2450" secondAttribute="leading" id="5yE-f7-nQa"/>
-                <constraint firstItem="2447" firstAttribute="top" secondItem="2449" secondAttribute="top" id="CGm-la-UE1"/>
-                <constraint firstItem="2450" firstAttribute="centerX" secondItem="2445" secondAttribute="centerX" id="QIC-47-BcF"/>
-                <constraint firstItem="2449" firstAttribute="top" secondItem="2450" secondAttribute="bottom" constant="8" id="Wzs-A3-HoP"/>
-                <constraint firstItem="2447" firstAttribute="width" secondItem="2449" secondAttribute="width" id="jMv-Cc-vXT"/>
-                <constraint firstItem="2450" firstAttribute="top" secondItem="2445" secondAttribute="top" constant="26" id="pQz-Md-S0m"/>
-                <constraint firstItem="2448" firstAttribute="top" secondItem="2450" secondAttribute="bottom" constant="8" symbolic="YES" id="pbg-Nb-XC1"/>
-                <constraint firstAttribute="bottom" secondItem="2449" secondAttribute="bottom" constant="25" id="qde-FB-0Rv"/>
-                <constraint firstItem="2447" firstAttribute="bottom" secondItem="2449" secondAttribute="bottom" id="rIG-3n-2DT"/>
-                <constraint firstItem="2447" firstAttribute="leading" secondItem="2449" secondAttribute="trailing" constant="1" id="uGv-Ro-tW3"/>
-                <constraint firstItem="2450" firstAttribute="leading" secondItem="2445" secondAttribute="leading" constant="54" id="uWX-aV-Mxo"/>
-                <constraint firstItem="2448" firstAttribute="trailing" secondItem="2450" secondAttribute="trailing" id="wG9-PY-Mbb"/>
-            </constraints>
-            <point key="canvasLocation" x="535" y="3246"/>
-        </customView>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="1817" userLabel="Ignores View">
             <rect key="frame" x="0.0" y="0.0" width="520" height="300"/>
             <subviews>
@@ -2612,9 +2463,6 @@ Gw
         </arrayController>
         <arrayController objectClassName="IRCChannelConfig" selectsInsertedObjects="NO" avoidsEmptySelection="NO" clearsFilterPredicateOnInsertion="NO" automaticallyRearrangesObjects="YES" id="XlX-J4-ZJt">
             <classReference key="objectClass" className="IRCChannelConfig"/>
-        </arrayController>
-        <arrayController objectClassName="IRCHighlightMatchCondition" selectsInsertedObjects="NO" avoidsEmptySelection="NO" automaticallyRearrangesObjects="YES" id="XVW-tl-Aro">
-            <classReference key="objectClass" className="IRCHighlightMatchCondition"/>
         </arrayController>
     </objects>
     <resources>

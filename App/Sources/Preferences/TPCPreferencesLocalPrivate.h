@@ -38,6 +38,8 @@
 #import "TPCPreferencesPrivate.h"
 #import "TPCPreferencesLocal.h"
 
+@class IRCHighlightKeyword, IRCHighlightMatchCondition;
+
 NS_ASSUME_NONNULL_BEGIN
 
 TEXTUAL_EXTERN NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotification;
@@ -161,6 +163,12 @@ typedef NS_ENUM(NSUInteger, TXInlineMediaDomainRuleMode) {
 + (void)setClientList:(nullable NSArray<NSDictionary *> *)clientList;
 
 + (void)cleanUpHighlightKeywords;
+
+/* The keyword lists with their limits and sounds (E3, D-E3.8) */
+@property (class, readonly, copy, nullable) NSArray<IRCHighlightKeyword *> *highlightMatchKeywordEntries;
+@property (class, readonly, copy, nullable) NSArray<IRCHighlightKeyword *> *highlightExcludeKeywordEntries;
+
++ (void)moveServerHighlightConditions:(NSArray<IRCHighlightMatchCondition *> *)conditions clientId:(NSString *)clientId;
 
 + (void)setTextFieldAutomaticSpellCheck:(BOOL)value;
 + (void)setTextFieldAutomaticGrammarCheck:(BOOL)value;

@@ -41,7 +41,6 @@
 		4C06E1F020EC4AC50055D09A /* TDCLicenseUpgradeDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E16B20EC4AC40055D09A /* TDCLicenseUpgradeDialog.xib */; };
 		4C06E1F420EC4AC50055D09A /* TDCServerChangeNicknameSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E16D20EC4AC40055D09A /* TDCServerChangeNicknameSheet.xib */; };
 		4C06E1F820EC4AC50055D09A /* TDCChannelModifyTopicSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E16F20EC4AC40055D09A /* TDCChannelModifyTopicSheet.xib */; };
-		4C06E20020EC4AC50055D09A /* TDCHighlightEntrySheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E17320EC4AC40055D09A /* TDCHighlightEntrySheet.xib */; };
 		4C06E20420EC4AC50055D09A /* TVCMainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E17520EC4AC40055D09A /* TVCMainWindow.xib */; };
 		4C06E20820EC4AC50055D09A /* TDCLicenseManagerDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E17720EC4AC40055D09A /* TDCLicenseManagerDialog.xib */; };
 		4C06E20C20EC4AC50055D09A /* TDCLicenseManagerRecoverLostLicenseSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C06E17920EC4AC40055D09A /* TDCLicenseManagerRecoverLostLicenseSheet.xib */; };
@@ -124,6 +123,7 @@
 		4C06E65620EC55B90055D09A /* TDCPreferencesNotificationConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31526820EB673E00448776 /* TDCPreferencesNotificationConfiguration.m */; };
 		6629EC30C06F122F65345BBD /* TDCPreferencesPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */; };
 		FF3154F13D955A95E47DEDC5 /* TDCPreferencesAppearancePanes.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */; };
+		4CFA3F87D82CF0A3A49ACBBE /* TDCHighlightKeywordSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8B178AD6EFE4D659798959 /* TDCHighlightKeywordSheet.m */; };
 		A158CC599D81585F02DDA31A /* TDCPreferencesAdvancedPanes.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */; };
 		4C497A2FFD766E56B1D4752B /* TDCPreferencesInlineMediaPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC6E20C4C4C3271153F5FAE /* TDCPreferencesInlineMediaPane.m */; };
 		4C06E65720EC55B90055D09A /* TDCPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31526920EB673E00448776 /* TDCPreferencesController.m */; };
@@ -139,7 +139,6 @@
 		4C06E66020EC55B90055D09A /* TDCChannelModifyTopicSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528920EB673E00448776 /* TDCChannelModifyTopicSheet.m */; };
 		4C06E66120EC55B90055D09A /* TDCChannelPropertiesNotificationConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31527120EB673E00448776 /* TDCChannelPropertiesNotificationConfiguration.m */; };
 		4C06E66220EC55B90055D09A /* TDCChannelPropertiesSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31526420EB673E00448776 /* TDCChannelPropertiesSheet.m */; };
-		4C06E66320EC55B90055D09A /* TDCHighlightEntrySheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528320EB673E00448776 /* TDCHighlightEntrySheet.m */; };
 		4C06E66420EC55B90055D09A /* TDCInputPrompt.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528520EB673E00448776 /* TDCInputPrompt.m */; };
 		4C06E66520EC55B90055D09A /* TDCNicknameColorSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31529420EB673E00448776 /* TDCNicknameColorSheet.m */; };
 		4C06E66620EC55B90055D09A /* TDCProgressIndicatorSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31528820EB673E00448776 /* TDCProgressIndicatorSheet.m */; };
@@ -183,6 +182,8 @@
 		5C9E9755237D12675AB8B926 /* IRCProtocolLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F94BFF2AB2E4BF62FA71F34 /* IRCProtocolLink.m */; };
 		4C06E68820EC55B90055D09A /* IRCHighlightLogEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31512620EB673E00448776 /* IRCHighlightLogEntry.m */; };
 		4C06E68920EC55B90055D09A /* IRCHighlightMatchCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31512A20EB673E00448776 /* IRCHighlightMatchCondition.m */; };
+		4C3614BEB78C374590C2FC99 /* IRCHighlightKeyword.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6B65A09213BD938609E130 /* IRCHighlightKeyword.m */; };
+		4CD9967A3456DDFEB208E332 /* IRCHighlightKeywordTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C90177E4FF69483A56EFC35 /* IRCHighlightKeywordTests.m */; };
 		4C06E68A20EC55B90055D09A /* IRCISupportInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31514120EB673E00448776 /* IRCISupportInfo.m */; };
 		4C06E68B20EC55B90055D09A /* IRCMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31512D20EB673E00448776 /* IRCMessage.m */; };
 		4C06E68C20EC55B90055D09A /* IRCMessageBatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31513F20EB673E00448776 /* IRCMessageBatch.m */; };
@@ -425,7 +426,6 @@
 		4C31571420EB6D0500448776 /* TDCFileTransferDialogPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31521220EB673E00448776 /* TDCFileTransferDialogPrivate.h */; };
 		4C31571520EB6D0500448776 /* TDCFileTransferDialogTableCellPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151BD20EB673E00448776 /* TDCFileTransferDialogTableCellPrivate.h */; };
 		4C31571620EB6D0500448776 /* TDCFileTransferDialogTransferControllerPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31520720EB673E00448776 /* TDCFileTransferDialogTransferControllerPrivate.h */; };
-		4C31571720EB6D0500448776 /* TDCHighlightEntrySheetPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151D720EB673E00448776 /* TDCHighlightEntrySheetPrivate.h */; };
 		4C31571C20EB6D0500448776 /* TDCLicenseManagerDialogPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31523720EB673E00448776 /* TDCLicenseManagerDialogPrivate.h */; };
 		4C31571D20EB6D0500448776 /* TDCLicenseManagerMigrateAppStoreSheetPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3151FD20EB673E00448776 /* TDCLicenseManagerMigrateAppStoreSheetPrivate.h */; };
 		4C31571E20EB6D0500448776 /* TDCLicenseManagerRecoverLostLicenseSheetPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C31523C20EB673E00448776 /* TDCLicenseManagerRecoverLostLicenseSheetPrivate.h */; };
@@ -875,7 +875,6 @@
 		4C06E16C20EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCLicenseUpgradeDialog.xib; sourceTree = "<group>"; };
 		4C06E16E20EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCServerChangeNicknameSheet.xib; sourceTree = "<group>"; };
 		4C06E17020EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCChannelModifyTopicSheet.xib; sourceTree = "<group>"; };
-		4C06E17420EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCHighlightEntrySheet.xib; sourceTree = "<group>"; };
 		4C06E17620EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TVCMainWindow.xib; sourceTree = "<group>"; };
 		4C06E17820EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCLicenseManagerDialog.xib; sourceTree = "<group>"; };
 		4C06E17A20EC4AC40055D09A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TDCLicenseManagerRecoverLostLicenseSheet.xib; sourceTree = "<group>"; };
@@ -965,6 +964,9 @@
 		4C31512820EB673E00448776 /* IRCChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCChannel.m; sourceTree = "<group>"; };
 		4C31512920EB673E00448776 /* IRCServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCServer.m; sourceTree = "<group>"; };
 		4C31512A20EB673E00448776 /* IRCHighlightMatchCondition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCHighlightMatchCondition.m; sourceTree = "<group>"; };
+		4C6B65A09213BD938609E130 /* IRCHighlightKeyword.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCHighlightKeyword.m; sourceTree = "<group>"; };
+		4C92C104117A1BED4EAF8438 /* IRCHighlightKeywordPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCHighlightKeywordPrivate.h; sourceTree = "<group>"; };
+		4C90177E4FF69483A56EFC35 /* IRCHighlightKeywordTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCHighlightKeywordTests.m; sourceTree = "<group>"; };
 		4C31512B20EB673E00448776 /* IRCAddressBookMatchCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCAddressBookMatchCache.m; sourceTree = "<group>"; };
 		4C31512C20EB673E00448776 /* IRCSendingMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCSendingMessage.m; sourceTree = "<group>"; };
 		4C31512D20EB673E00448776 /* IRCMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCMessage.m; sourceTree = "<group>"; };
@@ -1121,7 +1123,6 @@
 		4C3151D320EB673E00448776 /* TDCLicenseUpgradeCommonActionsPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCLicenseUpgradeCommonActionsPrivate.h; sourceTree = "<group>"; };
 		4C3151D520EB673E00448776 /* TVCAppearancePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCAppearancePrivate.h; sourceTree = "<group>"; };
 		4C3151D620EB673E00448776 /* TPCThemePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPCThemePrivate.h; sourceTree = "<group>"; };
-		4C3151D720EB673E00448776 /* TDCHighlightEntrySheetPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCHighlightEntrySheetPrivate.h; sourceTree = "<group>"; };
 		4C3151D820EB673E00448776 /* TextualPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextualPrivate.h; sourceTree = "<group>"; };
 		4C3151D920EB673E00448776 /* TDCChannelSpotlightSearchResultPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCChannelSpotlightSearchResultPrivate.h; sourceTree = "<group>"; };
 		4C3151DA20EB673E00448776 /* TLOInputHistoryPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLOInputHistoryPrivate.h; sourceTree = "<group>"; };
@@ -1260,6 +1261,8 @@
 		4C31526820EB673E00448776 /* TDCPreferencesNotificationConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesNotificationConfiguration.m; sourceTree = "<group>"; };
 		1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesPane.m; sourceTree = "<group>"; };
 		42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesAppearancePanes.m; sourceTree = "<group>"; };
+		4C8B178AD6EFE4D659798959 /* TDCHighlightKeywordSheet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCHighlightKeywordSheet.m; sourceTree = "<group>"; };
+		4CA934DABCFC7F896F9DDA98 /* TDCHighlightKeywordSheetPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TDCHighlightKeywordSheetPrivate.h; sourceTree = "<group>"; };
 		0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesAdvancedPanes.m; sourceTree = "<group>"; };
 		4CC6E20C4C4C3271153F5FAE /* TDCPreferencesInlineMediaPane.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesInlineMediaPane.m; sourceTree = "<group>"; };
 		4C31526920EB673E00448776 /* TDCPreferencesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCPreferencesController.m; sourceTree = "<group>"; };
@@ -1281,7 +1284,6 @@
 		4C31527A20EB673E00448776 /* TDCLicenseManagerDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCLicenseManagerDialog.m; sourceTree = "<group>"; };
 		4C31528020EB673E00448776 /* TDCAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCAlert.m; sourceTree = "<group>"; };
 		4C31528220EB673E00448776 /* TDCChannelBanListSheet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCChannelBanListSheet.m; sourceTree = "<group>"; };
-		4C31528320EB673E00448776 /* TDCHighlightEntrySheet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCHighlightEntrySheet.m; sourceTree = "<group>"; };
 		4C31528420EB673E00448776 /* TDCWindowBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCWindowBase.m; sourceTree = "<group>"; };
 		4C31528520EB673E00448776 /* TDCInputPrompt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCInputPrompt.m; sourceTree = "<group>"; };
 		4C31528620EB673E00448776 /* TDCServerChannelListDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TDCServerChannelListDialog.m; sourceTree = "<group>"; };
@@ -1865,8 +1867,6 @@
 				8CF7EBB3D5A10546C2FCEE6F /* TDCAddressBookUserTrackingSheet.m */,
 				4C3151BA20EB673E00448776 /* TDCAddressBookSheetPrivate.h */,
 				E5827991787F9CF9F3596537 /* TDCAddressBookSheetInternal.h */,
-				4C31528320EB673E00448776 /* TDCHighlightEntrySheet.m */,
-				4C3151D720EB673E00448776 /* TDCHighlightEntrySheetPrivate.h */,
 				4C31528F20EB673E00448776 /* TDCServerEndpointListSheet.m */,
 				4C31522F20EB673E00448776 /* TDCServerEndpointListSheetPrivate.h */,
 				4C31528E20EB673E00448776 /* TDCServerEndpointListSheetTableCellView.m */,
@@ -2314,6 +2314,8 @@
 				4C3151B220EB673E00448776 /* IRCHighlightLogEntryPrivate.h */,
 				4C31512A20EB673E00448776 /* IRCHighlightMatchCondition.m */,
 				4C31519520EB673E00448776 /* IRCHighlightMatchConditionInternal.h */,
+				4C6B65A09213BD938609E130 /* IRCHighlightKeyword.m */,
+				4C92C104117A1BED4EAF8438 /* IRCHighlightKeywordPrivate.h */,
 				4C31514120EB673E00448776 /* IRCISupportInfo.m */,
 				4C3151ED20EB673E00448776 /* IRCISupportInfoPrivate.h */,
 				4C31512D20EB673E00448776 /* IRCMessage.m */,
@@ -2546,6 +2548,8 @@
 				4C31526820EB673E00448776 /* TDCPreferencesNotificationConfiguration.m */,
 				1EA114D82331D3801BB9DF79 /* TDCPreferencesPane.m */,
 				42D2C09621FFCC92D23A575A /* TDCPreferencesAppearancePanes.m */,
+				4C8B178AD6EFE4D659798959 /* TDCHighlightKeywordSheet.m */,
+				4CA934DABCFC7F896F9DDA98 /* TDCHighlightKeywordSheetPrivate.h */,
 				0F8E8D21921ED7D68624BA14 /* TDCPreferencesAdvancedPanes.m */,
 				4CC6E20C4C4C3271153F5FAE /* TDCPreferencesInlineMediaPane.m */,
 				4C31523920EB673E00448776 /* TDCPreferencesNotificationConfigurationPrivate.h */,
@@ -2793,7 +2797,6 @@
 				4C06E14B20EC4AC40055D09A /* TDCChannelPropertiesSheet.xib */,
 				4C06E14320EC4AC40055D09A /* TDCChannelSpotlightController.xib */,
 				4C06E14520EC4AC40055D09A /* TDCFileTransferDialog.xib */,
-				4C06E17320EC4AC40055D09A /* TDCHighlightEntrySheet.xib */,
 				4C06E17720EC4AC40055D09A /* TDCLicenseManagerDialog.xib */,
 				4C06E14D20EC4AC40055D09A /* TDCLicenseManagerMigrateAppStoreSheet.xib */,
 				4C06E17920EC4AC40055D09A /* TDCLicenseManagerRecoverLostLicenseSheet.xib */,
@@ -2994,6 +2997,7 @@
 				4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */,
 				4C722724ADF9DDCE8BB13442 /* TVCInputMarkdownTests.m */,
 				4C870CA064CDF0587168CD01 /* IRCAliasTests.m */,
+				4C90177E4FF69483A56EFC35 /* IRCHighlightKeywordTests.m */,
 				4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */,
 				4CCEEF3CE8E84E1B5AE9AC3C /* TVCLogViewSecurityTests.m */,
 			);
@@ -3127,7 +3131,6 @@
 				4C31570D20EB6D0500448776 /* TDCChannelPropertiesNotificationConfigurationPrivate.h in Headers */,
 				4C3155BA20EB6CB400448776 /* IRCUser.h in Headers */,
 				4C3155C620EB6CB400448776 /* THOPluginProtocol.h in Headers */,
-				4C31571720EB6D0500448776 /* TDCHighlightEntrySheetPrivate.h in Headers */,
 				4C31575620EB6D0500448776 /* TVCLogScriptEventSinkPrivate.h in Headers */,
 				4C3158C520EB6D1000448776 /* IRCPrefixInternal.h in Headers */,
 				4C31575B20EB6D0500448776 /* TVCMainWindowChannelViewPrivate.h in Headers */,
@@ -3532,7 +3535,6 @@
 				4C06E1B420EC4AC40055D09A /* TDCLicenseManagerMigrateAppStoreSheet.xib in Resources */,
 				4C06E1D420EC4AC40055D09A /* TDCPreferences.xib in Resources */,
 				4C06E18C20EC4AC40055D09A /* TDCServerPropertiesSheet.xib in Resources */,
-				4C06E20020EC4AC50055D09A /* TDCHighlightEntrySheet.xib in Resources */,
 				4C06DF3820EC49A60055D09A /* StaticStore.plist in Resources */,
 				4C06E22C20EC4AC50055D09A /* TVCMainWindowTextViewAppearance.plist in Resources */,
 				4CCD93FF1CA7291300335381 /* JavaScript in Resources */,
@@ -3731,6 +3733,7 @@
 				4C06E65620EC55B90055D09A /* TDCPreferencesNotificationConfiguration.m in Sources */,
 				6629EC30C06F122F65345BBD /* TDCPreferencesPane.m in Sources */,
 				FF3154F13D955A95E47DEDC5 /* TDCPreferencesAppearancePanes.m in Sources */,
+				4CFA3F87D82CF0A3A49ACBBE /* TDCHighlightKeywordSheet.m in Sources */,
 				A158CC599D81585F02DDA31A /* TDCPreferencesAdvancedPanes.m in Sources */,
 				4C497A2FFD766E56B1D4752B /* TDCPreferencesInlineMediaPane.m in Sources */,
 				4C06E65720EC55B90055D09A /* TDCPreferencesController.m in Sources */,
@@ -3746,7 +3749,6 @@
 				4C06E66020EC55B90055D09A /* TDCChannelModifyTopicSheet.m in Sources */,
 				4C06E66120EC55B90055D09A /* TDCChannelPropertiesNotificationConfiguration.m in Sources */,
 				4C06E66220EC55B90055D09A /* TDCChannelPropertiesSheet.m in Sources */,
-				4C06E66320EC55B90055D09A /* TDCHighlightEntrySheet.m in Sources */,
 				4C06E66420EC55B90055D09A /* TDCInputPrompt.m in Sources */,
 				4C06E66520EC55B90055D09A /* TDCNicknameColorSheet.m in Sources */,
 				4C06E66620EC55B90055D09A /* TDCProgressIndicatorSheet.m in Sources */,
@@ -3790,6 +3792,7 @@
 				5C9E9755237D12675AB8B926 /* IRCProtocolLink.m in Sources */,
 				4C06E68820EC55B90055D09A /* IRCHighlightLogEntry.m in Sources */,
 				4C06E68920EC55B90055D09A /* IRCHighlightMatchCondition.m in Sources */,
+				4C3614BEB78C374590C2FC99 /* IRCHighlightKeyword.m in Sources */,
 				4C469E3D20EC5BDB00094EA4 /* TLOLinkParser.swift in Sources */,
 				4C06E68A20EC55B90055D09A /* IRCISupportInfo.m in Sources */,
 				4C06E68B20EC55B90055D09A /* IRCMessage.m in Sources */,
@@ -3945,6 +3948,7 @@
 				4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */,
 				4CE9F00465BB5D17F16D8988 /* TVCInputMarkdownTests.m in Sources */,
 				4C03ABFF9E2EFDF00767BBCD /* IRCAliasTests.m in Sources */,
+				4CD9967A3456DDFEB208E332 /* IRCHighlightKeywordTests.m in Sources */,
 				4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */,
 				4CACA1915D50ECEEE616CC47 /* TPCPreferencesTests.m in Sources */,
 				4CA4A4D412BC97120FEB0648 /* TVCLogRendererTests.m in Sources */,
@@ -4213,14 +4217,6 @@
 				4C06E17020EC4AC40055D09A /* en */,
 			);
 			name = TDCChannelModifyTopicSheet.xib;
-			sourceTree = "<group>";
-		};
-		4C06E17320EC4AC40055D09A /* TDCHighlightEntrySheet.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C06E17420EC4AC40055D09A /* en */,
-			);
-			name = TDCHighlightEntrySheet.xib;
 			sourceTree = "<group>";
 		};
 		4C06E17520EC4AC40055D09A /* TVCMainWindow.xib */ = {

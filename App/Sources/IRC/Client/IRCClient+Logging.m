@@ -87,6 +87,7 @@
 #import "IRCChannelPrivate.h"
 #import "IRCClientConfigPrivate.h"
 #import "IRCClientRequestedCommandsPrivate.h"
+#import "IRCHighlightKeywordPrivate.h"
 #import "IRCColorFormatPrivate.h"
 #import "IRCConnectionPrivate.h"
 #import "IRCConnectionConfig.h"
@@ -116,9 +117,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface IRCChannelHighlightKeywords : NSObject
 @property (nonatomic, copy) NSArray<NSString *> *matchKeywords;
 @property (nonatomic, copy) NSArray<NSString *> *excludeKeywords;
-@property (nonatomic, strong, nullable) NSArray<NSString *> *globalMatchKeywords;
-@property (nonatomic, strong, nullable) NSArray<NSString *> *globalExcludeKeywords;
-@property (nonatomic, strong) NSArray<IRCHighlightMatchCondition *> *clientHighlightList;
+@property (nonatomic, copy) NSArray<IRCHighlightKeyword *> *matchKeywordsForPeople; // limited to people: added per sender
+@property (nonatomic, copy) NSArray<IRCHighlightKeyword *> *excludeKeywordsForPeople;
+@property (nonatomic, strong, nullable) NSArray<IRCHighlightKeyword *> *globalMatchKeywords;
+@property (nonatomic, strong, nullable) NSArray<IRCHighlightKeyword *> *globalExcludeKeywords;
 @property (nonatomic, copy, nullable) NSString *nickname; // nil when the nickname isn't a keyword
 @end
 
@@ -374,9 +376,9 @@ NS_ASSUME_NONNULL_BEGIN
 	NSParameterAssert(channel != nil);
 	NSParameterAssert(localNickname != nil);
 
-	/* Global highlight keywords (TPCPreferences replaces these arrays when they change) */
-	NSArray *globalExcludeKeywords = [TPCPreferences highlightExcludeKeywords];
-	NSArray *globalMatchKeywords = [TPCPreferences highlightMatchKeywords];
+	/* Highlight keywords (TPCPreferences replaces these arrays when they change) */
+	NSArray *globalExcludeKeywords = [TPCPreferences highlightExcludeKeywordEntries];
+	NSArray *globalMatchKeywords = [TPCPreferences highlightMatchKeywordEntries];
 
 	/* Self nickname keyword */
 	NSString *nickname = nil;
@@ -387,43 +389,53 @@ NS_ASSUME_NONNULL_BEGIN
 		nickname = localNickname;
 	}
 
-	/* Client/channel specific keywords (a new array whenever the configuration changes) */
-	NSArray *clientHighlightList = self.config.highlightList;
-
 	IRCChannelHighlightKeywords *keywords = channel.highlightKeywords;
 
 	if (keywords &&
 		keywords.globalExcludeKeywords == globalExcludeKeywords &&
 		keywords.globalMatchKeywords == globalMatchKeywords &&
-		keywords.clientHighlightList == clientHighlightList &&
 		NSObjectsAreEqual(keywords.nickname, nickname))
 	{
 		return keywords;
 	}
 
-	NSMutableArray<NSString *> *excludeKeywords = [NSMutableArray arrayWithArray:globalExcludeKeywords];
-	NSMutableArray<NSString *> *matchKeywords = [NSMutableArray arrayWithArray:globalMatchKeywords];
+	NSString *channelId = channel.uniqueIdentifier;
+	NSString *clientId = self.uniqueIdentifier;
+
+	/* Keywords limited to other channels or networks are left out here;
+	 those limited to people are checked against each sender */
+	NSMutableArray<NSString *> *excludeKeywords = [NSMutableArray array];
+	NSMutableArray<IRCHighlightKeyword *> *excludeKeywordsForPeople = [NSMutableArray array];
+
+	for (IRCHighlightKeyword *e in globalExcludeKeywords) {
+		if ([e appliesToChannelWithId:channelId clientId:clientId] == NO) {
+			continue;
+		}
+
+		if (e.nicknames.count > 0) {
+			[excludeKeywordsForPeople addObject:e];
+		} else {
+			[excludeKeywords addObjectWithoutDuplication:e.keyword];
+		}
+	}
+
+	NSMutableArray<NSString *> *matchKeywords = [NSMutableArray array];
+	NSMutableArray<IRCHighlightKeyword *> *matchKeywordsForPeople = [NSMutableArray array];
+
+	for (IRCHighlightKeyword *e in globalMatchKeywords) {
+		if ([e appliesToChannelWithId:channelId clientId:clientId] == NO) {
+			continue;
+		}
+
+		if (e.nicknames.count > 0) {
+			[matchKeywordsForPeople addObject:e];
+		} else {
+			[matchKeywords addObjectWithoutDuplication:e.keyword];
+		}
+	}
 
 	if (nickname) {
 		[matchKeywords addObjectWithoutDuplication:nickname];
-	}
-
-	NSString *channelId = channel.uniqueIdentifier;
-
-	for (IRCHighlightMatchCondition *e in clientHighlightList) {
-		NSString *matchChannelId = e.matchChannelId;
-
-		if (matchChannelId.length > 0) {
-			if ([matchChannelId isEqualToString:channelId] == NO) {
-				continue;
-			}
-		}
-
-		if (e.matchIsExcluded) {
-			[excludeKeywords addObjectWithoutDuplication:e.matchKeyword];
-		} else {
-			[matchKeywords addObjectWithoutDuplication:e.matchKeyword];
-		}
 	}
 
 	keywords = [IRCChannelHighlightKeywords new];
@@ -431,14 +443,49 @@ NS_ASSUME_NONNULL_BEGIN
 	keywords.excludeKeywords = excludeKeywords;
 	keywords.matchKeywords = matchKeywords;
 
+	keywords.excludeKeywordsForPeople = excludeKeywordsForPeople;
+	keywords.matchKeywordsForPeople = matchKeywordsForPeople;
+
 	keywords.globalExcludeKeywords = globalExcludeKeywords;
 	keywords.globalMatchKeywords = globalMatchKeywords;
-	keywords.clientHighlightList = clientHighlightList;
 	keywords.nickname = nickname;
 
 	channel.highlightKeywords = keywords;
 
 	return keywords;
+}
+
+/* The channel's keywords plus those limited to the sender */
+- (NSArray<NSString *> *)highlightKeywords:(NSArray<NSString *> *)keywords addingKeywordsForPeople:(NSArray<IRCHighlightKeyword *> *)keywordsForPeople sender:(nullable NSString *)sender
+{
+	NSParameterAssert(keywords != nil);
+	NSParameterAssert(keywordsForPeople != nil);
+
+	if (keywordsForPeople.count == 0 || sender == nil) {
+		return keywords;
+	}
+
+	IRCISupportInfo *supportInfo = self.supportInfo;
+
+	NSMutableArray<NSString *> *keywordsOut = nil;
+
+	for (IRCHighlightKeyword *e in keywordsForPeople) {
+		if ([e appliesToNickname:sender supportInfo:supportInfo] == NO) {
+			continue;
+		}
+
+		if (keywordsOut == nil) {
+			keywordsOut = [keywords mutableCopy];
+		}
+
+		[keywordsOut addObjectWithoutDuplication:e.keyword];
+	}
+
+	if (keywordsOut == nil) {
+		return keywords;
+	}
+
+	return [keywordsOut copy];
 }
 
 - (void)print:(NSString *)messageBody by:(nullable NSString *)nickname inChannel:(nullable IRCChannel *)channel asType:(TVCLogLineType)lineType command:(nullable NSString *)command receivedAt:(NSDate *)receivedAt isEncrypted:(BOOL)isEncrypted escapeMessage:(BOOL)escapeMessage referenceMessage:(nullable IRCMessage *)referenceMessage completionBlock:(nullable TVCLogControllerPrintOperationCompletionBlock)completionBlock
@@ -504,8 +551,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if (matchHighlights) {
 		IRCChannelHighlightKeywords *keywords = [self highlightKeywordsForChannel:channel nickname:localNickname];
 
-		excludeKeywords = keywords.excludeKeywords;
-		matchKeywords = keywords.matchKeywords;
+		excludeKeywords = [self highlightKeywords:keywords.excludeKeywords addingKeywordsForPeople:keywords.excludeKeywordsForPeople sender:nickname];
+		matchKeywords = [self highlightKeywords:keywords.matchKeywords addingKeywordsForPeople:keywords.matchKeywordsForPeople sender:nickname];
 	}
 
 	if (lineType == TVCLogLineTypeActionNoHighlight) {

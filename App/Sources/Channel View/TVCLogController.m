@@ -80,6 +80,7 @@ static const NSTimeInterval TVCLogControllerMessageGroupingWindow = (5 * 60);
 @property (nonatomic, weak, readwrite) IRCClient *client;
 @property (nonatomic, weak, readwrite) IRCChannel *channel;
 @property (nonatomic, assign, readwrite, getter=isHighlight) BOOL highlight;
+@property (nonatomic, copy, readwrite, nullable) NSString *highlightKeyword;
 @property (nonatomic, copy, readwrite) TVCLogLine *logLine;
 @property (nonatomic, copy, readwrite) NSString *lineNumber;
 @end
@@ -1614,6 +1615,8 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 		BOOL highlighted = [resultInfo boolForKey:TVCLogRendererResultsKeywordMatchFoundAttribute];
 
+		NSString *highlightKeyword = resultInfo[TVCLogRendererResultsMatchedKeywordAttribute];
+
 		THOPluginDidPostNewMessageConcreteObject *pluginObject = resultInfo[@"pluginConcreteObject"];
 
 		XRPerformBlockAsynchronouslyOnMainQueue(^{
@@ -1625,7 +1628,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 			 appended again, but its highlight, unread count and notification still happen */
 			if ([self takeUnsavedLogLine:logLine] == NO) {
 				if (notifiedEarly == NO) {
-					[self finishPrintingLogLine:logLine highlighted:highlighted listOfUsers:listOfUsers completionBlock:completionBlock];
+					[self finishPrintingLogLine:logLine highlighted:highlighted highlightKeyword:highlightKeyword listOfUsers:listOfUsers completionBlock:completionBlock];
 				}
 
 				return;
@@ -1665,7 +1668,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 				return;
 			}
 
-			[self finishPrintingLogLine:logLine highlighted:highlighted listOfUsers:listOfUsers completionBlock:completionBlock];
+			[self finishPrintingLogLine:logLine highlighted:highlighted highlightKeyword:highlightKeyword listOfUsers:listOfUsers completionBlock:completionBlock];
 		});
 	};
 
@@ -1732,6 +1735,8 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 
 		BOOL highlighted = [rendererResults boolForKey:TVCLogRendererResultsKeywordMatchFoundAttribute];
 
+		NSString *highlightKeyword = rendererResults[TVCLogRendererResultsMatchedKeywordAttribute];
+
 		NSSet<IRCChannelUser *> *listOfUsers = rendererResults[TVCLogRendererResultsListOfUsersFoundAttribute];
 
 		XRPerformBlockAsynchronouslyOnMainQueue(^{
@@ -1743,7 +1748,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 				[self recordHighlightOfLogLine:logLine];
 			}
 
-			[self finishPrintingLogLine:logLine highlighted:highlighted listOfUsers:listOfUsers completionBlock:completionBlock];
+			[self finishPrintingLogLine:logLine highlighted:highlighted highlightKeyword:highlightKeyword listOfUsers:listOfUsers completionBlock:completionBlock];
 		});
 	});
 }
@@ -1766,7 +1771,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	[self.associatedClient cacheHighlightInChannel:self.associatedChannel withLogLine:logLine];
 }
 
-- (void)finishPrintingLogLine:(TVCLogLine *)logLine highlighted:(BOOL)highlighted listOfUsers:(nullable NSSet<IRCChannelUser *> *)listOfUsers completionBlock:(nullable TVCLogControllerPrintOperationCompletionBlock)completionBlock
+- (void)finishPrintingLogLine:(TVCLogLine *)logLine highlighted:(BOOL)highlighted highlightKeyword:(nullable NSString *)highlightKeyword listOfUsers:(nullable NSSet<IRCChannelUser *> *)listOfUsers completionBlock:(nullable TVCLogControllerPrintOperationCompletionBlock)completionBlock
 {
 	NSParameterAssert(logLine != nil);
 
@@ -1788,6 +1793,7 @@ NSString * const TVCLogControllerViewFinishedLoadingNotification = @"TVCLogContr
 	contextObject.client = self.associatedClient;
 	contextObject.channel = self.associatedChannel;
 	contextObject.highlight = highlighted;
+	contextObject.highlightKeyword = highlightKeyword;
 	contextObject.logLine = logLine;
 	contextObject.lineNumber = logLine.uniqueIdentifier;
 

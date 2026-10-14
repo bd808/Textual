@@ -54,6 +54,8 @@
 #import "TDCPreferencesUserStyleSheetPrivate.h"
 #import "TDCPreferencesControllerPrivate.h"
 #import "TDCPreferencesPanePrivate.h"
+#import "TDCHighlightKeywordSheetPrivate.h"
+#import "IRCHighlightKeywordPrivate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -68,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet NSTableView *highlightKeywordsTable;
 @property (nonatomic, weak) IBOutlet NSTableView *excludeKeywordsTable;
 @property (nonatomic, weak) IBOutlet NSButton *highlightNicknameButton;
+@property (nonatomic, strong, nullable) TDCHighlightKeywordSheet *keywordSheet;
 
 /* Bound in the nib; off while keywords are regular expressions */
 @property (nonatomic, assign) BOOL highlightCurrentNickname;
@@ -85,6 +88,181 @@ NS_ASSUME_NONNULL_BEGIN
 	[super viewDidLoad];
 
 	[self updateHighlightNicknameButton];
+
+	/* A keyword's settings open in a sheet (E3, D-E3.8) */
+	[self setUpKeywordTable:self.highlightKeywordsTable arrayController:self.highlightKeywordsArrayController action:@selector(onEditHighlightKeyword:)];
+	[self setUpKeywordTable:self.excludeKeywordsTable arrayController:self.excludeKeywordsArrayController action:@selector(onEditExcludeKeyword:)];
+}
+
+/* Rows open the sheet instead of being edited in place, and an Edit button
+ joins + and − */
+- (void)setUpKeywordTable:(NSTableView *)table arrayController:(NSArrayController *)arrayController action:(SEL)action
+{
+	NSParameterAssert(table != nil);
+	NSParameterAssert(arrayController != nil);
+
+	table.tableColumns.firstObject.editable = NO;
+
+	table.target = self;
+	table.doubleAction = action;
+
+	NSButton *removeButton = [self _removeButtonForArrayController:arrayController inView:self.view];
+
+	if (removeButton == nil) {
+		return;
+	}
+
+	NSButton *editButton = [NSButton buttonWithTitle:TXTLS(@"TDCPreferencesController[hkw-e1]") target:self action:action];
+
+	editButton.bezelStyle = NSBezelStyleSmallSquare;
+	editButton.controlSize = removeButton.controlSize;
+	editButton.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
+	editButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+	[editButton bind:NSEnabledBinding toObject:arrayController withKeyPath:@"canRemove" options:nil];
+
+	[removeButton.superview addSubview:editButton];
+
+	[NSLayoutConstraint activateConstraints:@[
+		[editButton.leadingAnchor constraintEqualToAnchor:removeButton.trailingAnchor constant:(-1)],
+		[editButton.topAnchor constraintEqualToAnchor:removeButton.topAnchor],
+		[editButton.heightAnchor constraintEqualToAnchor:removeButton.heightAnchor]
+	]];
+}
+
+- (nullable NSButton *)_removeButtonForArrayController:(NSArrayController *)arrayController inView:(NSView *)view
+{
+	for (NSView *subview in view.subviews) {
+		if ([subview isKindOfClass:[NSButton class]]) {
+			NSButton *button = (NSButton *)subview;
+
+			if (button.action == @selector(remove:) && button.target == arrayController) {
+				return button;
+			}
+		}
+
+		NSButton *button = [self _removeButtonForArrayController:arrayController inView:subview];
+
+		if (button) {
+			return button;
+		}
+	}
+
+	return nil;
+}
+
+/* A new keyword when entry is nil */
+- (void)editKeyword:(nullable NSDictionary *)entry inArrayController:(NSArrayController *)arrayController excluded:(BOOL)excluded
+{
+	NSParameterAssert(arrayController != nil);
+
+	NSWindow *window = self.view.window;
+
+	if (window == nil || self.keywordSheet != nil) {
+		return;
+	}
+
+	TDCHighlightKeywordSheet *sheet = [[TDCHighlightKeywordSheet alloc] initWithEntry:entry excluded:excluded];
+
+	self.keywordSheet = sheet;
+
+	[sheet beginSheetForWindow:window completionHandler:^(NSDictionary<NSString *, id> * _Nullable entryOut) {
+		self.keywordSheet = nil;
+
+		if (entryOut == nil) {
+			return;
+		}
+
+		if (entry) {
+			[arrayController removeObject:entry];
+		}
+
+		NSMutableDictionary *entryMutable = [entryOut mutableCopy];
+
+		[arrayController addObject:entryMutable];
+
+		[arrayController setSelectedObjects:@[entryMutable]];
+	}];
+}
+
+- (nullable NSDictionary *)_selectedEntryInArrayController:(NSArrayController *)arrayController
+{
+	NSDictionary *entry = arrayController.selectedObjects.firstObject;
+
+	if ([entry isKindOfClass:[NSDictionary class]] == NO) {
+		return nil;
+	}
+
+	return entry;
+}
+
+- (void)onEditHighlightKeyword:(nullable id)sender
+{
+	NSDictionary *entry = [self _selectedEntryInArrayController:self.highlightKeywordsArrayController];
+
+	if (entry == nil) {
+		return;
+	}
+
+	[self editKeyword:entry inArrayController:self.highlightKeywordsArrayController excluded:NO];
+}
+
+- (void)onEditExcludeKeyword:(nullable id)sender
+{
+	NSDictionary *entry = [self _selectedEntryInArrayController:self.excludeKeywordsArrayController];
+
+	if (entry == nil) {
+		return;
+	}
+
+	[self editKeyword:entry inArrayController:self.excludeKeywordsArrayController excluded:YES];
+}
+
+/* The keyword, then where, who and which sound in grey */
+- (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
+{
+	NSArrayController *arrayController = nil;
+
+	if (tableView == self.highlightKeywordsTable) {
+		arrayController = self.highlightKeywordsArrayController;
+	} else if (tableView == self.excludeKeywordsTable) {
+		arrayController = self.excludeKeywordsArrayController;
+	} else {
+		return;
+	}
+
+	NSArray *entries = arrayController.arrangedObjects;
+
+	if (row < 0 || row >= entries.count || [cell isKindOfClass:[NSTextFieldCell class]] == NO) {
+		return;
+	}
+
+	NSDictionary *entry = entries[row];
+
+	NSString *keyword = entry[IRCHighlightKeywordStringKey];
+
+	if ([keyword isKindOfClass:[NSString class]] == NO) {
+		return;
+	}
+
+	NSString *summary = [TDCHighlightKeywordSheet summaryOfEntry:entry];
+
+	if (summary == nil) {
+		return;
+	}
+
+	NSTextFieldCell *textCell = cell;
+
+	NSFont *font = textCell.font;
+
+	NSMutableAttributedString *value = [[NSMutableAttributedString alloc] initWithString:keyword attributes:@{NSFontAttributeName : font}];
+
+	[value appendAttributedString:[[NSAttributedString alloc] initWithString:[@"   " stringByAppendingString:summary] attributes:@{
+		NSFontAttributeName : [NSFont systemFontOfSize:[NSFont smallSystemFontSize]],
+		NSForegroundColorAttributeName : [NSColor secondaryLabelColor]
+	}]];
+
+	textCell.attributedStringValue = value;
 }
 
 - (BOOL)highlightCurrentNickname
@@ -146,60 +324,14 @@ NS_ASSUME_NONNULL_BEGIN
 			   alternateButton:nil];
 }
 
-/* add: only takes effect on a later pass of the run loop, so editing started
- before the row existed and the new empty row looked like nothing happened */
-- (void)addKeywordToArrayController:(NSArrayController *)arrayController inTableView:(NSTableView *)tableView
-{
-	[arrayController addObject:[arrayController newObject]];
-
-	XRPerformBlockAsynchronouslyOnMainQueue(^{
-		NSInteger row = arrayController.selectionIndex;
-
-		if (row == NSNotFound || row >= tableView.numberOfRows) {
-			row = (tableView.numberOfRows - 1);
-		}
-
-		if (row < 0) {
-			return;
-		}
-
-		[tableView scrollRowToVisible:row];
-
-		[tableView editColumn:0 row:row withEvent:nil select:YES];
-	});
-}
-
-/* With regular expression matching, a keyword that doesn't compile would never match */
-- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
-{
-	if (control != self.highlightKeywordsTable ||
-		[TPCPreferences highlightMatchingMethod] != TXNicknameHighlightMatchTypeRegularExpression)
-	{
-		return YES;
-	}
-
-	NSString *pattern = fieldEditor.string;
-
-	if (pattern.length == 0 || [XRRegularExpression isValidRegex:pattern]) {
-		return YES;
-	}
-
-	[TDCAlert alertWithMessage:TXTLS(@"TDCPreferencesController[r7x-q2]", pattern)
-						 title:TXTLS(@"TDCPreferencesController[r7x-q1]")
-				 defaultButton:TXTLS(@"Prompts[c7s-dq]")
-			   alternateButton:nil];
-
-	return NO;
-}
-
 - (void)onAddHighlightKeyword:(nullable id)sender
 {
-	[self addKeywordToArrayController:self.highlightKeywordsArrayController inTableView:self.highlightKeywordsTable];
+	[self editKeyword:nil inArrayController:self.highlightKeywordsArrayController excluded:NO];
 }
 
 - (void)onAddExcludeKeyword:(nullable id)sender
 {
-	[self addKeywordToArrayController:self.excludeKeywordsArrayController inTableView:self.excludeKeywordsTable];
+	[self editKeyword:nil inArrayController:self.excludeKeywordsArrayController excluded:YES];
 }
 
 @end

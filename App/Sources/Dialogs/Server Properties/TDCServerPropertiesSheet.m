@@ -60,7 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *encodingPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *generalPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *identityPane;
-@property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *highlightsPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *messagesPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *zncBouncerPane;
 @property (nonatomic, strong) IBOutlet TDCServerPropertiesPane *clientCertificatePane;
@@ -129,7 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
 		_paneItem(@"TDCServerPropertiesSheet[8ug-ka]", Encoding, self.encodingPane),
 		_paneItem(@"TDCServerPropertiesSheet[ehx-4d]", General, self.generalPane),
 		_paneItem(@"TDCServerPropertiesSheet[8ik-qo]", Identity, self.identityPane),
-		_paneItem(@"TDCServerPropertiesSheet[jtx-hn]", Highlights, self.highlightsPane),
 		_paneItem(@"TDCServerPropertiesSheet[j34-yr]", DisconnectMessages, self.messagesPane),
 	];
 

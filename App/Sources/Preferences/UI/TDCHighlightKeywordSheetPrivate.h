@@ -5,8 +5,7 @@
  *                   | |  __/>  <| |_| |_| | (_| | |
  *                   |_|\___/_/\_\\__|\__,_|\__,_|_|
  *
- * Copyright (c) 2010 - 2018 Codeux Software, LLC & respective contributors.
- *       Please see Acknowledgements.pdf for additional information.
+ * Copyright (c) 2026 Blendbyte GmbH & respective contributors.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,23 +34,19 @@
  *
  *********************************************************************** */
 
-#import "TDCSheetBase.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
-@class IRCChannelConfig, IRCHighlightMatchCondition;
+/* A keyword's settings in Preferences → Highlights (E3, D-E3.8): the keyword,
+ the channels or networks it applies to, the people it applies to and, for a
+ highlight word, its sound. Hands back the stored dictionary
+ (IRCHighlightKeywordPrivate.h), or nil when cancelled. */
+@interface TDCHighlightKeywordSheet : NSObject
+- (instancetype)initWithEntry:(nullable NSDictionary<NSString *, id> *)entry excluded:(BOOL)excluded;
 
-@interface TDCHighlightEntrySheet : TDCSheetBase
-- (instancetype)initWithConfig:(nullable IRCHighlightMatchCondition *)config NS_DESIGNATED_INITIALIZER;
+- (void)beginSheetForWindow:(NSWindow *)window completionHandler:(void (^)(NSDictionary<NSString *, id> * _Nullable entry))completionHandler;
 
-- (void)startWithChannels:(NSArray<IRCChannelConfig *> *)channels;
-@end
-
-@protocol TDCHighlightEntrySheetDelegate <NSObject>
-@required
-
-- (void)highlightEntrySheet:(TDCHighlightEntrySheet *)sender onOk:(IRCHighlightMatchCondition *)config;
-- (void)highlightEntrySheetWillClose:(TDCHighlightEntrySheet *)sender;
+/* "#textual, Libera Chat · alice · ♪ Glass", or nil without settings */
++ (nullable NSString *)summaryOfEntry:(NSDictionary<NSString *, id> *)entry;
 @end
 
 NS_ASSUME_NONNULL_END
