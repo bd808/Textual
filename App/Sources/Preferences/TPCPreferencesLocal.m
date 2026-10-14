@@ -62,6 +62,14 @@ NSString * const TPCPreferencesGeneralEventCheckboxDefaultsKey = @"DisplayEventI
 
 NSString * const TPCPreferencesShowInlineMediaDefaultsKey = @"DisplayEventInLogView -> Inline Media";
 
+NSArray<NSString *> *TPCPreferencesInputCompletionDefaultsKeys(void)
+{
+	return @[@"Input Completion -> Nicknames",
+			 @"Input Completion -> Channels",
+			 @"Input Completion -> Commands",
+			 @"Input Completion -> Emoji"];
+}
+
 NSString * const TPCPreferencesThemeNameMissingLocallyDefaultsKey = @"Theme -> Name -> Did Not Exist During Last Sync";
 
 NSString * const TPCPreferencesThemeFontNameMissingLocallyDefaultsKey = @"Theme -> Font Name -> Did Not Exist During Last Sync";
@@ -382,6 +390,28 @@ NSNotificationName const TPCPreferencesPreventSleepWhileConnectedChangedNotifica
 + (BOOL)showInlineMedia
 {
 	return [RZUserDefaults() boolForKey:TPCPreferencesShowInlineMediaDefaultsKey];
+}
+
++ (BOOL)inputCompletionEnabledForKind:(NSUInteger)kind
+{
+	NSArray *keys = TPCPreferencesInputCompletionDefaultsKeys();
+
+	if (kind >= keys.count) {
+		return NO;
+	}
+
+	return [RZUserDefaults() boolForKey:keys[kind]];
+}
+
++ (void)setInputCompletion:(BOOL)enabled forKind:(NSUInteger)kind
+{
+	NSArray *keys = TPCPreferencesInputCompletionDefaultsKeys();
+
+	if (kind >= keys.count) {
+		return;
+	}
+
+	[RZUserDefaults() setBool:enabled forKey:keys[kind]];
 }
 
 + (NSArray<NSString *> *)inlineMediaDisabledServices

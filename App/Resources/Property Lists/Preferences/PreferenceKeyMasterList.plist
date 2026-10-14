@@ -118,6 +118,14 @@
 	<integer>0</integer>
 	<key>IRCopDefaultLocalizaiton -&gt; Shun Reason</key>
 	<integer>0</integer>
+	<key>Input Completion -&gt; Channels</key>
+	<integer>0</integer>
+	<key>Input Completion -&gt; Commands</key>
+	<integer>0</integer>
+	<key>Input Completion -&gt; Emoji</key>
+	<integer>0</integer>
+	<key>Input Completion -&gt; Nicknames</key>
+	<integer>0</integer>
 	<key>InlineMediaAudio</key>
 	<integer>0</integer>
 	<key>InlineMediaCheckEverything</key>

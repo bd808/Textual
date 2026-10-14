@@ -301,6 +301,87 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TDCPreferencesControlsPane
 
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+
+	NSTabView *tabView = nil;
+
+	for (NSView *subview in self.view.subviews) {
+		if ([subview isKindOfClass:[NSTabView class]]) {
+			tabView = (NSTabView *)subview;
+
+			break;
+		}
+	}
+
+	[tabView addTabViewItem:[self _suggestionsTabViewItem]];
+}
+
+/* Suggestions while typing (E3): a switch per kind, built in code */
+- (NSTabViewItem *)_suggestionsTabViewItem
+{
+	NSTextField *heading = [NSTextField labelWithString:TXTLS(@"TDCPreferencesController[icp-h1]")];
+
+	NSArray<NSString *> *titles = @[TXTLS(@"TDCPreferencesController[icp-k0]"),
+									TXTLS(@"TDCPreferencesController[icp-k1]"),
+									TXTLS(@"TDCPreferencesController[icp-k2]"),
+									TXTLS(@"TDCPreferencesController[icp-k3]")];
+
+	NSMutableArray<NSView *> *rows = [NSMutableArray arrayWithObject:heading];
+
+	[titles enumerateObjectsUsingBlock:^(NSString *title, NSUInteger kind, BOOL *stop) {
+		NSButton *checkbox = [NSButton checkboxWithTitle:title target:self action:@selector(onChangedInputCompletion:)];
+
+		checkbox.tag = kind;
+
+		checkbox.state = [TPCPreferences inputCompletionEnabledForKind:kind];
+
+		[rows addObject:checkbox];
+	}];
+
+	NSTextField *note = [NSTextField wrappingLabelWithString:TXTLS(@"TDCPreferencesController[icp-n1]")];
+
+	note.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
+	note.textColor = [NSColor secondaryLabelColor];
+
+	[rows addObject:note];
+
+	NSStackView *column = [NSStackView stackViewWithViews:rows];
+
+	column.orientation = NSUserInterfaceLayoutOrientationVertical;
+	column.alignment = NSLayoutAttributeLeading;
+	column.spacing = 8;
+	column.translatesAutoresizingMaskIntoConstraints = NO;
+
+	[column setCustomSpacing:12 afterView:heading];
+	[column setCustomSpacing:16 afterView:rows[4]];
+
+	[note.widthAnchor constraintLessThanOrEqualToConstant:520].active = YES;
+
+	NSView *itemView = [NSView new];
+
+	[itemView addSubview:column];
+
+	[NSLayoutConstraint activateConstraints:@[
+		[column.leadingAnchor constraintEqualToAnchor:itemView.leadingAnchor constant:40],
+		[column.trailingAnchor constraintLessThanOrEqualToAnchor:itemView.trailingAnchor constant:-40],
+		[column.topAnchor constraintEqualToAnchor:itemView.topAnchor constant:28]
+	]];
+
+	NSTabViewItem *item = [NSTabViewItem new];
+
+	item.label = TXTLS(@"TDCPreferencesController[icp-t1]");
+	item.view = itemView;
+
+	return item;
+}
+
+- (void)onChangedInputCompletion:(NSButton *)sender
+{
+	[TPCPreferences setInputCompletion:(sender.state == NSControlStateValueOn) forKind:sender.tag];
+}
+
 - (void)onChangedInputHistoryScheme:(nullable id)sender
 {
 	[TPCPreferences performReloadAction:TPCPreferencesReloadActionInputHistoryScope];

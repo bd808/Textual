@@ -586,6 +586,12 @@ NS_ASSUME_NONNULL_BEGIN
 		[RZUserDefaults() _migrateObject:@(12.0) forKey:TPCPreferencesThemeFontSizeDefaultsKey];
 	}
 
+	/* Suggestions while typing are new: off for Textual 7 users (decided
+	 2026-10-13), offered on purpose (10.6) */
+	for (NSString *key in TPCPreferencesInputCompletionDefaultsKeys()) {
+		[RZUserDefaults() _migrateObject:@(NO) forKey:key];
+	}
+
 	/* Textual 7 showed no previews unless turned on; Textual 8 does (D-E2.14),
 	 which is offered on purpose too (10.6) */
 	if (preferences[TPCPreferencesShowInlineMediaDefaultsKey] == nil) {

@@ -77,6 +77,7 @@
 #import "TLONotificationControllerPrivate.h"
 #import "TLOSpeechSynthesizerPrivate.h"
 #import "TDCLicenseManagerDialogPrivate.h"
+#import "TVCInputCompletionPrivate.h"
 #import "TVCMainWindowInternal.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -106,6 +107,8 @@ NSString * const TVCMainWindowSelectionChangedNotification = @"TVCMainWindowSele
 - (void)prepareInitialState
 {
 	self.inputHistoryManager = [[TLOInputHistory alloc] initWithWindow:self];
+
+	self.inputCompletion = [[TVCInputCompletionController alloc] initWithWindow:self];
 
 	self.keyEventHandler = [[TLOKeyEventHandler alloc] initWithTarget:self];
 

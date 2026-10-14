@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define _treeDragItemTypes		[NSArray arrayWithObject:_treeDragItemType]
 
+@class TVCInputCompletionController;
+
 @interface TVCMainWindow ()
 @property (nonatomic, weak, readwrite) IBOutlet TVCMainWindowChannelView *channelView;
 @property (nonatomic, weak, readwrite) IBOutlet TVCMainWindowTitlebarAccessoryView *titlebarAccessoryView;
@@ -60,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, readwrite) IBOutlet TVCMemberList *memberList;
 @property (nonatomic, weak, readwrite) IBOutlet TVCServerList *serverList;
 @property (nonatomic, strong) TLOInputHistory *inputHistoryManager;
+@property (nonatomic, strong) TVCInputCompletionController *inputCompletion;
 @property (nonatomic, strong) TLONicknameCompletionStatus *nicknameCompletionStatus;
 @property (nonatomic, strong, readwrite) TVCMainWindowAppearance *userInterfaceObjects;
 @property (nonatomic, readwrite, copy) NSArray *selectedItems;

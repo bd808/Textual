@@ -77,6 +77,7 @@
 #import "TLONotificationControllerPrivate.h"
 #import "TLOSpeechSynthesizerPrivate.h"
 #import "TDCLicenseManagerDialogPrivate.h"
+#import "TVCInputCompletionPrivate.h"
 #import "TVCMainWindowInternal.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -420,8 +421,19 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
+- (void)inputSelectionDidChange
+{
+	if (self.inputDraftBeingRestored || self.inputCompletion.visible == NO) {
+		return;
+	}
+
+	[self.inputCompletion update];
+}
+
 - (void)restoreInputDraft:(nullable NSAttributedString *)draft
 {
+	[self.inputCompletion close];
+
 	self.inputDraftBeingRestored = YES;
 
 	if (draft) {
@@ -438,6 +450,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if (self.inputDraftBeingRestored) {
 		return;
 	}
+
+	[self.inputCompletion update];
 
 	IRCTreeItem *selectedItem = self.selectedItem;
 

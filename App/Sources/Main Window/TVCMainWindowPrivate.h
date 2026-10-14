@@ -112,6 +112,9 @@ typedef NS_OPTIONS(NSUInteger, TVCMainWindowMouseLocation) {
 - (void)updateTypingIndicatorForChannel:(IRCChannel *)channel;
 - (void)inputTextDidChange;
 
+/* The insertion point moved: the suggestion list follows */
+- (void)inputSelectionDidChange;
+
 /* Puts a channel's draft into the input field (10.11) without it counting as
  typing: the other side is told only once you edit it */
 - (void)restoreInputDraft:(nullable NSAttributedString *)draft;

@@ -231,6 +231,11 @@ NS_ASSUME_NONNULL_BEGIN
 	[self.mainWindow inputTextDidChange];
 }
 
+- (void)textViewDidChangeSelection:(NSNotification *)notification
+{
+	[self.mainWindow inputSelectionDidChange];
+}
+
 - (void)paste:(nullable id)sender
 {
 	/* Files copied in Finder */

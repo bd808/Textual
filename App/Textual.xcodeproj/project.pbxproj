@@ -11,6 +11,7 @@
 		4C06DF3320EC49A60055D09A /* IRCCommandIndexLocalData.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C3153A020EB676400448776 /* IRCCommandIndexLocalData.plist */; };
 		4C06DF3420EC49A60055D09A /* IRCCommandIndexRemoteData.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C31539F20EB676400448776 /* IRCCommandIndexRemoteData.plist */; };
 		4C06DF3520EC49A60055D09A /* IRCNetworks.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C3153A220EB676400448776 /* IRCNetworks.plist */; };
+		4CC2E2E089734BA6F6753ED0 /* EmojiShortcodes.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C82A2BFE6C1DE4253A10996 /* EmojiShortcodes.json */; };
 		4C06DF3820EC49A60055D09A /* StaticStore.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C3153A420EB676400448776 /* StaticStore.plist */; };
 		4C06DF3920EC49A60055D09A /* TemplateLineTypes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C3153A120EB676400448776 /* TemplateLineTypes.plist */; };
 		4C06DF4420EC49B90055D09A /* RemoteLicenseSystemPublicKey.pub in Resources */ = {isa = PBXBuildFile; fileRef = 4C3152EE20EB676400448776 /* RemoteLicenseSystemPublicKey.pub */; };
@@ -205,6 +206,7 @@
 		4C06E6A120EC55B90055D09A /* TLOFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515B20EB673E00448776 /* TLOFileLogger.m */; };
 		4C06E6A220EC55B90055D09A /* TLONotificationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31514920EB673E00448776 /* TLONotificationController.m */; };
 		4C06E6A320EC55B90055D09A /* TLOInputHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515420EB673E00448776 /* TLOInputHistory.m */; };
+		4C461703899F86E9A1CDD3F8 /* TVCInputCompletion.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC3E57AC7861D0E229F24C0 /* TVCInputCompletion.m */; };
 		4C06E6A420EC55B90055D09A /* TLOInternetAddressLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515620EB673E00448776 /* TLOInternetAddressLookup.m */; };
 		4C06E6A420EC55B90055D0A1 /* TLOKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31515620EB673E004487A1 /* TLOKeychain.m */; };
 		4C06E6A520EC55B90055D09A /* TLOKeyEventHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C31514B20EB673E00448776 /* TLOKeyEventHandler.m */; };
@@ -706,6 +708,7 @@
 		4C1191A4A0FA7E9B1A150781 /* TVCLogEventGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */; };
 		4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */; };
 		4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */; };
+		4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */; };
 		4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */; };
 /* End PBXBuildFile section */
 
@@ -991,6 +994,8 @@
 		4C31514F20EB673E00448776 /* TLOLicenseManagerLastGen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOLicenseManagerLastGen.m; sourceTree = "<group>"; };
 		4C31515020EB673E00448776 /* TLOLicenseManagerDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOLicenseManagerDownloader.m; sourceTree = "<group>"; };
 		4C31515420EB673E00448776 /* TLOInputHistory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOInputHistory.m; sourceTree = "<group>"; };
+		4CC3E57AC7861D0E229F24C0 /* TVCInputCompletion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputCompletion.m; sourceTree = "<group>"; };
+		4C681E8BDAA0BF760194D9D1 /* TVCInputCompletionPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TVCInputCompletionPrivate.h; sourceTree = "<group>"; };
 		4C31515520EB673E00448776 /* TLOLinkParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TLOLinkParser.swift; sourceTree = "<group>"; };
 		4C31515620EB673E00448776 /* TLOInternetAddressLookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOInternetAddressLookup.m; sourceTree = "<group>"; };
 		4C31515620EB673E004487A1 /* TLOKeychain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLOKeychain.m; sourceTree = "<group>"; };
@@ -1352,6 +1357,7 @@
 		4C3153A020EB676400448776 /* IRCCommandIndexLocalData.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = IRCCommandIndexLocalData.plist; sourceTree = "<group>"; };
 		4C3153A120EB676400448776 /* TemplateLineTypes.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = TemplateLineTypes.plist; sourceTree = "<group>"; };
 		4C3153A220EB676400448776 /* IRCNetworks.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = IRCNetworks.plist; sourceTree = "<group>"; };
+		4C82A2BFE6C1DE4253A10996 /* EmojiShortcodes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = EmojiShortcodes.json; sourceTree = "<group>"; };
 		4C3153A420EB676400448776 /* StaticStore.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = StaticStore.plist; sourceTree = "<group>"; };
 		4C3153A520EB676400448776 /* RegisteredUserDefaults.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = RegisteredUserDefaults.plist; sourceTree = "<group>"; };
 		4C3154E720EB68A900448776 /* Standard Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Standard Release.entitlements"; sourceTree = "<group>"; };
@@ -1600,6 +1606,7 @@
 		4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCLogEventGroupTests.m; sourceTree = "<group>"; };
 		4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICLMediaFetchTests.m; sourceTree = "<group>"; };
 		4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICMPreviewCardTests.m; sourceTree = "<group>"; };
+		4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TVCInputCompletionTests.m; sourceTree = "<group>"; };
 		4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HLSHistoricLogManagerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2361,6 +2368,8 @@
 			isa = PBXGroup;
 			children = (
 				4C31515420EB673E00448776 /* TLOInputHistory.m */,
+				4CC3E57AC7861D0E229F24C0 /* TVCInputCompletion.m */,
+				4C681E8BDAA0BF760194D9D1 /* TVCInputCompletionPrivate.h */,
 				4C3151DA20EB673E00448776 /* TLOInputHistoryPrivate.h */,
 				4C31514B20EB673E00448776 /* TLOKeyEventHandler.m */,
 				4C31515C20EB673E00448776 /* TLONicknameCompletionStatus.m */,
@@ -2839,6 +2848,7 @@
 				4C3153A020EB676400448776 /* IRCCommandIndexLocalData.plist */,
 				4C31539F20EB676400448776 /* IRCCommandIndexRemoteData.plist */,
 				4C3153A220EB676400448776 /* IRCNetworks.plist */,
+				4C82A2BFE6C1DE4253A10996 /* EmojiShortcodes.json */,
 				4C3153A420EB676400448776 /* StaticStore.plist */,
 				4C3153A120EB676400448776 /* TemplateLineTypes.plist */,
 			);
@@ -2967,6 +2977,7 @@
 				4C5E04F67BC5DBEF2515D874 /* TVCLogEventGroupTests.m */,
 				4C72E54BBB9310F2C913CE4D /* ICLMediaFetchTests.m */,
 				4C05CDC624EEC0625677AF70 /* ICMPreviewCardTests.m */,
+				4C8A5C9CB4FDF0A9CA7AF3F5 /* TVCInputCompletionTests.m */,
 				4C7CB29786A3E7B68BF1EA7B /* HLSHistoricLogManagerTests.m */,
 				4CCEEF3CE8E84E1B5AE9AC3C /* TVCLogViewSecurityTests.m */,
 			);
@@ -3454,6 +3465,7 @@
 				4C06E1C420EC4AC40055D09A /* TVCChannelSelectionView.xib in Resources */,
 				4C06E1CC20EC4AC40055D09A /* TVCNotificationConfigurationView.xib in Resources */,
 				4C06DF3520EC49A60055D09A /* IRCNetworks.plist in Resources */,
+				4CC2E2E089734BA6F6753ED0 /* EmojiShortcodes.json in Resources */,
 				4C06E1EC20EC4AC50055D09A /* TVCAlert.xib in Resources */,
 				4C06E32220EC4FF00055D09A /* Notifications.strings in Resources */,
 				4C06E2F620EC4FF00055D09A /* TDCChannelPropertiesSheet.strings in Resources */,
@@ -3786,6 +3798,7 @@
 				4C06E6A120EC55B90055D09A /* TLOFileLogger.m in Sources */,
 				4C06E6A220EC55B90055D09A /* TLONotificationController.m in Sources */,
 				4C06E6A320EC55B90055D09A /* TLOInputHistory.m in Sources */,
+				4C461703899F86E9A1CDD3F8 /* TVCInputCompletion.m in Sources */,
 				4C06E6A420EC55B90055D09A /* TLOInternetAddressLookup.m in Sources */,
 				4C06E6A420EC55B90055D0A1 /* TLOKeychain.m in Sources */,
 				4C06E6A520EC55B90055D09A /* TLOKeyEventHandler.m in Sources */,
@@ -3911,6 +3924,7 @@
 				4C1191A4A0FA7E9B1A150781 /* TVCLogEventGroupTests.m in Sources */,
 				4C319D7C8536D678F60A2564 /* ICLMediaFetchTests.m in Sources */,
 				4CD951298FA4C04FEC4CA45E /* ICMPreviewCardTests.m in Sources */,
+				4C8039A99A1E59D8BFBE1872 /* TVCInputCompletionTests.m in Sources */,
 				4C25AC984F529FACD80D31C3 /* HLSHistoricLogManagerTests.m in Sources */,
 				4CACA1915D50ECEEE616CC47 /* TPCPreferencesTests.m in Sources */,
 				4CA4A4D412BC97120FEB0648 /* TVCLogRendererTests.m in Sources */,

@@ -87,3 +87,12 @@ Click “Edit Style” to add your own style sheet rules. This feature can also 
 "imp-ra" = "Add Site";
 "imp-rr" = "Remove Site";
 "imp-rn" = "A site includes its subdomains: example.com also covers www.example.com. To stop previews from one person, choose “Don’t Preview Links from …” in their nickname menu; for one channel, use Channel Properties.";
+
+/* Controls → Suggestions (E3) */
+"icp-t1" = "Suggestions";
+"icp-h1" = "Show a list of suggestions while typing:";
+"icp-k0" = "Nicknames, after @";
+"icp-k1" = "Channels, after #";
+"icp-k2" = "Commands, after / at the start of a message";
+"icp-k3" = "Emoji, after : and two letters (:thumbsup:)";
+"icp-n1" = "↑ and ↓ choose, Tab or Return picks, Esc closes the list. A nickname is inserted without the @, with the autocomplete suffix at the start of a message. Tab completion works as before.";

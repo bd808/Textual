@@ -77,6 +77,7 @@
 #import "TLONotificationControllerPrivate.h"
 #import "TLOSpeechSynthesizerPrivate.h"
 #import "TDCLicenseManagerDialogPrivate.h"
+#import "TVCInputCompletionPrivate.h"
 #import "TVCMainWindowInternal.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -113,11 +114,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)performedCustomKeyboardEvent:(NSEvent *)e
 {
+	NSResponder *firstResponder = self.firstResponder;
+
+	/* The suggestion list takes ↑ ↓ Tab Return Esc while it is open */
+	if (firstResponder == self.inputTextField && [self.inputCompletion handleKeyEvent:e]) {
+		return YES;
+	}
+
 	/* With Full Keyboard Access, Tab outside the input field moves the focus */
 	if (e.keyCode == TXKeyTabCode &&
 		(e.modifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption)) == 0 &&
 		NSApp.fullKeyboardAccessEnabled &&
-		self.firstResponder != self.inputTextField)
+		firstResponder != self.inputTextField)
 	{
 		return NO;
 	}
